@@ -1,4 +1,4 @@
-package kr.co.sist.instructor.lecture.chapter;
+package kr.co.sist.user.lecture.chapter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +17,7 @@ public class ChapterController {
 
 		// model.addAttribute("video",video);
 
-		return "/youtubeTest/youtubeAPISample";
+		return "/youtubeTest/youtubeTest";
 	}// method
 
 }// class

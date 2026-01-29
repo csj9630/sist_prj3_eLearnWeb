@@ -42,7 +42,7 @@
         player = new YT.Player("player", {
           height: "390",
           width: "640",
-          videoId: "wBlNgLss9Uw",
+          videoId: "cg1xvFy1JQQ",
 
           playerVars: {
             playsinline: 1,
@@ -80,12 +80,14 @@
 
       //테스트용 시간 추출하기
       function getTime() {
-        var time = player.getCurrentTime();
-        alert("영상 시간 : " + Math.floor(time));
+        var time =Math.floor(player.getCurrentTime());
+  //      alert("영상 시간 : " + Math.floor(time));
 
-        var time2 = player.getDuration();
-        alert("영상 시간2 : " + time2);
-      }
+	//        var time2 = player.getDuration();
+      //  alert("영상 시간2 : " + time2);
+      
+      	return time;
+      }//
 
       //시간 이동
       function moveTime(sec) {
@@ -95,8 +97,9 @@
     <script type="text/javascript">
       $(function () {
         $("#btn").click(function () {
-          muteVideo();
-          getTime();
+//          muteVideo();
+          
+          $(".result").text(getTime());
         }); //click
         $("#btn2").click(function () {
           moveTime(50);

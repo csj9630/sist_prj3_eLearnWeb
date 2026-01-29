@@ -1,4 +1,4 @@
-package kr.co.sist.instructor.lecture.chapter;
+package kr.co.sist.user.lecture.chapter;
 
 import org.springframework.stereotype.Repository;
 
