@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping("/")
+@RequestMapping("/chapter")
 @Controller
 public class ChapterController {
 	@Autowired(required = false)
@@ -17,7 +17,7 @@ public class ChapterController {
 
 		// model.addAttribute("video",video);
 
-		return "/youtubeTest/youtubeTest";
+		return "youtubeTest/youtubeTest";
 	}// method
 
 }// class
