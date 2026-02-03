@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>관리자 대시보드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
+  <link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	$("#search").click(function(){
+		
+	})	
+});
+</script>
+</head>
+<body class="admin-dashboard">
+  <div id="header">
+    <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+  </div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <th:block th:replace="~{fragments/adminSidebar :: adminSidebar}"></th:block>
+    </aside>
+
+	<!-- 좌측 상단 제목 -->
+    <main class="admin-content">
+      <section class="course-page">
+        <header class="course-header">
+          <h1>교육 과목 관리</h1>
+        </header>
+
+		<!-- 옵션 선택바 -->
+        <div class="course-toolbar">
+          <div class="course-filter">
+            <label class="sr-only" for="category">카테고리</label>
+            <select id="category">
+              <option>카테고리 선택</option>
+              <option>개발</option>
+              <option>디자인</option>
+              <option>마케팅</option>
+            </select>
+          </div>
+
+		  <!-- 검색바 -->
+          <div class="course-search">
+            <input type="text" placeholder="강의명 / 강사 검색">
+            <button type="button" id="search">검색</button>
+          </div>
+        </div>
+
+		<!-- 테이블 내용 -->
+        <table class="course-table">
+          <thead>
+            <tr>
+              <th>이미지</th>
+              <th>강의명</th>
+              <th>평점</th>
+              <th>총 수강생</th>
+              <th>강사</th>
+              <th>총 수입</th>
+              <th>상태</th>
+              <th>관리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="course-row" th:each="lects : ${lectList}" th:object="${lects}">
+              <td class="course-thumb">
+                <img th:src="@{'/common/images/'+*{thumbnail}}" alt="">
+              </td>
+              <td class="course-title" th:text="*{lect_name}"></td>
+              <td th:text="*{score}"></td>
+              <td th:text="*{usercount}"></td>
+              <td th:text="*{inst_name}"></td>
+              <td th:text="*{total_profit}"></td>
+              <td class="status status--open">
+              <span th:if="*{availability eq 1}">공개</span>
+              <span th:unless="*{availability eq 1}">비공개</span>
+              </td>
+              <td class="course-actions">
+                <button class="btn btn--ghost">중지</button>
+                <button class="btn btn--primary">공개</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+      
+    </main>
+  </div>
+</body>
+</html>
