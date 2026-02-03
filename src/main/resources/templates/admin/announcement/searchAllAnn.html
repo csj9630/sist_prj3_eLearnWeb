@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>관리자 대시보드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
+</head>
+<body class="admin-dashboard">
+  <div id="header">
+    <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+  </div>
+
+  <div class="admin-layout">
+    <!-- 왼쪽 사이드바 -->
+    <aside class="admin-sidebar">
+    	<th:block th:replace="~{fragments/adminSidebar :: adminSidebar}"></th:block>
+    </aside>
+  </div>
+  
+</body>
+
+</html>
