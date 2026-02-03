@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>내 장바구니</title>
+    
+    <script src="https://js.tosspayments.com/v1/payment"></script>
+    
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; padding: 20px; }
+        h2 { border-bottom: 2px solid #333; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #f8f9fa; }
+        .total-area { text-align: right; margin-top: 20px; font-size: 1.5em; font-weight: bold; }
+        .btn-pay { background-color: #007bff; color: white; border: none; padding: 15px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; }
+        .btn-pay:hover { background-color: #0056b3; }
+        .btn-del { color: red; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <h2>🛒 내 장바구니</h2>
+
+<table>
+        <thead>
+            <tr>
+                <th style="width: 50px;">
+                    <input type="checkbox" id="chkAll" checked onclick="toggleAll(this)">
+                </th>
+                <th>이미지</th>
+                <th>강의명</th>
+                <th>강사명</th>
+                <th>가격</th>
+                <th>관리</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(cartList)}">
+                <td colspan="6" style="padding: 50px;">장바구니가 비어있습니다.</td>
+            </tr>
+            
+            <tr th:each="cart : ${cartList}">
+                <td>
+                    <input type="checkbox" name="cartItem" class="chk-item" 
+                           th:value="${cart.lectId}" 
+                           th:data-price="${cart.price}" 
+                           checked 
+                           onclick="calcTotal()">
+                </td>
+                <td>
+                    <img th:src="@{/images/lecture/{img}(img=${cart.lectThumbnail})}" width="80" alt="강의"
+                         onerror="this.src='https://placehold.co/80'"/>
+                </td>
+                <td th:text="${cart.lectName}" style="text-align: left; font-weight: bold;">자바 강의</td>
+                <td th:text="${cart.instname}">김강사</td> 
+                <td th:text="${#numbers.formatInteger(cart.price, 0, 'COMMA')} + '원'">50,000원</td>
+                <td>
+                    <a th:href="@{/user/payment/delLectFromCart(lectId=${cart.lectId})}" class="btn-del">삭제</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="total-area" th:if="${not #lists.isEmpty(cartList)}">
+        총 결제 금액: <span id="totalPriceDisplay" style="color: #e74c3c;" 
+                       th:text="${#numbers.formatInteger(#aggregates.sum(cartList.![price]), 0, 'COMMA')}">0</span>원
+        <br><br>
+        <button type="button" class="btn-pay" onclick="payToss()">선택 강의 결제하기</button>
+    </div>
+
+    <div class="total-area" th:if="${not #lists.isEmpty(cartList)}">
+        총 결제 금액: <span style="color: #e74c3c;" th:text="${#numbers.formatInteger(#aggregates.sum(cartList.![price]), 0, 'COMMA')}">0</span>원
+        <br><br>
+        <button type="button" class="btn-pay" onclick="payToss()">결제하기</button>
+    </div>
+
+    <script th:inline="javascript">
+        // 1. 전체 선택/해제
+        function toggleAll(source) {
+            const checkboxes = document.querySelectorAll('.chk-item');
+            checkboxes.forEach(cb => cb.checked = source.checked);
+            calcTotal();
+        }
+
+        // 2. 총 금액 재계산
+        function calcTotal() {
+            let total = 0;
+            const checkboxes = document.querySelectorAll('.chk-item:checked');
+            
+            checkboxes.forEach(cb => {
+                total += parseInt(cb.getAttribute('data-price'));
+            });
+
+            // 화면 숫자 업데이트 (천단위 콤마)
+            document.getElementById('totalPriceDisplay').innerText = total.toLocaleString();
+        }
+
+        // 3. 결제 요청 (수정됨)
+        function payToss() {
+            var clientKey = 'test_ck_Z1aOwX7K8mz4qRa9nBwA3yQxzvNP'; 
+            var tossPayments = TossPayments(clientKey);
+            var orderId = 'ORDER_' + new Date().getTime(); 
+            var userName = /*[[${session.userName}]]*/ '구매자';
+
+            // [핵심] 선택된 강의들의 가격 합산 및 ID 수집
+            let totalAmount = 0;
+            let selectedIds = [];
+            
+            const checkboxes = document.querySelectorAll('.chk-item:checked');
+            checkboxes.forEach(cb => {
+                totalAmount += parseInt(cb.getAttribute('data-price'));
+                selectedIds.push(cb.value); // 강의 ID 수집
+            });
+
+            if(totalAmount <= 0) {
+                alert("결제할 강의를 선택해주세요.");
+                return;
+            }
+
+            // [핵심] 성공 URL 뒤에 선택된 강의 ID들을 붙여서 보냄 (예: ...?lectIds=L1,L2,L3)
+            let successUrl = window.location.origin + '/user/payment/toss/success?lectIds=' + selectedIds.join(',');
+
+            tossPayments.requestPayment('카드', { 
+                amount: totalAmount, 
+                orderId: orderId, 
+                orderName: '이러닝 강의 ' + selectedIds.length + '건', 
+                customerName: userName, 
+                successUrl: successUrl, 
+                failUrl: window.location.origin + '/user/payment/toss/fail', 
+            })
+            .catch(function (error) {
+                if (error.code === 'USER_CANCEL') {
+                    // 취소 시 조용히 넘어감
+                } else {
+                    alert('결제 실패: ' + error.message);
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
