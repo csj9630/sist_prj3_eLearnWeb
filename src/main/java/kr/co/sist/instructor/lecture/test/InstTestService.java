@@ -29,7 +29,7 @@ public class InstTestService {
 		public InstTestDomain searchOneTest(InstTestViewDTO itvDTO) {
 			InstTestDomain itDomain = null;
 			
-			return iDTO;
+			return itDomain;
 		}//searchOneTest
 	
 	//시험문제 - 삭제
