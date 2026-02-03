@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>E-Learning 메인</title>
+<style>
+    body { font-family: 'Noto Sans KR', sans-serif; text-align: center; padding-top: 50px; background-color: #f9f9f9;}
+    h1 { color: #333; margin-bottom: 40px; }
+    
+    /* 메뉴 컨테이너 */
+    .menu-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+    
+    /* 카드 스타일 */
+    .menu-card {
+        width: 220px; padding: 30px; border: 1px solid #eee; border-radius: 15px;
+        background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.2s;
+    }
+    .menu-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    
+    .icon { font-size: 50px; margin-bottom: 15px; display: block; }
+    .btn {
+        display: inline-block; padding: 12px 25px; text-decoration: none; color: white;
+        border-radius: 8px; margin-top: 15px; font-weight: bold; width: 100%; box-sizing: border-box;
+    }
+    
+    /* 색상 테마 */
+    .btn-cart { background-color: #3498db; } /* 파랑 */
+    .btn-history { background-color: #2ecc71; } /* 초록 */
+    .btn-inst { background-color: #e67e22; } /* 주황 (강사) */
+    .btn-login { background-color: #95a5a6; } /* 회색 */
+    
+    /* 구분선 */
+    .divider { width: 100%; height: 1px; background: #ddd; margin: 40px 0; }
+</style>
+</head>
+<body>
+
+    <h1>🏫 E-Learning 서비스 (테스트 포털)</h1>
+
+    <div th:if="${session.userId == null && session.instId == null}">
+        <p>테스트를 위해 로그인을 먼저 진행해주세요.</p>
+        <div class="menu-container">
+            <div class="menu-card">
+                <span class="icon">👤</span>
+                <h3>사용자 로그인</h3>
+                <p>구매자(학생) 모드</p>
+                <a href="/user/loginTest" class="btn btn-cart">로그인 (user1)</a>
+            </div>
+            
+            <div class="menu-card" style="border: 2px solid #e67e22;">
+                <span class="icon">👨‍🏫</span>
+                <h3>강사 모드</h3>
+                <p>판매자(강사) 모드</p>
+                <a href="/instructor/payment/inst_payment" class="btn btn-inst">강사 페이지 바로가기</a>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${session.userId != null}">
+        <h3>반갑습니다, <span style="color:#3498db" th:text="${session.userName}"></span> 학생님!</h3>
+        
+        <div class="menu-container">
+            <div class="menu-card">
+                <span class="icon">🛒</span>
+                <h3>장바구니</h3>
+                <p>담아둔 강의 결제</p>
+                <a href="/user/payment/searchMyCart" class="btn btn-cart">이동하기</a>
+            </div>
+
+            <div class="menu-card">
+                <span class="icon">📜</span>
+                <h3>구매 내역</h3>
+                <p>내 학습 목록</p>
+                <a href="/user/my/payrec/searchMyPurchase" class="btn btn-history">확인하기</a>
+            </div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <p>👇 강사 기능 테스트 👇</p>
+        <a href="/instructor/payment/inst_payment" class="btn btn-inst" style="width: 200px;">강사 수익 확인하기</a>
+        
+        
+        
+	    <div class="menu-card">
+		    <span class="icon">🏫</span>
+		    <h3>내 강의실</h3>
+		    <p>수강 중인 강의</p>
+	    <a href="/user/my/lecture/searchMyLecture" class="btn btn-cart" style="background-color: #9b59b6;">입장하기</a>
+		</div>
+		
+		<div class="menu-card" style="border: 2px solid #9b59b6;">
+                <span class="icon">📊</span>
+                <h3>학습 대시보드</h3>
+                <p>최근 학습 및 진도율</p>
+                <a href="/user/my/dashboard/index" class="btn" style="background-color: #8e44ad;">대시보드 보기</a>
+            </div>
+		
+		
+    </div>
+
+</body>
+</html>
