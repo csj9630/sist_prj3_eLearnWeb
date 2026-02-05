@@ -7,10 +7,4 @@
 		select chptr_id, num, name, length, doc, docregdate, video, regdate
 		from   CHAPTER
 	</select>
-	
-	<select id="selectTest" resultType="int">
-		select chptr_id
-		from   CHAPTER;
-	</select>
-	
 </mapper>
