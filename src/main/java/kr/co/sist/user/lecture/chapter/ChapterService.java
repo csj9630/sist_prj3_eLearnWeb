@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class ChapterService {
 
 //	@Autowired(required = false)
-	@Autowired(required = false)
+	@Autowired
 	private ChapterMapper cm;
 
 	public List<ChapterDomain> searchAllChapter(/* ChapterDTO cdto */) {

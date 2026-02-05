@@ -9,22 +9,23 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/lecture/chapter")
+//@RequestMapping("/lecture/chapter")
 //@Controller
 @RestController
 public class ChapterController {
 	@Autowired
 	private ChapterService cs;
 
+//	@GetMapping("/")
+//	public String youtubeTest(Model model) {
+//
+//		// model.addAttribute("video",video);
+//
+//		return "youtubeTest/youtubeTest";
+//	}// method
+
+//	@GetMapping("/viewList")
 	@GetMapping("/")
-	public String youtubeTest(Model model) {
-
-		// model.addAttribute("video",video);
-
-		return "youtubeTest/youtubeTest";
-	}// method
-
-	@GetMapping("/viewList")
 	public String viewChapter(Model model) {
 
 		List<ChapterDomain> list = cs.searchAllChapter();

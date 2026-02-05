@@ -2,6 +2,7 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- /kr/co/sist/user/lecture/chapter/ChapterMapper.java  -->
 <mapper namespace="kr.co.sist.user.lecture.chapter.ChapterMapper">
 	<select id="selectAllChapter" resultType="kr.co.sist.user.lecture.chapter.ChapterDomain">
 		select chptr_id, num, name, length, doc, docregdate, video, regdate
@@ -10,7 +11,7 @@
 	
 	<select id="selectTest" resultType="int">
 		select chptr_id
-		from   CHAPTER;
+		from   CHAPTER
 	</select>
 	
 </mapper>

@@ -7,4 +7,5 @@ import org.apache.ibatis.exceptions.PersistenceException;
 @Mapper
 public interface ChapterMapper {
 	public List<ChapterDomain> selectAllChapter() throws PersistenceException;
+	public int selectTest();
 }
