@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-//@RequestMapping("/lecture/chapter")
+@RequestMapping("/lecture/chapter")
 //@Controller
 @RestController
 public class ChapterController {
@@ -24,8 +24,8 @@ public class ChapterController {
 //		return "youtubeTest/youtubeTest";
 //	}// method
 
-//	@GetMapping("/viewList")
-	@GetMapping("/")
+	@GetMapping("/viewList")
+	//@GetMapping("/")
 	public String viewChapter(Model model) {
 
 		List<ChapterDomain> list = cs.searchAllChapter();

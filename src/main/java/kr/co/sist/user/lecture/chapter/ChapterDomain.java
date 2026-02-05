@@ -2,6 +2,8 @@ package kr.co.sist.user.lecture.chapter;
 
 import java.sql.Date;
 
+import org.apache.ibatis.type.Alias;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Alias(value = "chapterDomain")
 public class ChapterDomain {
 	private String chptr_id ;
 	private String name, video, doc;

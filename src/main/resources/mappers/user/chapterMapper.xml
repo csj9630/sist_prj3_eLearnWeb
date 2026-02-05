@@ -4,7 +4,8 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   <!-- /kr/co/sist/user/lecture/chapter/ChapterMapper.java  -->
 <mapper namespace="kr.co.sist.user.lecture.chapter.ChapterMapper">
-	<select id="selectAllChapter" resultType="kr.co.sist.user.lecture.chapter.ChapterDomain">
+<!--	<select id="selectAllChapter" resultType="kr.co.sist.user.lecture.chapter.ChapterDomain">-->
+	<select id="selectAllChapter" resultType="chapterDomain">
 		select chptr_id, num, name, length, doc, docregdate, video, regdate
 		from   CHAPTER
 	</select>
