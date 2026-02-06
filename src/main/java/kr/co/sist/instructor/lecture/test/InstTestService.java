@@ -1,0 +1,107 @@
+package kr.co.sist.instructor.lecture.test;
+
+import java.util.List;
+
+import org.apache.ibatis.exceptions.PersistenceException;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class InstTestService {
+
+	private final TempController tempController;
+
+	@Autowired(required = false)
+	private InstTestMapper iMapper;
+
+	InstTestService(TempController tempController) {
+		this.tempController = tempController;
+	}
+
+	// 시험문제 페이지 조회 ( 모든 시험 문제 조회 )
+	public List<InstTestDomain> searchTest(InstTestViewDTO itvDTO) {
+		List<InstTestDomain> list = null;
+		try {
+			list = iMapper.selectAllInstTest(itvDTO);
+		} catch (PersistenceException pe) {
+			pe.printStackTrace();
+		} // end catch
+
+		return list;
+	}// searchTest
+
+	// 시험문제 - 하나 조회 ( ajax로 구현 )
+	public String searchOneTest(InstTestViewDTO itvDTO) {
+		InstTestDomain itDomain = null;
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("flag", false);
+		try {
+			itDomain = iMapper.selectOneInstTest(itvDTO);
+
+			if (itDomain != null) {
+				jsonObj.put("flag", true);
+				
+				JSONObject jsonData = new JSONObject();
+				jsonData = new JSONObject();
+				jsonData.put("id", itDomain.getId());
+				jsonData.put("lectId", itDomain.getLectId());
+				jsonData.put("qid", itDomain.getQid());
+				jsonData.put("content", itDomain.getContent());
+				jsonData.put("opt1", itDomain.getOpt1());
+				jsonData.put("opt2", itDomain.getOpt2());
+				jsonData.put("opt3", itDomain.getOpt3());
+				jsonData.put("opt4", itDomain.getOpt4());
+				jsonData.put("ans", itDomain.getAns());
+				jsonData.put("exp", itDomain.getExp());
+				jsonData.put("num", itDomain.getNum());
+
+				jsonObj.put("data", jsonData);
+			}
+		} catch (PersistenceException pe) {
+			pe.printStackTrace();
+		} // end catch
+		return jsonObj.toJSONString();
+	}// searchOneTest
+
+
+	// 시험문제 - 삭제 (ajax 구현)
+	public String removeTest(InstTestViewDTO itvDTO) {
+		boolean removeResult = false;
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("flag", false);
+		try {
+			//삭제 성공 시 true 반환
+			if(iMapper.deleteOneInstTest(itvDTO) == 1) {
+				removeResult = true;
+			}
+
+				jsonObj.put("removeResult", removeResult);
+				jsonObj.put("flag", true);
+		} catch (PersistenceException pe) {
+			pe.printStackTrace();
+		} // end catch
+		return jsonObj.toJSONString();
+	}// removeTest
+
+	// 시험문제 - 수정
+	public int modifyTest(InstTestDTO iDTO) {
+		int testPage = 0;
+
+		return testPage;
+	}// modifyTest
+
+	// 시험문제 - 생성
+	public boolean writeTest(InstTestDTO iDTO) {
+		boolean flag = false;
+
+		try {
+			int cnt = iMapper.insertTest(iDTO);
+			flag = cnt == 1;
+		} catch (PersistenceException pe) {
+			pe.printStackTrace();
+		}
+		return flag;
+	}// writeTest
+
+}// class
