@@ -26,12 +26,13 @@ public class ChapterController {
 
 	@GetMapping("/viewList")
 	//@GetMapping("/")
-	public String viewChapter(Model model) {
+//	public String viewChapter(Model model) {
+		public List<ChapterDomain> viewChapter(Model model) {
 
 		List<ChapterDomain> list = cs.searchAllChapter();
 		model.addAttribute("chapterList",list);
 
-		return list.toString();
+		return list;
 	}// method
 	
 	

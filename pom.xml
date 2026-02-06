@@ -70,7 +70,7 @@
 		</dependency>
 		<!-- security 편의상 잠금
 				<dependency>
-			<groupId>org.springframework.boot</groupId>
+			<groupId>org.springfr	amework.boot</groupId>
 		<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 		<dependency>
