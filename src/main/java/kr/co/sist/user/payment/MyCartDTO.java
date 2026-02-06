@@ -12,6 +12,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class MyCartDTO {
-	String cartId, userId, lectId, lectName, lectThumbnail, instname, instId;
+	String cartId, userId, lectId, lectName, lectThumbnail, instName, instId;
 	int price;
 }

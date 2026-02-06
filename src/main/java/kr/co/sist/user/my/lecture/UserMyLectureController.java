@@ -19,19 +19,19 @@ public class UserMyLectureController {
 
     @GetMapping("/searchMyLecture")
     public String searchMyLecture(HttpSession session, Model model) {
-        // 세션에서 아이디 가져오기
+        // 1. 세션에서 아이디 가져오기
         String userId = (String) session.getAttribute("userId");
         
-        // 비로그인 시 메인으로 리다이렉트
+        // 2. 없으면 테스트 계정(user4) 자동 설정
         if(userId == null) {
-            return "redirect:/";
+            userId = "user4";
+            session.setAttribute("userId", userId);
         }
 
-        // 서비스 호출
+        // 3. 서비스 호출
         List<UserMyLectureDomain> list = umls.searchMyLectureList(userId);
         model.addAttribute("myLectureList", list);
 
-        // HTML 파일 위치
         return "user/my/lecture/my_lecture_list";
     }
 }

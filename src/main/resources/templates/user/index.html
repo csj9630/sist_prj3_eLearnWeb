@@ -8,95 +8,100 @@
     h1 { color: #333; margin-bottom: 40px; }
     
     /* 메뉴 컨테이너 */
-    .menu-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+    .menu-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 30px; }
     
     /* 카드 스타일 */
     .menu-card {
         width: 220px; padding: 30px; border: 1px solid #eee; border-radius: 15px;
         background: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.2s;
+        text-decoration: none; color: inherit; display: block;
     }
-    .menu-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .menu-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); cursor: pointer; }
     
     .icon { font-size: 50px; margin-bottom: 15px; display: block; }
-    .btn {
-        display: inline-block; padding: 12px 25px; text-decoration: none; color: white;
-        border-radius: 8px; margin-top: 15px; font-weight: bold; width: 100%; box-sizing: border-box;
+    .card-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; display: block;}
+    .card-desc { font-size: 14px; color: #666; }
+    
+    /* 개발자 툴바 */
+    .dev-toolbar {
+        background-color: #333; color: #fff; padding: 15px; 
+        border-radius: 8px; margin-bottom: 40px; display: inline-block;
     }
-    
-    /* 색상 테마 */
-    .btn-cart { background-color: #3498db; } /* 파랑 */
-    .btn-history { background-color: #2ecc71; } /* 초록 */
-    .btn-inst { background-color: #e67e22; } /* 주황 (강사) */
-    .btn-login { background-color: #95a5a6; } /* 회색 */
-    
-    /* 구분선 */
-    .divider { width: 100%; height: 1px; background: #ddd; margin: 40px 0; }
+    .dev-toolbar select { padding: 5px; border-radius: 4px; }
 </style>
 </head>
 <body>
 
-    <h1>🏫 E-Learning 서비스 (테스트 포털)</h1>
+    <h1>🏫 E-Learning 서비스</h1>
 
-    <div th:if="${session.userId == null && session.instId == null}">
-        <p>테스트를 위해 로그인을 먼저 진행해주세요.</p>
-        <div class="menu-container">
-            <div class="menu-card">
-                <span class="icon">👤</span>
-                <h3>사용자 로그인</h3>
-                <p>구매자(학생) 모드</p>
-                <a href="/user/loginTest" class="btn btn-cart">로그인 (user1)</a>
-            </div>
-            
-            <div class="menu-card" style="border: 2px solid #e67e22;">
-                <span class="icon">👨‍🏫</span>
-                <h3>강사 모드</h3>
-                <p>판매자(강사) 모드</p>
-                <a href="/instructor/payment/inst_payment" class="btn btn-inst">강사 페이지 바로가기</a>
-            </div>
-        </div>
+    <div class="dev-toolbar">
+        <strong>🛠️ 사용자/강사 선택: </strong>
+        
+        <select onchange="if(this.value) location.href='/dev/login/user?id=' + this.value;">
+            <option value="">-- 사용자 로그인 --</option>
+            <option value="user1">User1 (이정우 - 구매완료)</option>
+            <option value="user2">User2 (남지우 - 구매완료)</option>
+            <option value="user3">User3 (이지원 - 구매완료)</option>
+            <option value="user4">User4 (신승덕 - 미결제)</option>
+            <option value="user5">User5 (최승준)</option>
+            <option value="user6">User6 (버즈)</option>
+            <option value="user7">User7 (나경원)</option>
+            <option value="user8">User8 (윤자빈)</option>
+            <option value="user9">User9 (박상현)</option>
+            <option value="user10">User10 (고준서 - 회원탈퇴_비활성화)</option>
+        </select>
+    
+        &nbsp;|&nbsp;
+    
+        <select onchange="if(this.value) location.href='/dev/login/inst?id=' + this.value;">
+            <option value="">-- 강사 로그인 --</option>
+            <option value="inst1">Inst1 (강사1 - SQL)</option>
+            <option value="inst2">Inst2 (강사2 - Java)</option>
+            <option value="inst3">Inst3 (강사3 - AI)</option>
+            <option value="inst4">Inst4 (강사4 - 앱)</option>
+            <option value="inst5">Inst5 (강사5 - 거절됨)</option>
+            <option value="inst6">Inst6 (강사6 - 보안)</option>
+            <option value="inst7">Inst7 (강사7 - 분석)</option>
+            <option value="inst8">Inst8 (강사8 - AWS)</option>
+            <option value="inst9">Inst9 (강사9 - 은퇴)</option>
+            <option value="inst10">Inst10 (강사10 - 철학)</option>
+        </select>
+    </div>
+
+    <div th:if="${session.userId == null}">
+        <h3 style="color: #e74c3c;">로그인이 필요합니다.</h3>
+        <p>위 드롭다운 메뉴에서 <b>사용자</b>를 선택해주세요.</p>
     </div>
 
     <div th:if="${session.userId != null}">
-        <h3>반갑습니다, <span style="color:#3498db" th:text="${session.userName}"></span> 학생님!</h3>
+        <h3>반갑습니다, <span style="color:#3498db" th:text="${session.userId}"></span> 학생님!</h3>
+        <p>원하시는 메뉴를 선택하세요.</p>
         
         <div class="menu-container">
-            <div class="menu-card">
+            <a href="/user/payment/searchMyCart" class="menu-card">
                 <span class="icon">🛒</span>
-                <h3>장바구니</h3>
-                <p>담아둔 강의 결제</p>
-                <a href="/user/payment/searchMyCart" class="btn btn-cart">이동하기</a>
-            </div>
+                <span class="card-title">장바구니</span>
+                <span class="card-desc">담아둔 강의 결제하기</span>
+            </a>
 
-            <div class="menu-card">
+            <a href="/user/my/payrec/searchMyPurchase" class="menu-card">
                 <span class="icon">📜</span>
-                <h3>구매 내역</h3>
-                <p>내 학습 목록</p>
-                <a href="/user/my/payrec/searchMyPurchase" class="btn btn-history">확인하기</a>
-            </div>
-        </div>
-        
-        <div class="divider"></div>
-        
-        <p>👇 강사 기능 테스트 👇</p>
-        <a href="/instructor/payment/inst_payment" class="btn btn-inst" style="width: 200px;">강사 수익 확인하기</a>
-        
-        
-        
-	    <div class="menu-card">
-		    <span class="icon">🏫</span>
-		    <h3>내 강의실</h3>
-		    <p>수강 중인 강의</p>
-	    <a href="/user/my/lecture/searchMyLecture" class="btn btn-cart" style="background-color: #9b59b6;">입장하기</a>
-		</div>
-		
-		<div class="menu-card" style="border: 2px solid #9b59b6;">
+                <span class="card-title">구매 내역</span>
+                <span class="card-desc">나의 결제 이력 확인</span>
+            </a>
+            
+            <a href="/user/my/lecture/searchMyLecture" class="menu-card">
+                <span class="icon">🏫</span>
+                <span class="card-title">내 강의실</span>
+                <span class="card-desc">수강 중인 강의 목록</span>
+            </a>
+            
+            <a href="/user/my/dashboard/index" class="menu-card">
                 <span class="icon">📊</span>
-                <h3>학습 대시보드</h3>
-                <p>최근 학습 및 진도율</p>
-                <a href="/user/my/dashboard/index" class="btn" style="background-color: #8e44ad;">대시보드 보기</a>
-            </div>
-		
-		
+                <span class="card-title">학습 대시보드</span>
+                <span class="card-desc">진도율 및 출석 확인</span>
+            </a>
+        </div>
     </div>
 
 </body>

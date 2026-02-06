@@ -1,53 +1,48 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>내 구매 내역</title>
-    <style>
-        body { font-family: 'Noto Sans KR', sans-serif; padding: 20px; }
-        h2 { border-bottom: 2px solid #333; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background-color: #f8f9fa; }
-        .btn-home { 
-            display: inline-block; margin-top: 20px; padding: 10px 20px; 
-            background-color: #333; color: white; text-decoration: none; border-radius: 5px; 
-        }
-    </style>
+<meta charset="UTF-8">
+<title>구매 내역</title>
+<style>
+    body { font-family: 'Noto Sans KR', sans-serif; padding: 30px; text-align: center; }
+    table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 10px; }
+    th { background-color: #f2f2f2; }
+    .btn-home { background-color: #555; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+</style>
 </head>
 <body>
+    <h2>📜 구매 내역 (영수증)</h2>
+    
+    <div style="text-align: right; width: 80%; margin: 0 auto 20px;">
+        <a href="/" class="btn-home">🏠 메인으로</a>
+    </div>
 
-    <h2>📜 내 구매 내역</h2>
+    <div th:if="${#lists.isEmpty(purchaseList)}">
+        <p>구매 내역이 없습니다.</p>
+    </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>구매일시</th>
-                <th>이미지</th>
-                <th>강의명</th>
-                <th>강사명</th>
-                <th>결제금액</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:if="${#lists.isEmpty(purchaseList)}">
-                <td colspan="5" style="padding: 30px;">구매한 내역이 없습니다.</td>
-            </tr>
-            
-            <tr th:each="pay : ${purchaseList}">
-                <td th:text="${#dates.format(pay.time, 'yyyy-MM-dd HH:mm')}">2026-01-31</td>
-                <td>
-                    <img th:src="@{/images/lecture/{img}(img=${pay.lectThumbnail})}" width="60" 
-                         onerror="this.src='https://via.placeholder.com/60'"/>
-                </td>
-                <td th:text="${pay.lectName}" style="text-align: left; font-weight: bold;"></td>
-                <td th:text="${pay.instName}"></td>
-                <td th:text="${#numbers.formatInteger(pay.lectPrice, 0, 'COMMA')} + '원'"></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="/user/payment/searchMyCart" class="btn-home">장바구니로 가기</a>
-
+    <div th:if="${not #lists.isEmpty(purchaseList)}">
+        <table>
+            <thead>
+                <tr>
+                    <th>결제번호</th>
+                    <th>강의명</th>
+                    <th>강사</th>
+                    <th>결제금액</th>
+                    <th>결제일시</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${purchaseList}">
+                    <td th:text="${item.payId}"></td>
+                    <td th:text="${item.lectName}"></td>
+                    <td th:text="${item.instName}"></td>
+                    <td th:text="${#numbers.formatInteger(item.lectPrice, 0, 'COMMA')} + '원'"></td>
+                    <td th:text="${item.time}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

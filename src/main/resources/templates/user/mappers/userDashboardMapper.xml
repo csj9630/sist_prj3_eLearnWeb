@@ -38,7 +38,7 @@
         AND ATTDATE BETWEEN #{arDTO.startDate} AND #{arDTO.endDate}
         ORDER BY ATTDATE
     </select>
-    
+        
     <select id="selectLectureDetail" parameterType="String" resultType="kr.co.sist.user.my.lecture.UserMyLectureDomain">
         SELECT 
             ml.MYLECT_ID AS myLectId,

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="recentFragment">
+    <style>
+        .recent-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .recent-card { 
+            flex: 1; min-width: 300px; background: #fff; border: 1px solid #ddd; 
+            border-radius: 10px; padding: 20px; display: flex; align-items: center;
+            transition: transform 0.2s; cursor: pointer;
+        }
+        .recent-card:hover { transform: translateY(-5px); border-color: #3498db; box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2); }
+        .thumb-icon { font-size: 40px; margin-right: 20px; }
+        .lect-info h4 { margin: 0 0 5px 0; font-size: 18px; color: #333; }
+        .lect-info p { margin: 0; color: #777; font-size: 14px; }
+    </style>
+
+    <div th:if="${#lists.isEmpty(recentList)}" style="text-align: center; color: #999; padding: 20px;">
+        아직 학습한 강의가 없습니다.
+    </div>
+
+    <div class="recent-container" th:if="${not #lists.isEmpty(recentList)}">
+        <div class="recent-card" th:each="item : ${recentList}" 
+             th:onclick="|location.href='@{/user/my/dashboard/detail(myLectId=${item.myChapterId})}'|">
+            
+            <div class="thumb-icon">📺</div>
+            <div class="lect-info">
+                <h4 th:text="${item.lectName}">강의명</h4>
+                <p th:text="${item.chptrName}">최근 챕터</p>
+                <p style="color:#3498db; font-size:12px; margin-top:5px;">클릭하여 상세보기</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
