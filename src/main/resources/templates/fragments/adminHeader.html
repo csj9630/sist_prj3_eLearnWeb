@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<th:block th:fragment="adminHeader">
+  <link rel="stylesheet" th:href="@{/common/css/admin-header.css}">
+
+  <header class="admin-header">
+    <div class="admin-header__bar">
+      <a class="admin-header__brand" th:href="@{/admin/dashboard}">
+        <img th:src="@{/common/images/main_logo.png}">
+      </a>
+
+	<!-- 대시보드, 강사관리, 교육과목 관리, 문의 관리, 회원 관리, 공지사항 관리, 강의 관리, 강의 리뷰 관리-->
+      <nav class="admin-header__nav">
+        <span class="admin-header__link" th:text="${pageTitle}"></span>
+      </nav>
+
+	<!-- th:if 사용해서 로그인 여부로 로그인/로그아웃 표시  -->
+      <div class="admin-header__actions">
+        <a class="admin-header__logout" th:href="@{/logout}">로그아웃</a>
+      </div>
+    </div>
+
+    <div class="admin-header__accent"></div>
+  </header>
+</th:block>
+</body>
+</html>

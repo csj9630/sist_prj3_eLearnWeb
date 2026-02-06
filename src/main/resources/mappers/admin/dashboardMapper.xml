@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.admin.dashboard.AdminDashBoardMapper">
+
+<!-- 총 강사 수  -->
+<select id="selectCountInst" resultType="int">
+select count(*)
+from instructor
+</select>
+
+<!-- 총 강의 수  -->
+<select id="selectCountLect" resultType="int">
+select count(*)
+from lecture
+</select>
+
+<!-- 총 수강생 수 -->
+<select id="selectCountUser" resultType="int">
+select count(*)
+from users
+</select>
+
+<!-- 강의 총 수익 -->
+<select id="selectAllProfit" resultType="int">
+select sum(price * usercount)as all_profit
+from lecture
+</select>
+
+<!-- 가장 수익이 높은 강의 조회 -->
+<select id="selectTopPayLecture" resultType="int">
+select
+  l.lect_id,
+  l.name as lect_name,
+  sum(l.price * l.usercount) as estimated_profit
+from lecture l
+group by l.lect_id, l.name
+order by estimated_profit desc
+</select>
+
+<!-- 가장 수강생이 많은 과목 조회 -->
+<select id="selectMostUserLecture" resultType="int">
+select l.name as lect_name
+from lecture l
+order by usercount desc
+</select>
+
+</mapper>
