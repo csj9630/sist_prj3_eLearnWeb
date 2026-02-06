@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.instructor.payment.InstPaymentMapper">
+
+    <select id="selectMyPaySum" parameterType="String" resultType="int">
+        SELECT NVL(SUM(l.PRICE), 0)
+        FROM PAYMENT_DETAIL2 pd2
+        JOIN LECTURE l ON pd2.LECT_ID = l.LECT_ID
+        JOIN PAYMENT p ON pd2.PAYREC_ID = p.PAYREC_ID
+        WHERE l.INST_ID = #{instId} 
+        AND p.STATE = 1
+    </select>
+
+    <select id="selectMyPaySumByLect" parameterType="String" resultType="kr.co.sist.instructor.payment.PaymentSumDTO">
+        SELECT 
+            l.LECT_ID AS lectId,
+            l.NAME AS lectName,
+            COUNT(p.PAY_ID) AS salesCount,
+            SUM(CASE WHEN p.PAY_ID IS NOT NULL THEN l.PRICE ELSE 0 END) AS totalPrice,
+            l.USERCOUNT AS userCount
+        FROM LECTURE l
+        LEFT JOIN PAYMENT_DETAIL2 pd2 ON l.LECT_ID = pd2.LECT_ID
+        LEFT JOIN PAYMENT p ON pd2.PAYREC_ID = p.PAYREC_ID AND p.STATE = 1
+        WHERE l.INST_ID = #{instId}
+        GROUP BY l.LECT_ID, l.NAME, l.USERCOUNT
+        ORDER BY totalPrice DESC
+    </select>
+
+    <select id="selectMyUserCount" parameterType="String" resultType="int">
+        SELECT NVL(SUM(USERCOUNT), 0)
+        FROM LECTURE
+        WHERE INST_ID = #{instId}
+    </select>
+
+</mapper>

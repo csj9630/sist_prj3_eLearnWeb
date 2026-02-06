@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.user.my.dashboard.UserDashboardMapper">
+
+    <select id="selectRecentLectures" parameterType="String" resultType="kr.co.sist.user.my.dashboard.MyChapterDomain">
+        SELECT * FROM (
+            SELECT 
+                ml.MYLECT_ID AS myChapterId,
+                l.NAME AS lectName,
+                NVL(
+                    (SELECT c.NAME FROM MY_CHAPTER mc 
+                     JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID 
+                     WHERE c.LECT_ID = ml.LECT_ID AND mc.USER_ID = ml.USER_ID 
+                     AND ROWNUM = 1), 
+                    '학습 시작 전'
+                ) AS chptrName,  l.THUMBNAIL AS thumbnail,
+                NVL(
+                    (SELECT MAX(mc.LASTDATE) FROM MY_CHAPTER mc 
+                     JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID 
+                     WHERE c.LECT_ID = ml.LECT_ID AND mc.USER_ID = ml.USER_ID), 
+                    ml.REGDATE
+                ) AS lastDate,   0 AS progress    FROM MY_LECTURE ml
+            JOIN LECTURE l ON ml.LECT_ID = l.LECT_ID
+            WHERE ml.USER_ID = #{userId}
+            ORDER BY lastDate DESC
+        ) WHERE ROWNUM &lt;= 2
+    </select>
+
+<select id="selectMyAttendance" resultType="kr.co.sist.user.my.dashboard.AttendanceDTO">
+        SELECT 
+            ATTEND_ID AS id,
+            USER_ID AS userId,
+            ATTDATE AS attendDate  FROM ATTENDANCE
+        WHERE USER_ID = #{userId}
+        AND ATTDATE BETWEEN #{arDTO.startDate} AND #{arDTO.endDate}
+        ORDER BY ATTDATE
+    </select>
+        
+    <select id="selectLectureDetail" parameterType="String" resultType="kr.co.sist.user.my.lecture.UserMyLectureDomain">
+        SELECT 
+            ml.MYLECT_ID AS myLectId,
+            ml.USER_ID AS userId,
+            ml.LECT_ID AS lectId,
+            l.NAME AS lectName,
+            l.THUMBNAIL AS thumbnail,
+            l.SHORTINT AS shortIntro,
+            l.INTRO AS intro,           l.LENGTH AS length,         l.USERCOUNT AS userCount,   c.NAME AS catName,          i.NAME AS instName,
+            ml.REGDATE AS regDate,
+            l.COUNT AS totalChapter,
+            (SELECT COUNT(*) FROM MY_CHAPTER mc JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID WHERE c.LECT_ID = l.LECT_ID AND mc.USER_ID = ml.USER_ID) AS myChapter,
+            CASE WHEN l.COUNT > 0 THEN 
+                TRUNC((SELECT COUNT(*) FROM MY_CHAPTER mc JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID WHERE c.LECT_ID = l.LECT_ID AND mc.USER_ID = ml.USER_ID) / l.COUNT * 100)
+            ELSE 0 END AS progRate
+        FROM MY_LECTURE ml
+        JOIN LECTURE l ON ml.LECT_ID = l.LECT_ID
+        JOIN INSTRUCTOR i ON l.INST_ID = i.INST_ID
+        JOIN CATEGORY c ON l.CAT_ID = c.CAT_ID  WHERE ml.MYLECT_ID = #{myLectId}
+    </select>
+
+</mapper>

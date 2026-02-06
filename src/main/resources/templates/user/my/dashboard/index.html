@@ -1,32 +1,56 @@
 <!DOCTYPE html>
-<html xmlns:th = "http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-<th:block th:replace = "~{fragments/cdn :: cdn}"/>
-<style type = "text/css">
-#wrap{margin: 0px auto; width: 1000px; height: 1200px}
-#header{height: 150px}
-#container{height: 950px}
-#footer{height: 100px}
-</style>
-<script type="text/javascript">
-$(function() {
+<title>학습 대시보드</title>
+<style>
+    body { font-family: 'Noto Sans KR', sans-serif; padding: 30px; background-color: #f4f6f8; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    
+    .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .btn-home { background-color: #555; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
 
-}); // ready
-</script>
+    /* 섹션 공통 스타일 */
+    .dashboard-section { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
+    .section-title { font-size: 20px; font-weight: bold; color: #2c3e50; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+    /* AJAX 로딩 영역 */
+    #recentLectureArea, #weekAttendArea, #monthAttendArea { min-height: 100px; }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-<div id = "wrap">
-<div id = "header">
-<th:block th:replace = "~{fragments/header :: header}"/>
-</div>
-<div id = "container">
 
+<div class="container">
+    <div class="header-area">
+        <h2>📊 나의 학습 대시보드</h2>
+        <a href="/" class="btn-home">🏠 메인으로</a>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-title">🕒 최근 학습한 강의 (Last 2)</div>
+        <div id="recentLectureArea">로딩 중...</div>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-title">📅 주간 학습 현황 (이번 주)</div>
+        <div id="weekAttendArea">로딩 중...</div>
+    </div>
+
+    <div class="dashboard-section">
+        <div class="section-title">📆 월간 학습 현황 (이번 달)</div>
+        <div id="monthAttendArea">로딩 중...</div>
+    </div>
 </div>
-<div id = "footer">
-<th:block th:replace = "~{fragments/footer :: footer}"/>
-</div>
-</div>
+
+<script>
+    $(document).ready(function() {
+        // 페이지 열리자마자 3개 영역 동시에 비동기 로딩
+        $("#recentLectureArea").load("/user/my/dashboard/searchRecentLectures");
+        $("#weekAttendArea").load("/user/my/dashboard/searchMyWeekAttendance");
+        $("#monthAttendArea").load("/user/my/dashboard/searchMyMonthlyAttendance");
+    });
+</script>
+
 </body>
 </html>
