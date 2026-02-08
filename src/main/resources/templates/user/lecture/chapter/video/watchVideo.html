@@ -66,8 +66,13 @@
 		    </div>
 		    <script th:inline="javascript" type="text/javascript">
 			//영상 데이터를 가져와서 json 형태로 사용.	
-		    var videoData = [[${vd}]];
-				//console.log(videoData);
+		    //var videoData = [[${vd}]];
+			
+			//IDE에서 에러 표시 나서 주석 기법으로 변경
+		    var videoData = /*[[${vd}]]*/ 'default_value'; 
+			
+			
+			//console.log(videoData);
 		    
 		    </script>
 			<script>
