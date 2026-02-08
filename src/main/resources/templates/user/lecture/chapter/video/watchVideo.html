@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+
+<style type="text/css">
+#wrap {
+	margin: 0px auto;
+	width: 1200px;
+	height: 1000px;
+}
+
+#header {
+	height: 150px;
+}
+
+#container {
+	height: 700px;
+}
+
+#footer {
+	height: 150px;
+}
+</style>
+
+<!--JS 실습 파트-->
+<script type="text/javascript">
+	$(function() {
+	});//document.ready
+</script>
+</head>
+<body>
+	<div id="wrap">
+		<div id="container">
+
+			<h3>유튜브 강의화면</h3>
+			<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+			<div id="player"></div>
+			<hr />
+<!-- 			<button id="btn" class="btn btn-info" value="prev">prev</button>
+			<button id="btn2" class="btn btn-success" value="next">next</button> -->
+<!-- 			<a th:href="@{/lecture/chapter/video(chptrId=*{chptrId})}"
+							th:text="|강의시청:*{video}|"
+							class="btn btn-sm btn-info">강의시청</a>
+			<a th:href="@{/lecture/chapter/video(chptrId=*{chptrId})}"
+							th:text="|강의시청:*{video}|"
+							class="btn btn-sm btn-info">강의시청</a> -->
+			<button id="btn3" class="btn btn-success" value="setTime">setTimeByModel</button>
+			<button id="btn4" class="btn btn-success" value="setTime">setTime130</button>
+	
+			<div class="videoData">
+				<ul>
+					<h5>model값 체크</h5>
+					<li>current :  <span th:text="${vd.videoUrl}"></span></li>
+					<li>prev : <span th:text="${vd.prevVideoUrl}"></span></li>
+					<li>next : <span th:text="${vd.nextVideoUrl}"></span> </li>
+					<li>time(sec) : <span th:text="${vd.progTime}"></li>
+					
+				</ul>
+			</div>
+		    <div class="result">
+		      <span></span>
+		    </div>
+		    <script th:inline="javascript" type="text/javascript">
+			//영상 데이터를 가져와서 json 형태로 사용.	
+		    var videoData = [[${vd}]];
+				//console.log(videoData);
+		    
+		    </script>
+			<script>
+		
+				// 2. This code loads the IFrame Player API code asynchronously.
+				var tag = document.createElement("script");
+
+				tag.src = "https://www.youtube.com/iframe_api";
+				var firstScriptTag = document.getElementsByTagName("script")[0];
+				firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+				// 3. This function creates an <iframe> (and YouTube player)
+				//    after the API code downloads.
+				var player;
+				function onYouTubeIframeAPIReady() {
+					player = new YT.Player("player", {
+						height : "390",
+						width : "640",
+						videoId : videoData.videoUrl,//model에서 url 가져옴
+						
+						playerVars : {
+							playsinline : 1,
+						},
+						events : {
+							onReady : onPlayerReady,
+							onStateChange : onPlayerStateChange,
+						},
+					});
+				}
+
+				// 4. The API will call this function when the video player is ready.
+				function onPlayerReady(event) {
+					event.target.playVideo();
+					player.seekTo(videoData.progTime, true); //model값으로 시간 설정
+				}
+
+				// 5. The API calls this function when the player's state changes.
+				//    The function indicates that when playing a video (state=1),
+				//    the player should play for six seconds and then stop.
+				var done = false;
+				function onPlayerStateChange(event) {
+					if (event.data == YT.PlayerState.PLAYING && !done) {
+						setTimeout(stopVideo, 6000);
+						done = true;
+					}
+				}
+				function stopVideo() {
+					player.stopVideo();
+				}
+
+				//영상 음소거
+				function muteVideo() {
+					player.mute();
+				}
+
+				//테스트용 시간 추출하기
+				function getTime() {
+					var time = Math.floor(player.getCurrentTime());
+					//      alert("영상 시간 : " + Math.floor(time));
+
+					//        var time2 = player.getDuration();
+					//  alert("영상 시간2 : " + time2);
+
+					return time;
+				}//
+
+				//시간 이동
+				function moveTime(sec) {
+					player.seekTo(sec, true);
+				}
+			</script>
+			<script type="text/javascript">
+				$(function() {
+					$("#btn").click(function() {
+						//          muteVideo();
+
+						$(".result").text(getTime());
+					}); //click
+					$("#btn2").click(function() {
+						moveTime(50);
+					}); //click
+					$("#btn3").click(function() {
+						moveTime(videoData.progTime);
+					}); //click
+					$("#btn3").click(function() {
+						moveTime(130);
+					}); //click
+				}); //document.ready
+			</script>
+
+
+		</div>
+		<!--"container" -->
+
+
+	</div>
+
+
+</body>
+</html>

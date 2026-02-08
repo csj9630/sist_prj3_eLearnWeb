@@ -28,4 +28,18 @@ public class ChapterService {
 		return list;
 	}//method
 	
+	public VideoDomain getVideoInfo(String stuId, String chptrId) {
+		VideoDomain vd = new VideoDomain();
+		
+		vd.setStuId(stuId);
+		vd.setChptrId(chptrId);
+		vd.setTitle("유튜브 영상 제목");
+		vd.setVideoUrl("cg1xvFy1JQQ");
+		vd.setPrevVideoUrl("4VR-6AS0-l4");
+		vd.setNextVideoUrl("mNlxH0a6CfI");
+		vd.setProgTime(35);
+		
+		return vd;
+	}//method
+	
 }//class
