@@ -13,11 +13,11 @@ public class ChapterService {
 	@Autowired
 	private ChapterMapper cm;
 
-	public List<ChapterDomain> searchAllChapter(/* ChapterDTO cdto */) {
+	public List<ChapterDomain> searchChapterProgress(ChapterDTO cdto) {
 		List<ChapterDomain> list = null;
-		//cdto = new ChapterDTO("stu001","chptr001");
+		//cdto = new ChapterDTO("user1","L1");
 		try { 
-			list = cm.selectAllChapter();
+			list = cm.selectChapterProgress(cdto);
 			System.out.println("=====================================");
 			System.out.println(list);
 			System.out.println("=====================================");
@@ -27,4 +27,5 @@ public class ChapterService {
 		
 		return list;
 	}//method
+	
 }//class

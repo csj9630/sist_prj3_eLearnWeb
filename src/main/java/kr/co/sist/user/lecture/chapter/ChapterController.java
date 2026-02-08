@@ -25,15 +25,14 @@ public class ChapterController {
 //	}// method
 
 	@GetMapping("/viewList")
-	//@GetMapping("/")
+	// @GetMapping("/")
 //	public String viewChapter(Model model) {
-		public List<ChapterDomain> viewChapter(Model model) {
-
-		List<ChapterDomain> list = cs.searchAllChapter();
-		model.addAttribute("chapterList",list);
+	public List<ChapterDomain> viewChapter(Model model) {
+		ChapterDTO cdto = new ChapterDTO("user1", "L1");
+		List<ChapterDomain> list = cs.searchChapterProgress(cdto);
+		model.addAttribute("chapterList", list);
 
 		return list;
 	}// method
-	
-	
+
 }// class

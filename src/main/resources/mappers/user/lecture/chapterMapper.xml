@@ -4,15 +4,27 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
   <!-- /kr/co/sist/user/lecture/chapter/ChapterMapper.java  -->
 <mapper namespace="kr.co.sist.user.lecture.chapter.ChapterMapper">
-<!--	<select id="selectAllChapter" resultType="kr.co.sist.user.lecture.chapter.ChapterDomain">-->
-	<select id="selectAllChapter" resultType="chapterDomain">
-		select chptr_id, num, name, length, doc, docregdate, video, regdate
-		from   CHAPTER
-	</select>
-	
+	<!--테스트용-->
 	<select id="selectTest" resultType="int">
 		select chptr_id
 		from   CHAPTER
+	</select>
+	
+	<!--학생id, 강의id로 수강 강의표 진척까지 조회-->
+	<select id="selectChapterProgress" parameterType="chapterDTO" resultType="chapterDomain">
+		select 
+	        c.name, c.length, c.regdate, c.doc, c.video,
+	        nvl(m.progress, 0) as progress,
+	        nvl(m.state, 0) as state
+	    from 
+	        chapter c
+	    left join 
+	        my_chapter m on c.chptr_id = m.chptr_id 
+	        and m.user_id = #{userId}
+	    where 
+	        c.lect_id = #{lectId}
+	    order by 
+	        c.num asc
 	</select>
 	
 </mapper>
