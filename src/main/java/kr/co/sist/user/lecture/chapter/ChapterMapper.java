@@ -7,5 +7,6 @@ import org.apache.ibatis.exceptions.PersistenceException;
 @Mapper
 public interface ChapterMapper {
 	public int selectTest();
-	public List<ChapterDomain> selectChapterProgress(ChapterDTO cdto) throws PersistenceException;
+	public List<ChapterDomain> selectChapterList(String lectId) throws PersistenceException;
+	public List<StuChapterDomain> selectChapterProgress(ChapterDTO cdto) throws PersistenceException;
 }

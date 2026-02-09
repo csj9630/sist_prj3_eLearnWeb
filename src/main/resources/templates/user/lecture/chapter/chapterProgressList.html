@@ -53,13 +53,13 @@
 				</thead>
 				<tbody>
 
-					<th:block th:if="${chapterList.empty}">
+					<th:block th:if="${chapterProgress.empty}">
 						<tr>
 							<td colspan="7" style="text-align: center;">데이터가 존재하지 않습니다</td>
 						</tr>
 					</th:block>
 
-					<tr th:each="cdto, i : ${chapterList}" th:object="${cdto}">
+					<tr th:each="cdto, i : ${chapterProgress}" th:object="${cdto}">
 						<td th:text="*{name}">01강 객체지향의 이해</td>
 						<td th:text="*{lengthStr}">24:30</td>
 						<td th:text="*{#dates.format(regdate, 'yyyy-MM-dd')}">2024-05-20</td>

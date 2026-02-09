@@ -13,14 +13,33 @@ public class ChapterService {
 	@Autowired
 	private ChapterMapper cm;
 
-	public List<ChapterDomain> searchChapterProgress(ChapterDTO cdto) {
+	/**
+	 * 강의 상세용 커리큘럼 조회
+	 * @param lectId
+	 * @return
+	 */
+	public List<ChapterDomain> searchChapterList(String lectId) {
 		List<ChapterDomain> list = null;
 		//cdto = new ChapterDTO("user1","L1");
 		try { 
+			list = cm.selectChapterList(lectId);
+		}catch(PersistenceException pe) {
+			pe.printStackTrace();
+		}
+		
+		return list;
+	}//method
+	
+	/**
+	 * 수강 중인 강의 커리큘럼 및 진척도 조회
+	 * @param cdto
+	 * @return
+	 */
+	public List<StuChapterDomain> searchChapterProgress(ChapterDTO cdto) {
+		List<StuChapterDomain> list = null;
+		//cdto = new ChapterDTO("user1","L1");
+		try { 
 			list = cm.selectChapterProgress(cdto);
-			System.out.println("=====================================");
-			System.out.println(list);
-			System.out.println("=====================================");
 		}catch(PersistenceException pe) {
 			pe.printStackTrace();
 		}

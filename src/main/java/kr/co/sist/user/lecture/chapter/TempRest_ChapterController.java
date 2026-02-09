@@ -3,7 +3,6 @@ package kr.co.sist.user.lecture.chapter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * DB 실행 체크용
  */
-@RequestMapping("/lecture/chapter")
+@RequestMapping("/csj")
 @RestController
 public class TempRest_ChapterController {
 	@Autowired
@@ -30,13 +29,12 @@ public class TempRest_ChapterController {
 	// @GetMapping("/")
 //	public String viewChapter(Model model) {
 	public List<ChapterDomain> viewChapter(Model model) {
-		ChapterDTO cdto = new ChapterDTO("user1", "L1");
-		List<ChapterDomain> list = cs.searchChapterProgress(cdto);
+		String lectId = "L1";
+		List<ChapterDomain> list = cs.searchChapterList(lectId);
 		model.addAttribute("chapterList", list);
 
 		return list;
 	}// method
-	
 
 
 }// class
