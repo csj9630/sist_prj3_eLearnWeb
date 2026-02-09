@@ -46,7 +46,7 @@ public class ChapterController {
 		
 		model.addAttribute("vd", vd);
 		
-		return "user/lecture/chapter/video/watchVideo" ;
+		return "user/lecture/chapter/watchVideo" ;
 	}// method
 
 }// class
