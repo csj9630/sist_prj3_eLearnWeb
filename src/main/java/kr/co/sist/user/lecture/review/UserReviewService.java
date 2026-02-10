@@ -68,6 +68,23 @@ public class UserReviewService {
 		return startNum + pageScale - 1;
 	} // endNum
 	
+	/**
+	 * 총 게시물의 수
+	 * @param rangeDTO
+	 * @return
+	 */
+	public double avgScore(UserReviewRangeDTO rangeDTO) {
+		double avgScore = 0;
+		
+		try {
+			avgScore = rm.selectReviewAvgScore(rangeDTO);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} // end try ~ catch
+		
+		return avgScore;
+	} // totalCnt
+	
 	public boolean addReview(UserReviewDTO rDTO) {
 		
 		boolean flag = false;
@@ -93,6 +110,7 @@ public class UserReviewService {
 		
 		try {
 			list = rm.selectRangeReview(rangeDTO);
+			contentSubStr(list);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} // end try ~ catch
@@ -106,13 +124,13 @@ public class UserReviewService {
 	 */
 	public void contentSubStr(List<UserReviewDomain> reviewList) {
 		String content = "";
-		for(UserReviewDomain rDTO : reviewList) {
-			content = rDTO.getContent();
+		for(UserReviewDomain rDomain : reviewList) {
+			content = rDomain.getContent();
 			if(content != null && content.length() > 19) {
-				rDTO.setContent(content.substring(0, 20) + "...");
+				rDomain.setContent(content.substring(0, 20) + "...");
 			} // end if
 		} // end for
-	} // titleSubStr
+	} // contentSubStr
 	
 	/**
 	 * 페이지네이션 [<<] ... [1][2][3] ... [>>]

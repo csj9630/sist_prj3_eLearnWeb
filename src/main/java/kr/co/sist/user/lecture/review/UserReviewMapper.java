@@ -17,6 +17,10 @@ public interface UserReviewMapper {
 	// <select id = "selectReviewTotalCnt" parameterType = "userReviewRangeDTO" resultType = "int">
 	public int selectReviewTotalCnt(UserReviewRangeDTO rangeDTO) throws SQLException;
 	
+	// 특정 강의의 수강평 평점 평균을 조회
+	// <select id = "selectReviewTotalCnt" parameterType = "userReviewRangeDTO" resultType = "int">
+	public double selectReviewAvgScore(UserReviewRangeDTO rangeDTO) throws SQLException;
+	
 	// 한 페이지에 출력할(만일 키워드가 있다면 키워드를 포함하는 내용의) 공지사항을 조회
 	// <select id = "selectRangeReview" parameterType = "userReviewRangeDTO" resultType = "userReviewDomain">
 	public List<UserReviewDomain> selectRangeReview(UserReviewRangeDTO rangeDTO) throws SQLException;
