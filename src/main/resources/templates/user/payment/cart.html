@@ -3,95 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <title>장바구니</title>
-<style>
-    body { font-family: 'Noto Sans KR', sans-serif; padding: 30px; text-align: center; }
-    table { width: 80%; margin: 20px auto; border-collapse: collapse; }
-    th, td { border: 1px solid #ddd; padding: 10px; }
-    th { background-color: #f2f2f2; }
-    .btn { padding: 10px 20px; text-decoration: none; border-radius: 5px; color: white; display: inline-block; margin: 5px;}
-    .btn-del { background-color: #e74c3c; }
-    .btn-pay { background-color: #3498db; font-size: 18px; }
-    .btn-home { background-color: #555; } /* 뒤로가기 버튼 스타일 */
-</style>
+<link rel="stylesheet" href="/css/user-mypage.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://js.tosspayments.com/v1/payment"></script>
+
+<script>
+    // [기존 스크립트 유지]
+    var clientKey = 'test_ck_Z1aOwX7K8mz4qRa9nBwA3yQxzvNP';
+    var tossPayments = TossPayments(clientKey);
+
+    function calcTotal() {
+        let total = 0;
+        document.querySelectorAll('input[name="chkLect"]:checked').forEach(function(chk) {
+            total += parseInt(chk.getAttribute('data-price'));
+        });
+        document.getElementById('totalPrice').innerText = total.toLocaleString();
+    }
+
+    function requestPayment() {
+        let totalAmount = parseInt(document.getElementById('totalPrice').innerText.replace(/,/g, ''));
+        if (totalAmount === 0) { alert("결제할 강의를 선택해주세요."); return; }
+
+        let selectedIds = [];
+        document.querySelectorAll('input[name="chkLect"]:checked').forEach(function(chk) {
+            selectedIds.push(chk.value);
+        });
+        let lectIdsStr = selectedIds.join(",");
+
+        tossPayments.requestPayment('카드', {
+            amount: totalAmount,
+            orderId: 'ORDER_' + new Date().getTime(),
+            orderName: '강의 결제',
+            customerName: '수강생',
+            successUrl: window.location.origin + '/user/payment/toss/success?lectIds=' + lectIdsStr,
+            failUrl: window.location.origin + '/user/payment/fail_page',
+        });
+    }
+    
+    // 페이지 로드 시 초기 계산 및 이벤트 바인딩
+    $(document).ready(function() {
+        calcTotal();
+        $("#checkAll").change(function(){
+            $("input[name='chkLect']").prop('checked', $(this).prop("checked"));
+            calcTotal();
+        });
+        $("input[name='chkLect']").change(function(){
+            calcTotal();
+            if(!$(this).prop("checked")) $("#checkAll").prop('checked', false);
+        });
+    });
+</script>
 </head>
 <body>
+    <div th:replace="~{fragments/MyHeader :: header}"></div>
 
-    <h2>🛒 나의 장바구니</h2>
-    
-    <div style="text-align: right; width: 80%; margin: 0 auto;">
-        <a href="/" class="btn btn-home">🏠 메인으로</a>
-    </div>
-
-    <div th:if="${#lists.isEmpty(cartList)}">
-        <p>장바구니가 비어있습니다.</p>
-    </div>
-
-    <div th:if="${not #lists.isEmpty(cartList)}">
-        <table>
-            <thead>
-                <tr>
-                    <th>선택</th>
-                    <th>이미지</th>
-                    <th>강의명</th>
-                    <th>강사</th>
-                    <th>가격</th>
-                    <th>관리</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="item : ${cartList}">
-                    <td><input type="checkbox" name="chkLect" th:value="${item.lectId}" th:data-price="${item.price}" checked onchange="calcTotal()"></td>
-                    <td><img th:src="@{/images/{img}(img=${item.lectThumbnail})}" width="50"></td>
-                    <td th:text="${item.lectName}"></td>
-                    <td th:text="${item.instName}"></td>
-                    <td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')} + '원'"></td>
-                    <td><a th:href="@{/user/payment/delLectFromCart(lectId=${item.lectId})}" class="btn btn-del">삭제</a></td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h3>총 결제금액: <span id="totalPrice">0</span>원</h3>
-        <button class="btn btn-pay" onclick="requestPayment()">결제하기</button>
-    </div>
-
-    <script th:inline="javascript">
-        // (기존 스크립트 유지 - 생략 없이 포함)
-        var clientKey = 'test_ck_Z1aOwX7K8mz4qRa9nBwA3yQxzvNP';
-        var tossPayments = TossPayments(clientKey);
-
-        function calcTotal() {
-            let total = 0;
-            document.querySelectorAll('input[name="chkLect"]:checked').forEach(function(chk) {
-                total += parseInt(chk.getAttribute('data-price'));
-            });
-            document.getElementById('totalPrice').innerText = total.toLocaleString();
-        }
-
-        function requestPayment() {
-            let totalAmount = parseInt(document.getElementById('totalPrice').innerText.replace(/,/g, ''));
-            if (totalAmount === 0) { alert("결제할 강의를 선택해주세요."); return; }
-
-            // 선택된 강의 ID 수집
-            let selectedIds = [];
-            document.querySelectorAll('input[name="chkLect"]:checked').forEach(function(chk) {
-                selectedIds.push(chk.value);
-            });
-            let lectIdsStr = selectedIds.join(",");
-
-            // 토스 결제 요청
-            tossPayments.requestPayment('카드', {
-                amount: totalAmount,
-                orderId: 'ORDER_' + new Date().getTime(),
-                orderName: '강의 결제',
-                customerName: '테스트유저',
-                successUrl: window.location.origin + '/user/payment/toss/success?lectIds=' + lectIdsStr,
-                failUrl: window.location.origin + '/user/payment/fail_page',
-            });
-        }
+    <div class="mypage-container" style="display:block; width: 1000px; margin: 50px auto;">
         
-        // 페이지 로드 시 초기 계산
-        calcTotal();
-    </script>
+        <h2 class="page-title">🛒 나의 장바구니</h2>
+        
+        <div style="text-align: right; margin-bottom: 20px;">
+            <a href="/" class="btn-outline" style="font-size:14px; padding:8px 16px;">🏠 메인으로</a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(cartList)}" class="empty-state">
+            <i class="fas fa-shopping-cart"></i>
+            <p>장바구니가 비어있습니다.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(cartList)}" class="purchase-list-container">
+            <div style="padding: 10px; border-bottom: 1px solid #eee; margin-bottom: 10px;">
+                <label><input type="checkbox" id="checkAll" checked> 전체 선택</label>
+            </div>
+
+            <th:block th:each="cart : ${cartList}">
+                <div class="purchase-card">
+                    <div class="p-left">
+                        <input type="checkbox" name="chkLect" th:value="${cart.lectId}" th:data-price="${cart.price}" checked style="margin-right:15px; transform:scale(1.2);">
+                        <div class="p-thumb">
+                            <img th:src="${cart.lectThumbnail}" onerror="this.src='https://via.placeholder.com/120x75'">
+                        </div>
+                        <div class="p-info">
+                            <h4 th:text="${cart.lectName}">강의명</h4>
+                            <span th:text="${cart.instName}">강사명</span>
+                        </div>
+                    </div>
+                    <div class="p-right">
+                        <span class="p-price" th:text="${#numbers.formatInteger(cart.price, 0, 'COMMA') + '원'}">가격</span>
+                        <button type="button" style="border:none; background:none; cursor:pointer; color:#888;"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            </th:block>
+
+            <div class="cart-footer" style="margin-top: 30px; text-align: right; border-top: 2px solid #333; padding-top: 20px;">
+                <span style="font-size: 20px; font-weight: bold; margin-right: 20px;">
+                    총 결제 금액: <span id="totalPrice" style="color: #00c471;">0</span>원
+                </span>
+                <button type="button" onclick="requestPayment()" 
+                        style="background:#00c471; color:white; border:none; padding:12px 40px; border-radius:4px; font-size:16px; font-weight:bold; cursor:pointer;">
+                    결제하기
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
