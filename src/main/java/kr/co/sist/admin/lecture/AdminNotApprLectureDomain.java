@@ -16,8 +16,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ManageNotApprLectureDomain {
-	private String thumbnail, lect_name, inst_name; 
+public class AdminNotApprLectureDomain {
+	private String thumbnail, lect_id, lect_name, inst_name; 
 	private Date regDate;
 	private int approval;
 }

@@ -21,6 +21,6 @@ public class AdminPaymentController {
 		//하단 수익 데이터
 		model.addAttribute("lectProfitList", lectProfitList);
 		
-		return "";
+		return "admin/payment/payment";
 	}//searchPaySum
 }
