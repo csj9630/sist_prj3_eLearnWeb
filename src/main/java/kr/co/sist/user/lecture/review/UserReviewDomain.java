@@ -14,7 +14,7 @@ import lombok.ToString;
 @ToString
 public class UserReviewDomain {
 	
-	private String review_id, content, regip, lect_id, user_id;
+	private String review_id, content, regip, lect_id, user_id, name, profile;
 	private int score;
 	private Date regdate;
 	

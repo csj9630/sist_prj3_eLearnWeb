@@ -15,7 +15,7 @@
 <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
 <script type="text/javascript">
 $(function(){
-	
+	//중지 눌렀을 때 나오는 다이얼로그
 	$("#stopDialog").dialog({
 	    autoOpen: false,
 	    modal: true,
@@ -27,15 +27,15 @@ $(function(){
 	        //ajax로 과목
 	        $.ajax({
 	        	url:"/admin/lecture/updateLectState",
-	    		type:"GET",
+	    		type:"POST",
 	    		data:{lectureId: lectureId},
 	    		error:function(xhr){
 	    			alert(xhr.status);
 	    		},
-	    		success:function(html){
-	    			
-	    		}
-	        });
+	    		success:function(data){
+					
+	    		}//success
+	        });//ajax
 	      },
 	      "아니오": function () {
 	        $(this).dialog("close");
@@ -54,28 +54,66 @@ $(function(){
 	});
 });
 
+function showLect(){
+
+}
+
 function stopLect(){
-	$("#stopDialog").dialog("open");
+	//이미 비공개 상태이면 중지 버튼이 안눌리게
+	if(av) {
+		$("#stopDialog").dialog("open");
+	}
 };
 
+//카테고리 누를 때 변경하는 테이블 데이터
 function lectByCategory(){
+	//select 태그
 	var categoryName=$("#category").val();
 	
 	$.ajax({
-		url:"/admin/lecture/searchAllLect",
+		url:"/admin/lecture/searchCategoryLect",
 		type:"GET",
 		data:{categoryName: categoryName},
+		dataType:"json",
 		error:function(xhr){
 			alert(xhr.status);
 		},
-		success:function(html){
-			var newBody = $(html).find("#lectureTableBody");
-			$("#lectureTableBody").replaceWith(newBody);
-			$(".btn--ghost").click(function(){
-				stopLect();
-			});
-		}
-	});
+		success:function(data){
+			var tbody = $("#lectureTableBody");
+			tbody.empty();
+			
+			//데이터가 없으면 메시지 출력
+			if (!data || data.length === 0) {
+			    tbody.append('<tr><td style="text-align : center;" colspan="8">데이터 없음</td></tr>');
+			    return;
+			}
+			
+			data.forEach(function(lect){
+			    var statusHtml = lect.availability === 1
+			      ? '<span class="open">공개</span>'
+			      : '<span class="not-open">비공개</span>';
+
+			    var row = `
+			      <tr class="course-row">
+			        <td class="course-thumb">
+			          <img src="/common/images/${lect.thumbnail}" alt="">
+			        </td>
+			        <td class="course-title">${lect.lect_name}</td>
+			        <td>${lect.score}</td>
+			        <td>${lect.usercount}</td>
+			        <td>${lect.inst_name}</td>
+			        <td>${lect.total_profit}</td>
+			        <td class="status status--open">${statusHtml}</td>
+			        <td class="course-actions">
+			          <button class="btn btn--primary" value="${lect.lect_id}">공개</button>
+			          <button class="btn btn--ghost" value="${lect.lect_id}">중지</button>
+			        </td>
+			      </tr>
+			    `;
+			    tbody.append(row);
+			  });
+		}//success
+	});//ajax
 }
 </script>
 </head>
@@ -102,9 +140,9 @@ function lectByCategory(){
           <div class="course-filter">
             <label class="sr-only" for="category">카테고리</label>
             <select id="category" name="categoryName" onchange="lectByCategory()">
-              <option th:value="${category}">전체</option>
+              <option value="">전체</option>
               <option th:each="category:${categoryList}"
-               th:value="${category}" th:text="${category}" th:selected="${category == mlsDTO.categoryName}">
+               th:value="${category}" th:text="${category}" th:selected="${category == alsDTO.categoryName}">
               </option>
             </select>
           </div>

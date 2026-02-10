@@ -2,7 +2,7 @@
 <html xmlns:th = "http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>작업용 링크</title>
 <th:block th:replace = "~{fragments/cdn :: cdn}"/>
 <style type = "text/css">
 #wrap{margin: 0px auto; width: 1000px; height: 1200px}
@@ -22,6 +22,21 @@ $(function() {
 <th:block th:replace = "~{fragments/header :: header}"/>
 </div>
 <div id = "container">
+<h3>작업용 링크 - 최승준</h3>
+<ul>
+	<li>
+		<a th:href="@{/csj/tempviewList}">테스트용 restController</a>
+	</li>
+	<li>
+		<a th:href="@{/user/lecture/lectureList}">강의 목록</a>
+	</li>
+	<li>
+		<a th:href="@{/lecture/chapter/viewProgressList}">챕터 목록</a>
+	</li>
+	<li>
+		<a th:href="@{/lecture/chapter/video?chptrId=L1}">동영상 강의 시청</a>
+	</li>
+</ul>
 
 </div>
 <div id = "footer">

@@ -4,26 +4,15 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.sist.admin.lecture.AdminLectureMapper">
 
-<!-- 교육 과목 관리 페이지 좌측 상단의 데이터 -->
+<!-- 교육 과목 관리 페이지 좌측 상단의 카테고리 -->
 <select id="selectAllCategory" resultType="string">
 select name
 from category
 order by name
 </select>
 
-<!-- 교육 과목 관리 페이지 전체 데이터 -->
-<!-- <select id="selectLectList" resultType="lectListDomain">
-select l.thumbnail as thumbnail, l.name as lect_name, r.score as score, l.usercount as usercount, 
-i.name as inst_name, (l.usercount*l.price) as total_profit , l.availability as availability
-from lecture l
-join review r
-on l.lect_id=r.lect_id
-join instructor i
-on i.inst_id=l.inst_id
-</select> -->
-
 <!-- 교육 과목 관리 페이지 검색 데이터 -->
-<select id="selectLectureByCategory" resultType="lectListDomain" parameterType="lectSearchDTO">
+<select id="selectLectureByCategory" parameterType="lectSearchDTO" resultType="lectListDomain">
 select l.lect_id, l.thumbnail as thumbnail, l.name as lect_name, r.score as score, l.usercount as usercount,
 i.name as inst_name, (l.usercount*l.price) as total_profit , l.availability as availability
 from lecture l
@@ -48,13 +37,59 @@ and availability=1
 </update>
 
 <!-- 강의 관리 페이지 등록일 최신순으로 정렬 -->
-<select id="selectNotApprLectList" resultType="notApprlectListDomain">
-select l.thumbnail as thumbnail, l.name as lect_name, l.regdate,
+<select id="selectNotApprLectList" parameterType="lectSearchDTO" resultType="notApprlectListDomain">
+select l.thumbnail as thumbnail, l.lect_id, l.name as lect_name, l.regdate,
 i.name as inst_name, l.approval as approval
 from lecture l
 join instructor i
 on i.inst_id=l.inst_id
+join category c
+on c.cat_id = l.cat_id
+where l.approval=0
+<if test="categoryName != null and categoryName != ''">
+and c.name = #{categoryName}
+</if>
 order by regdate desc
 </select>
+
+<!-- 강의 관리 상세 페이지-상세 정보 -->
+<select id="selectLectureDetail" parameterType="lectSearchDTO" resultType="lectDetailDomain">
+select l.lect_id as lect_id,
+       l.name as lect_name,
+       l.thumbnail as thumbnail,
+       c.name as category_name,
+       i.name as inst_name,
+       l.price as price,
+       l.usercount as user_count,
+       l.availability as availability,
+       l.approval as approval,
+       l.regdate as regDate,
+       l.intro as intro
+from lecture l
+join instructor i on i.inst_id = l.inst_id
+join category c on c.cat_id = l.cat_id
+where l.lect_id = #{lectureId}
+</select>
+
+<!-- 강의 관리 상세 페이지-챕터 정보 -->
+<select id="selectLectureChapter" parameterType="String" resultType="lectChapterDomain">
+select ch.num as ch_num,
+       ch.name as ch_name,
+       ch.length as ch_length,
+       ch.regdate as ch_regdate,
+       ch.doc as ch_doc,
+       ch.video as ch_video
+from chapter ch
+where ch.lect_id = #{lectureId}
+order by ch.num
+</select>
+
+<!-- 강의 승인 -->
+<update id="updateApproval" parameterType="String">
+update lecture
+set approval = 1
+where lect_id = #{lectureId}
+and approval = 0
+</update>
 
 </mapper>
