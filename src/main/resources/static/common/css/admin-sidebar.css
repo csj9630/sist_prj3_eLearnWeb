@@ -1,0 +1,60 @@
+:root {
+  --sidebar-bg: #ffffff;
+  --sidebar-ink: #1f2328;
+  --sidebar-muted: #8b8f96;
+  --sidebar-accent: #24b47e;
+  --sidebar-border: transparent;
+}
+
+.admin-sidebar {
+  width: 240px;
+  padding: 14px 12px;
+}
+
+.admin-sidebar-nav {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.admin-sidebar-title {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c9c9c9;
+  letter-spacing: -0.02em;
+}
+
+.admin-sidebar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.admin-sidebar-link {
+  display: block;
+  padding: 4px 2px;
+  color: var(--sidebar-ink);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.admin-sidebar-link:hover {
+  color: var(--sidebar-accent);
+}
+
+.admin-sidebar-link.is-active {
+  color: var(--sidebar-accent);
+}
+
+@media (max-width: 960px) {
+  .admin-sidebar {
+    display: none;
+  }
+}

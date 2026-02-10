@@ -1,0 +1,179 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- bootStrap CDN ---------------------->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <!----------------------- bootStrap CDN -->
+
+    <!-- JQuery 세트 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <title>Insert title here</title>
+
+    <style type="text/css">
+      #wrap {
+        margin: 0px auto;
+        width: 1200px;
+        height: 1000px;
+      }
+      #header {
+        height: 150px;
+      }
+      #container {
+        height: 700px;
+      }
+      #footer {
+        height: 150px;
+      }
+    </style>
+    <!-- ---------youtube api용 --------------- -->
+    <script>
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement("script");
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 3. This function creates an <iframe> (and YouTube player)
+      //    after the API code downloads.
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player("player", {
+          height: "390",
+          width: "640",
+          videoId: "cg1xvFy1JQQ",
+
+          playerVars: {
+            playsinline: 1,
+          },
+          events: {
+            onReady: onPlayerReady,
+            //onStateChange: onPlayerStateChange,
+          },
+        });
+      }
+
+      // 4. The API will call this function when the video player is ready.
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+
+      // 5. The API calls this function when the player's state changes.
+      //    The function indicates that when playing a video (state=1),
+      //    the player should play for six seconds and then stop.
+      var done = false;
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+          setTimeout(stopVideo, 6000);
+          done = true;
+        }
+      }
+      function stopVideo() {
+        player.stopVideo();
+      }
+
+      //영상 음소거
+      function muteVideo() {
+        player.mute();
+      }
+
+      //테스트용 시간 추출하기
+      function getTime() {
+        var time = Math.floor(player.getCurrentTime());
+        return time;
+      } //
+
+      //시간 이동
+      function moveTime(sec) {
+        player.seekTo(sec, true);
+      }
+    </script>
+    <!-- ---------youtube api용 --------------- -->
+    <!--JS 실습 파트-->
+    <script type="text/javascript">
+      $(function () {
+        $("#btn").click(function () {
+          var currnetTime = getTime();
+          $("#currentTime").text(currnetTime);
+          //console.log(time);
+        }); //click
+        $("#btn2").click(function () {
+          moveTime(50);
+        }); //click
+      }); //document.ready
+    </script>
+  </head>
+  <body>
+    <div id="wrap">
+      <div id="container">
+        <h3>Youtube 시간 데이터를 뽑아내는 실험</h3>
+        <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+        <div id="player"></div>
+        <div>
+          <button id="btn" class="btn btn-info" value="function">
+            function1
+          </button>
+          <button id="btn2" class="btn btn-success" value="function">
+            function2
+          </button>
+        </div>
+
+        <div>
+          <span>동영상 시간 : </span
+          ><span id="currentTime" th:text="${time}">99:99 </span>
+        </div>
+
+        <!-- api 테스트 -->
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th style="width: 450px">전체시간</th>
+              <th style="width: 80px">제목</th>
+              <th style="width: 150px">현재시간</th>
+              <th style="width: 80px">조회수</th>
+              <th style="width: 200px">작성일</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- <th:block th:if="${boardList.empty}">
+              <tr>
+                <td colspan="6" style="text-align: center">
+                  작성된 게시글이 없습니다.
+                </td>
+              </tr>
+            </th:block> -->
+            <tr
+              th:each="boardDomain, i:${boardList}"
+              th:object="${boardDomain}"
+            >
+              <td th:text="${i.count}">번호</td>
+              <td>
+                <a th:href="@{{url}(url='/board/boardDetail', num=*{num})}"
+                  ><span th:text="*{title}">제목</span></a
+                >
+              </td>
+              <td th:text="*{id}">작성자id</td>
+              <td th:text="*{cnt}">조회수</td>
+              <td th:text="*{#dates.format(input_date,'MM-dd-yyyy EEEE')}">
+                작성일
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- api 테스트 -->
+      </div>
+      <!--container  -->
+    </div>
+  </body>
+</html>

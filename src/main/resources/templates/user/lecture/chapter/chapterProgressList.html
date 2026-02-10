@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+
+<style type="text/css">
+#wrap {
+	margin: 0px auto;
+	width: 1200px;
+	height: 1000px;
+}
+
+#header {
+	height: 150px;
+}
+
+#container {
+	height: 700px;
+}
+
+#footer {
+	height: 150px;
+}
+</style>
+
+<!--JS 실습 파트-->
+<script type="text/javascript">
+	$(function() {
+	});//document.ready
+</script>
+</head>
+<body>
+	<div id="wrap">
+		<div id="container">
+
+			<h3>강의 수강리스트</h3>
+
+
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th style="width: 150px;">강의명</th>
+						<th style="width: 100px;">강의시간</th>
+						<th style="width: 150px;">업로드날짜</th>
+						<th style="width: 150px;">강의자료</th>
+						<th style="width: 150px;">강의진척률</th>
+						<th style="width: 70px;">출석여부</th>
+						<th style="width: 200px;">강의시청</th>
+					</tr>
+				</thead>
+				<tbody>
+
+					<th:block th:if="${chapterProgress.empty}">
+						<tr>
+							<td colspan="7" style="text-align: center;">데이터가 존재하지 않습니다</td>
+						</tr>
+					</th:block>
+
+					<tr th:each="cdto, i : ${chapterProgress}" th:object="${cdto}">
+						<td th:text="*{name}">01강 객체지향의 이해</td>
+						<td th:text="*{lengthStr}">24:30</td>
+						<td th:text="*{#dates.format(regdate, 'yyyy-MM-dd')}">2024-05-20</td>
+						<td th:text="*{doc}"></td>
+						<td th:text="*{progress}"></td>
+						<td th:text="*{state}"></td>
+						<td><a th:href="@{/lecture/chapter/video(chptrId=*{chptrId})}"
+							th:text="|강의시청:*{video}|"
+							class="btn btn-sm btn-info">강의시청</a></td>	
+					</tr>
+
+
+				</tbody>
+			</table>
+		</div>
+		<!--"container" -->
+
+
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- bootstrap CDN 시작-->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+	crossorigin="anonymous">
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+	crossorigin="anonymous"></script>
+<!-- bootstrap CDN 끝-->
+<style type="text/css">
+</style>
+<!-- jquery CDN 시작-->
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<!-- jquery CDN 끝-->
+<script type="text/javascript">
+	$(function() {
+		refreshTable();
+		
+		//좌측 문제 번호 클릭 -> 해당 번호의 문제 정보를 오른쪽에 ajax로 뿌림.
+		$(document).on("click", ".ajaxTestATeg", function() {
+			var qid = $(this).data("qid");
+			var num = $(this).data("num");
+			searchOneTest(qid, num);
+		});
+	
+		//문제 등록 버튼 클릭시 오른쪽 form 값 submit
+		$("#createTest").click(function(){
+			insertOneTest();
+		});
+		
+		//수정 버튼 클릭시 오른쪽 화면에 값을 자동으로 채움
+		$(document).on("click", ".updateAjax", function() {
+			var qid = $(this).data("qid");
+			var num = $(this).data("num");
+			searchOneTest(qid, num);
+		});
+
+		//삭제 버튼 클릭 시 삭제 기능 수행	
+		$(document).on("click", ".deleteAjax", function() {
+			if (confirm("삭제하시겠습니까?")) {
+			deleteOneTest($(this).data("num"));
+			}
+		});
+
+		//수정 완료 버튼 클릭 시 수정 진행
+		$(document).on("click", ".btnUpdate", function() {
+			if (confirm("수정하시겠습니까?")) {
+				updateTest($(this).data("num"));
+				}
+		});
+
+		//오른쪽 영역 초기화
+		$(".btn-success").click(function() {
+
+			// 오른쪽 영역의 form을 찾아 초기화
+			var $rightForm = $("#rightForm");
+
+			$rightForm[0].reset();
+
+			$("#qid").val("");
+		});
+
+	});//ready
+	//ajax 시작
+	//문제 하나 확인하기
+	function searchOneTest(qid, num) {
+		var instId = $("#instId").val();
+		var lectId = $("#lectId").val();
+		var ajaxData = {
+			"qid" : qid,
+			"instId" : instId,
+			"lectId" : lectId
+		};
+
+		$.ajax({
+			url : "/instructor/lecture/test/instTestOneFrm",
+			dataType : "JSON",
+			data : ajaxData,
+			error : function(xhr) {
+				alert("조회 실패");
+				console.log(xhr.status);
+			},
+			success : function(jsonObj) {
+				// 문제 번호 클릭시, 해당 문제 정보를 AJAX로 나온 값들로 채워주기.
+				$("#question").val(jsonObj.data.content);
+				$("#qid").val(jsonObj.data.qid);
+				$("#opt1").val(jsonObj.data.opt1);
+				$("#opt2").val(jsonObj.data.opt2);
+				$("#opt3").val(jsonObj.data.opt3);
+				$("#opt4").val(jsonObj.data.opt4);
+				$("#exp").val(jsonObj.data.exp);
+				//정답 체크
+				$("input:radio[name='ans'][value='" + jsonObj.data.ans + "']")
+						.prop("checked", true);
+				
+				//번호 or 수정 버튼 클릭 시 오른쪽 form에 수정, 취소 버튼 생성
+				$("#createTest").hide(); // 등록 버튼 숨김
+				$("#btnUpdate").show(); // 수정 버튼 보임
+				$("#btnCancel").show(); // 취소 버튼 보임
+				
+				//등록 버튼, 취소 버튼 클릭 시 오른쪽 값들 리셋시키고 버튼 안 보이게 만들기.
+				$(".btn-success, #btnCancel").click(function() {
+					$("#rightForm")[0].reset(); 
+					$("#qid").val(""); 
+
+					$("#createTest").show(); 
+					$("#btnUpdate").hide(); 
+					$("#btnCancel").hide(); 
+				});
+			}
+		});//ajax
+	}//searchOneTest
+
+	//테스트 문제 생성
+	function insertOneTest() {
+		//form태그 내부의 값들을(name 기준) 쿼리스트링 처럼 뱉어주는 serialize 메소드 사용
+		var ajaxData = $("#rightForm").serialize();
+
+		$.ajax({
+			url : "/instructor/lecture/test/createTest",
+			type : "POST",
+			dataType : "JSON",
+			data : ajaxData,
+			error : function(xhr) {
+				alert("문제 추가 실패");
+				console.log(xhr.status);
+			},
+			success: function(jsonObj) {
+	            if (jsonObj.flag) {
+	                alert("문제가 성공적으로 등록되었습니다.");
+	                // 폼 초기화
+	                $("#rightForm")[0].reset();
+	                // 왼쪽 테이블 새로고침
+	                refreshTable(); 
+	            } else {
+	                alert("등록에 실패했습니다.");
+	            }
+	        }
+		});//ajax
+	}//searchOneTest
+	
+	//테스트 삭제
+	function deleteOneTest(num) {
+		var qid = $("#deleteTest-" + num).data("qid");
+		var instId = $("#instId").val();
+		var lectId = $("#lectId").val();
+		var ajaxData = {
+			"qid" : qid,
+			"instId" : instId,
+			"lectId" : lectId
+		};
+
+		$.ajax({
+			url : "/instructor/lecture/test/removeTest",
+			type : "POST",
+			dataType : "JSON",
+			data : ajaxData,
+			error : function(xhr) {
+				alert("삭제 실패");
+				console.log(xhr.status);
+			},
+			success : function(jsonObj) {
+				alert("삭제되었습니다.");
+				refreshTable();
+			}
+		});//ajax
+	}//searchOneTest
+
+	//테스트 수정
+	function updateTest(num) {
+		var qid = $("#qid").val();
+		var instId = $("#instId").val();
+		var lectId = $("#lectId").val();
+		var ajaxData = {
+			"qid" : qid,
+			"instId" : instId,
+			"lectId" : lectId,
+			"content" : $("#question").val(),
+			"opt1" : $("#opt1").val(),
+			"opt2" : $("#opt2").val(),
+			"opt3" : $("#opt3").val(),
+			"opt4" : $("#opt4").val(),
+			"ans" : $("input[name='ans']:checked").val(),
+			"exp" : $("#exp").val()
+		};
+
+		console.log("보낼 데이터:", qid, instId, lectId);
+		$.ajax({
+			url : "/instructor/lecture/test/modifyTest",
+			type : "POST",
+			dataType : "JSON",
+			data : ajaxData,
+			error : function(xhr) {
+				alert("수정 실패");
+				console.log(xhr.status);
+			},
+			success : function(jsonObj) {
+				alert("수정되었습니다.");
+				refreshTable();
+			}
+		});//ajax
+	}//updateTest
+
+	//서버에서 데이터를 가져와서 drawTestTable에 던져주는 함수
+	function refreshTable() {
+		var instId = $("#instId").val();
+		var lectId = $("#lectId").val();
+
+		$.ajax({
+			url : "/instructor/lecture/test/instTestListJson",
+			type : "POST",
+			data : {
+				"instId" : instId,
+				"lectId" : lectId
+			},
+			dataType : "JSON",
+			success : function(list) {
+				// 받아온 JSON 리스트로 테이블 그리기
+				drawTestTable(list, instId, lectId);
+			}
+		});
+	}//refreshTable
+
+	//왼쪽 테이블 그리는 function
+	function drawTestTable(list, instId, lectId) {
+		var html = "";
+
+		// 데이터가 없을 경우
+		if (!list || list.length === 0) {
+			html = '<tr><td colspan="3" style="text-align:center;">검색된 시험 정보가 존재하지 않습니다.</td></tr>';
+			$("#testTableBody").html(html);
+			return;
+		}
+
+		// 데이터를 반복하며 HTML 생성
+		$.each(list,function(idx, item) {
+							html += '<tr>';
+							html += '    <td>';
+							// hidden 값들 세팅
+							html += '        <input type="hidden" class="h-instId" value="' + instId + '">';
+							html += '        <input type="hidden" class="h-lectId" value="' + lectId + '">';
+							html += '        <input type="hidden" class="h-id" value="' + item.id + '">';
+							html += '        <input type="hidden" class="h-qid" value="' + item.qid + '">';
+							html += '        <input type="hidden" class="h-content" value="' + item.content + '">';
+							html += '        <input type="hidden" class="h-opt1" value="' + item.opt1 + '">';
+							html += '        <input type="hidden" class="h-opt2" value="' + item.opt2 + '">';
+							html += '        <input type="hidden" class="h-opt3" value="' + item.opt3 + '">';
+							html += '        <input type="hidden" class="h-opt4" value="' + item.opt4 + '">';
+							html += '        <input type="hidden" class="h-ans" value="' + item.ans + '">';
+							html += '        <input type="hidden" class="h-exp" value="' + item.exp + '">';
+
+							// 문제 번호 (클릭 시 상세조회용)
+							html += '        <span class="ajaxTestATeg" data-qid="' + item.qid + '" data-num="' + item.num + '" ';
+        					html += '        id="test-' + item.num + '" style="color: blue; text-decoration: underline; cursor: pointer;">';
+							html += item.num;
+							html += '        </span>';
+							html += '    </td>';
+
+							// 문제 내용
+							html += '    <td>' + item.content + '</td>';
+
+							// 관리 버튼 (수정/삭제)
+							html += '    <td>';
+							/*  html += '        <input type="button" value="수정" style="margin: 10px;" class="btn btn-sm btn-info updateAjax">'; */
+							html += '        <input type="button" value="수정" style="margin: 10px;" class="btn btn-sm btn-info updateAjax" ';
+							html += '               data-qid="' + item.qid + '" data-num="' + item.num + '" id="update-btn-' + item.num + '">';
+							html += '        <input type="button" value="삭제" class="btn btn-sm btn-danger deleteAjax" ';
+        					html += '               data-qid="' + item.qid + '" data-num="' + item.num + '" id="deleteTest-' + item.num + '">';
+							html += '    </td>';
+							html += '</tr>';
+						});
+		// <tbody> 태그 내부에 조립된 HTML을 삽입
+		$("#testTableBody").html(html);
+	}//drawTestTable
+</script>
+</head>
+<body>
+	<div id="container">
+			<div id="leftView" style="float: left; width: 50%;">
+				<label>Step1. 제작된 문제 목록(개수)</label>
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>번호</th>
+							<th>내용</th>
+							<th>관리</th>
+						</tr>
+					</thead>
+					<tbody id="testTableBody">
+					</tbody>
+				</table>
+				<input type="button" value="추가" style="margin: 10px;" class="btn btn-sm btn-success">
+			</div>
+
+		<form th:action="@{/instructor/lecture/test/createTest}" method="POST" id="rightForm">
+			<div id="rightView" style="float: right; width: 50%;">
+				입력된 강사 아이디 : <input type="text" name="instId" id="instId"
+					th:value="${param.instId}"><br> 입력된 강의 아이디 : <input
+					type="text" name="lectId" id="lectId" th:value="${param.lectId}"><br>
+				<input type="hidden" id="qid" name="qid" value=""> <input
+					type="hidden" id="id" name="id" value=""> <label>Step2.
+					문제 정보 입력</label><br> <label>질문 내용(Question)</label><br> 
+					<input type="text" placeholder="질문 내용을 입력해주세요." name="content" value="" id="question" class="content"><br>
+					<label>보기 입력 & 정답 선택</label><br>
+				A<input type="text" name="opt1" id="opt1" placeholder="보기 1 입력">
+				<input type="radio" name="ans" value="1"><br> 
+				B<input type="text" name="opt2" id="opt2" placeholder="보기 2 입력">
+					<input type="radio" name="ans" value="2"><br> 
+					C<input type="text" name="opt3" id="opt3" placeholder="보기 3 입력">
+					<input type="radio" name="ans" value="3"><br> 
+					D<input type="text" name="opt4" id="opt4" placeholder="보기 4 입력">
+					<input type="radio" name="ans" value="4"><br> <label>오답
+					해설 (Explanation) *사용자가 틀렸을 때 보여줄 설명입니다.</label><br>
+				<textarea rows="5" cols="50" placeholder="해설 내용을 입력하세요." name="exp"
+					id="exp"></textarea>
+				<br>
+				<div id="buttonArea">
+					<input type="button" name="createTest" id="createTest" value="문제 등록" class="btn btn-primary createTest"> 
+						<input type="button" id="btnUpdate" value="수정 완료" class="btn btn-info btnUpdate" style="display: none;"> 
+						<input type="button" id="btnCancel" value="취소" class="btn btn-secondary" style="display: none;">
+				</div>
+			</div>
+
+		</form>
+	</div>
+</body>
+</html>

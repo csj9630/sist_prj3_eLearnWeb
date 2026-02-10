@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<th:block th:replace = "~{//fragments/cdn :: cdn}"/>
+<style type = "text/css">
+#wrap{margin: 0px auto; width: 1000px; height: 1200px;}
+#header{height: 150px;}
+#container{min-height: 950px;}
+#footer{height: 100px;}
+#sectorHead{display: flex; margin-bottom: 20px;}
+#headName{font-size: 20px; font-weight: bold;}
+#btnWriteContainer{padding: 20px; background-color: #fff9db; border-radius: 10px; display: flex;}
+#star{color: #fab005; font-weight: bold; font-size: 18px;}
+#containerText{width: 600px;}
+#containerTitle{font-weight: bold; font-size: 18px;}
+#containerContent{margin-left: 23px; font-size: 17px;}
+#containerButton{margin-left: 210px;}
+#btnWrite{background-color: #fd7e14; color: #fff; font-weight: bold; width: 150px; height: 40px;}
+#reviewStats{text-align: center; margin-top: 20px; margin-bottom: 20px; border: solid; border-color: #e0e0e0;  border-radius: 10px;}
+#statAvgScore{font-size: 50px; height: 60px;}
+#statReviewCount{font-size: 20px; margin-bottom: 10px;}
+
+td p{margin: 0 !important;}
+h5{font-weight: bold;}
+
+/* 별점 디자인 */
+/* 별점 디자인 베이스 */
+.statStarRate {
+    position: relative;
+    display: inline-block;
+    font-size: 40px; /* 별 크기 조절 */
+    text-align: top;
+    color: #ddd;     /* 빈 별 색상 (회색) */
+}
+/* 별점 디자인 채우기 */
+.statStarRate .fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: #f5c518;  /* 채워진 별 색상 (노란색) */
+}
+</style>
+<script type="text/javascript">
+$(function() {
+	$("#btnWrite").click(function() {
+		location.href = "/lecture/review/reviewWriteFrm?lectId=[[${param.lectId}]]&currentPage=[[${param.currentPage}]]";
+	}); // click
+	
+	$("#btnSearch").click(function() {
+		searchReview();
+	}); // click
+	
+	$("#keyword").keyup(function(evt) {
+		if(evt.which == 13) {
+			searchReview();
+		} // end if
+	}); // keyup
+}); // ready
+
+function searchReview() {
+	if($("#keyword").val().trim() != "") {
+		$("#reviewSearchFrm").submit();
+	} // end if
+} // searchReview
+</script>
+</head>
+<body>
+<div id = "wrap">
+<div id = "header">
+</div>
+<div id = "container">
+<div id = "sectorHead">
+	<div id = "headName">수강평</div>
+	<div id = "headCount">전체  <strong><span th:text = "|${totalCount}개|"></span></strong></div>
+</div>
+<div id = "reviewList" style = "min-height: 500px">
+	<div id = "btnWriteContainer">
+		<div id = "containerText">
+			<span id = "star"> ★ </span><span id = "containerTitle">수강평을 남겨주세요</span><br/>
+			<span id = "containerContent">여러분의 소중한 수강평이 다른 학습자들에게 큰 도움이 됩니다.</span><br/>
+			<span id = "containerContent">간단한 피드백을 남겨주세요.</span>
+		</div>
+		<div id = "containerButton">
+			<input type = "button" value = "수강평 남기기" class = "btn" id = "btnWrite"/>
+		</div>
+	</div>
+	<div id = "reviewStats">
+		<div id = "statAvgScore"><strong><span th:text = "${avgScore}"></span></strong></div>
+		<div class="statStarRate">
+		    <span>★★★★★</span>
+		    <span class="fill" th:style="'width:' + ${avgScore * 20} + '%'">★★★★★</span>
+		</div>
+		<div id = "statReviewCount"><strong><span th:text = "${totalCount}"></span>개의 수강평</strong></div>
+	</div>
+	<table class = "table table-hover">
+	<thead>
+	<tr>
+		<th style = "width: 100px">프로필</th>
+		<th style = "width: 340px">내용</th>
+		<th style = "width: 120px">작성자 ID</th>
+		<th style = "width: 120px">작성자 닉네임</th>
+		<th style = "width: 80px">평점</th>
+		<th style = "width: 200px">작성일</th>
+	</tr>
+	</thead>
+	<tbody>
+	<th:block th:if = "${reviewList.empty}">
+	<tr>
+		<td colspan = "5" style = "text-align: center;">게시글이 없습니다.</td>
+	</tr>
+	</th:block>
+	<tr th:each = "reviewDomain, i : ${reviewList}" th:object = "${reviewDomain}">
+		<td th:text = "*{profile}">프로필</td>
+		<td><a th:href = "@{{url}(url = '/lecture/review/reviewDetail', reviewId = *{review_id}, lectId = ${param.lectId}, currentPage = ${param.currentPage})}"><span th:utext = "*{content}">내용</span></a></td>
+		<td th:text = "*{name}">작성자 ID</td>
+		<td th:text = "*{user_id}">작성자 ID</td>
+		<td th:text = "*{score}">평점</td>
+		<td th:text = "*{#dates.format(regdate, 'yyyy-MM-dd EEEE')}">작성일</td>
+	</tr>
+	</tbody>
+	</table>
+</div>
+<div id = "reviewSearchDiv" style = "text-align: center">
+	<form th:action = "@{/lecture/review/reviewList}" id = "reviewSearchFrm">
+	<select name = "field" id = "field" style = "height: 30px">
+	<option value = "1" th:selected = "${param.field ne null and param.field[0] eq '1'}">내용</option>
+	<option value = "2" th:selected = "${param.field ne null and param.field[0] eq '2'}">작성자</option>
+	</select>
+	<input type = "text" name = "keyword" id = "keyword" th:value = "${param.keyword}" style = "height: 30px;"/>
+	<input type = "hidden" name = "currentPage" id = "currentPage" th:value = "${param.currentPage eq null ? 1 : param.currentPage}"/>
+	<input type = "hidden" name = "lectId" id = "lectId" th:value = "${param.lectId}"/>
+	<input type = "text" style = "display: none"/>
+	<input type = "button" value = "검색" id = "btnSearch" class = "btn btn-success btn-sm"/>
+	</form>
+</div>
+<div id = "pagination" style = "text-align: center; display: flex; justify-content: center; align-items: center;">
+	<div th:utext = "${pagination}"></div>
+</div>
+</div>
+<div id = "footer">
+</div>
+</div>
+</body>
+</html>

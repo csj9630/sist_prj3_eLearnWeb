@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<th:block th:replace = "~{fragments/cdn :: cdn}"/>
+<style type = "text/css">
+#wrap{margin: 0px auto; width: 1200px; height: 1000px;}
+#header{height: 150px;}
+#container{height: 700px;}
+#footer{height: 150px;}
+
+a{color: #000000; text-decoration: none;}
+a:hover{color: #808080; text-decoration: none;}
+
+/* 게시판 pagination 디자인 */
+.prevMark{color: #FF0000;}
+.nextMark{color: #FF0000;}
+.currentPage{font-size: 20px; font-weight: bold;}
+.notCurrentPage{font-size: 18px; font-weight: normal;}
+
+</style>
+<!-- summernote 시작 -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+
+<script type="text/javascript">
+$(function() {
+	$("#btnModify").click(function() {
+		if(confirm("글을 정말 수정하시겠습니까?")) {
+			// 내용에 값이 있는지 유효성 검증
+			if($("#content").val() == "" || $("#content").val() == "<p></p>") {
+				alert("내용은 필수 입력입니다.");
+				return;
+			} // end if
+			$("#frm")[0].action = "/lecture/review/reviewModifyProcess?lectId=[[${param.lectId}]]&currentPage=[[${param.currentPage}]]";
+			$("#frm").submit();
+		}
+	});
+	
+	$("#btnDelete").click(function() {
+		if(confirm("글을 정말 삭제하시겠습니까?")) {
+			$("#frm")[0].action = "/lecture/review/reviewRemoveProcess?lectId=[[${param.lectId}]]&currentPage=[[${param.currentPage}]]";
+			$("#frm").submit();
+		}
+		
+	});
+}); // ready
+</script>
+<script type="text/javascript">
+$(function() {
+      $('#content').summernote({
+        placeholder: '아무말 대잔치!',
+        tabsize: 2,
+        height: 300,
+        width: 500,
+        toolbar: [
+			// [groupName, [list of button]]
+			['style', ['bold', 'italic', 'underline', 'clear']],
+			['font', ['strikethrough', 'superscript', 'subscript']],
+			['fontsize', ['fontsize']],
+			['color', ['color']],
+			['para', ['ul', 'ol', 'paragraph']],
+			['height', ['height']],
+			['insert', ['link', 'picture']]
+		]
+      });
+}); // ready
+</script>
+</head>
+<body>
+<div id = "wrap">
+<div id = "header">
+<!-- <th:block th:replace = "~{fragments/header :: header}"/> -->
+</div>
+<div id = "container">
+<h2><span th:text = "${param.lectId}"></span>강의 리뷰</h2>
+<form method = "post" name = "frm" id = "frm">
+<table>
+<tr>
+	<td style = "width: 100px">평점</td>
+	<td><input type = "text" name = "score" id = "score" th:value = "${reviewDomain.score}" style = "width: 500px"/> / 5</td>
+</tr>
+<tr>
+	<td>내용</td>
+	<td><textarea name = "content" id = "content" th:text = "${reviewDomain.content}"></textarea></td>
+</tr>
+<tr>
+	<td>ID / IP</td>
+	<td><span th:text = "${reviewDomain.user_id}"></span> / <span th:text = "${reviewDomain.regip}"></span></td>
+</tr>
+<tr>
+	<td colspan = "2" style = "text-align: center;">
+		<input type = "hidden" name = "review_id" th:value = "${param.reviewId}"/>
+		<th:block th:if = "${reviewDomain.user_id} eq ${session.user_id}">
+		<button onclick = "return false" class = "btn btn-success" id = "btnModify">글 수정</button>
+		<button onclick = "return false" class = "btn btn-danger" id = "btnDelete">글 삭제</button>
+		</th:block>
+		<a th:href = "@{{url}(url = '/lecture/review/reviewList', lectId = ${param.lectId}, currentPage = ${param.currentPage})}" class = "btn btn-info"  id = "btnWrite">리스트</a>
+	</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+</tr>
+</table>
+</form>
+</div>
+<div id = "footer">
+<!-- <th:block th:replace = "~{fragments/footer :: footer}"/> -->
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+
+<style type="text/css">
+#wrap {
+	margin: 0px auto;
+	width: 1200px;
+	height: 1000px;
+}
+
+#header {
+	height: 150px;
+}
+
+#container {
+	height: 700px;
+}
+
+#footer {
+	height: 150px;
+}
+
+.thumb {
+	width: 80%;
+	border-radius: 5px;
+}
+</style>
+
+<!--JS 실습 파트-->
+<script type="text/javascript">
+	$(function() {
+	});//document.ready
+</script>
+</head>
+<body>
+	<div id="wrap">
+		<div id="container">
+
+			<h3>강의리스트</h3>
+
+
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th style="width: 200px;"></th>
+						<th style="width: 200px;">강의명</th>
+						<th style="width: 120px;">강사 ID</th>
+						<th style="width: 120px;">가격</th>
+						<th style="width: 100px;">수강인원</th>
+						<th style="width: 100px;">리뷰수</th>
+						<th style="width: 100px;">평균평점</th>
+						<th style="width: 150px;">상세보기</th>
+					</tr>
+				</thead>
+				<tbody>
+					<th:block th:if="${#lists.isEmpty(lectureList)}">
+						<tr>
+							<td colspan="7" style="text-align: center;">등록된 강의가 존재하지
+								않습니다.</td>
+						</tr>
+					</th:block>
+
+					<tr th:each="lecture : ${lectureList}" th:object="${lecture}">
+						<td><img
+							th:src="@{/common/images/강의썸네일(임시)/{imgName}(imgName=*{thumbnail})}"
+							alt="썸네일" class="thumb"></td>
+						<td th:text="*{name}">객체지향의 이해</td>
+						<td th:text="*{instName}">강사 곽우신</td>
+						<td
+							th:text="|${#numbers.formatInteger(lecture.price, 3, 'COMMA')}원|">0원</td>
+						<td th:text="|*{userCount}명|">0명</td>
+						<td th:text="|*{reviewCount}건|">0건</td>
+						<td><span th:text="*{#numbers.formatDecimal(avgScore, 1, 1)}">0.0</span>
+							<span style="color: #f39c12;">★</span></td>
+						<td><a th:href="@{/lecture/detail(lectId=*{lectId})}"
+							class="btn btn-sm btn-info">강의신청</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<!--"container" -->
+
+
+	</div>
+
+
+</body>
+</html>

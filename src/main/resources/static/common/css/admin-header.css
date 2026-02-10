@@ -1,0 +1,118 @@
+:root {
+  --admin-header-bg: #2f3437;
+  --admin-header-text: #e9eff2;
+  --admin-header-accent: #19d1b4;
+  --admin-header-muted: #b8c2c9;
+  --admin-header-btn: #4d6dff;
+  --admin-header-btn-hover: #3b5af0;
+}
+
+.admin-header {
+  width: 100%;
+  background: var(--admin-header-bg);
+  color: var(--admin-header-text);
+  font-family: "Pretendard", "Noto Sans KR", "Segoe UI", sans-serif;
+  letter-spacing: 0.2px;
+}
+
+.admin-header__bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 16px;
+}
+
+.admin-header__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  color: var(--admin-header-text);
+}
+
+.admin-header__brand img {
+  height: 28px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+.admin-header__brand-accent {
+  color: var(--admin-header-accent);
+}
+
+.admin-header__brand-main {
+  color: var(--admin-header-muted);
+}
+
+.admin-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-left: 8px;
+}
+
+.admin-header__link {
+  color: var(--admin-header-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.admin-header__link:hover {
+  color: var(--admin-header-text);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-header__link.is-active {
+  color: var(--admin-header-text);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.admin-header__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.admin-header__logout {
+  background: var(--admin-header-btn);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.admin-header__logout:hover {
+  background: var(--admin-header-btn-hover);
+  transform: translateY(-1px);
+}
+
+.admin-header__accent {
+  height: 3px;
+  background: #ffffff;
+  opacity: 0.9;
+}
+
+@media (max-width: 720px) {
+  .admin-header__bar {
+    height: 52px;
+    gap: 12px;
+  }
+
+  .admin-header__nav {
+    display: none;
+  }
+}

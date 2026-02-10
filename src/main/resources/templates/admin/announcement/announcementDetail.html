@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<th:block th:replace = "~{/fragments/cdn :: cdn}"/>
+<style type = "text/css">
+#wrap{margin: 0px auto; width: 1200px; height: 1000px;}
+#header{height: 150px;}
+#container{height: 700px;}
+#footer{height: 150px;}
+
+a{color: #000000; text-decoration: none;}
+a:hover{color: #808080; text-decoration: none;}
+
+/* 게시판 pagination 디자인 */
+.prevMark{color: #FF0000;}
+.nextMark{color: #FF0000;}
+.currentPage{font-size: 20px; font-weight: bold;}
+.notCurrentPage{font-size: 18px; font-weight: normal;}
+</style>
+<!-- summernote 시작 -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+
+<script type="text/javascript">
+$(function() {
+	$("#btnModify").click(function() {
+		if(confirm("글을 정말 수정하시겠습니까?")) {
+			// 내용에 값이 있는지 유효성 검증
+			if($("#content").val() == "" || $("#content").val() == "<p></p>") {
+				alert("내용은 필수 입력입니다.");
+				return;
+			} // end if
+			$("#frm")[0].action = "/admin/announcement/modifyAnnouncementProcess";
+			$("#frm").submit();
+		}
+		
+	});
+	
+	$("#btnDelete").click(function() {
+		if(confirm("글을 정말 삭제하시겠습니까?")) {
+			$("#frm")[0].action = "/admin/announcement/removeAnnouncementProcess";
+			$("#frm").submit();
+		}
+		
+	});
+}); // ready
+</script>
+<script type="text/javascript">
+$(function() {
+      $('#content').summernote({
+        placeholder: '아무말 대잔치!',
+        tabsize: 2,
+        height: 300,
+        width: 500,
+        toolbar: [
+			// [groupName, [list of button]]
+			['style', ['bold', 'italic', 'underline', 'clear']],
+			['font', ['strikethrough', 'superscript', 'subscript']],
+			['fontsize', ['fontsize']],
+			['color', ['color']],
+			['para', ['ul', 'ol', 'paragraph']],
+			['height', ['height']],
+			['insert', ['link', 'picture']]
+		]
+      });
+}); // ready
+</script>
+</head>
+<body>
+<div id = "wrap">
+<div id = "header">
+</div>
+<div id = "container">
+<h2>아무말 대잔치 글읽기</h2>
+<form method = "post" name = "frm" id = "frm">
+<table>
+<tr>
+	<td style = "width: 100px">제목</td>
+	<td><input type = "text" name = "title" id = "title" th:value = "${announcementDomain.title}" style = "width: 500px"/></td>
+</tr>
+<tr>
+	<td>내용</td>
+	<td><textarea name = "content" id = "content" th:text = "${announcementDomain.content}"></textarea></td>
+</tr>
+<tr>
+	<td>ID/IP</td>
+	<td><input type = "text" name = "id" id = "id" readonly = "readonly" th:value = "${announcementDomain.adm_id}" style = "width: 300px"/>/<span th:text = "${announcementDomain.regip}"></span></td>
+</tr>
+<tr>
+	<td colspan = "2" style = "text-align: center;">
+		<input type = "hidden" name = "ann_id" th:value = "${param.annId}"/>
+		<input type = "hidden" name = "currentPage" th:value = "${param.currentPage}"/>
+		<button onclick = "return false" class = "btn btn-success"  id = "btnModify">글 수정</button>
+		<button onclick = "return false" class = "btn btn-danger"  id = "btnDelete">글 삭제</button>
+		<a href = "javascript:history.back()" class = "btn btn-info"  id = "btnWrite">리스트</a>
+	</td>
+	<td></td>
+</tr>
+<tr>
+	<td></td>
+	<td></td>
+</tr>
+</table>
+</form>
+</div>
+<div id = "footer">
+</div>
+</div>
+</body>
+</html>
