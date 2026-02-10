@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<th:block th:replace = "~{//fragments/cdn :: cdn}"/>
+<th:block th:replace = "~{fragments/cdn :: cdn}"/>
 <style type = "text/css">
 #wrap{margin: 0px auto; width: 1200px; height: 1000px;}
 #header{height: 150px;}
@@ -28,7 +28,7 @@ a:hover{color: #808080; text-decoration: none;}
 $(function() {
 	if(`[[${flag}]]`) {
 		alert("글 삭제 성공");
-		location.href = "/admin/announcement/announcementList?currentPage=[[${param.currentPage}]]";
+		location.href = "/lecture/review/reviewList?lectId=[[${param.lectId}]]&currentPage=[[${param.currentPage}]]";
 	} else {
 		alert("글 삭제 실패");
 		history.back();
@@ -40,11 +40,13 @@ $(function() {
 <body>
 <div id = "wrap">
 <div id = "header">
+<th:block th:replace = "~{fragments/header :: header}"/>
 </div>
 <div id = "container">
 
 </div>
 <div id = "footer">
+<th:block th:replace = "~{fragments/footer :: footer}"/>
 </div>
 </div>
 </body>

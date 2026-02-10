@@ -15,7 +15,7 @@ public class MyChapterDomain {
     private Date lastDate;
     private int progress, progtime, state;
     
-    // [추가] 화면 표시용 변수
+    //화면 표시용 변수
     private String lectName;
     private String chptrName;
     private String thumbnail;

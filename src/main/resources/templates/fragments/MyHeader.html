@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header">
+    <header>
+        <div class="header-inner">
+            <a href="#" class="logo">Inflearn</a>
+
+            <nav class="header-nav">
+                <a href="#" class="nav-text">강의</a>
+                <a href="#" class="nav-text">커뮤니티</a>
+                
+                <a href="/user/payment/searchMyCart" class="header-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                
+                <a href="/user/my/dashboard" class="profile-btn">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+            </nav>
+        </div>
+    </header>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/user-mypage.css">
+</div>
+</html>

@@ -6,9 +6,6 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * 강의에 해당하는 교육 과목 관리, 강의 관리 페이지 담당
- */
 @Service
 public class AdminLectureService {
 
@@ -24,20 +21,30 @@ public class AdminLectureService {
 	public int disableLecture(String lectureId) throws PersistenceException{
 		return alm.updateStatus(lectureId);
 	}
-	
+
 	//교육 과목 관리 데이터
-	public List<ManageLectureDomain> searchLectureByCategory(ManageLectureSearchDTO mlsDTO) throws PersistenceException{
-		List<ManageLectureDomain> lectureByCategory;
-		lectureByCategory=alm.selectLectureByCategory(mlsDTO);
-		System.out.println(lectureByCategory);
-		return lectureByCategory;
-	}//searchLectureByCategory
+	public List<AdminLectureDomain> searchLectureByCategory(AdminLectureSearchDTO alsDTO) throws PersistenceException{
+		return alm.selectLectureByCategory(alsDTO);
+	}
 	
 	//강의 관리 데이터
-	public List<ManageNotApprLectureDomain> searchNotApprLectList() throws PersistenceException{
-		List<ManageNotApprLectureDomain> notApprLectureList;
-		notApprLectureList=alm.selectNotApprLectList();
-		
-		return notApprLectureList;
-	}//searchNotApprLectList
+	public List<AdminNotApprLectureDomain> searchNotApprLectList(AdminLectureSearchDTO alsDTO) throws PersistenceException {
+		return alm.selectNotApprLectList(alsDTO);
+	}
+	
+	//강의 관리 상세 데이터
+	public List<AdminLectureDetailDomain> searchLectureDetail(String lectureId) throws PersistenceException {
+		return alm.selectLectureDetail(lectureId);
+	}
+	
+	//강의 관리 상세 데이터(챕터)
+	public List<AdminLectureChapterDomain> searchLectureChapter(String lectureId) throws PersistenceException {
+		return alm.selectLectureChapter(lectureId);
+	}
+	
+	//강의 승인
+	public int approvalLecture(String lectureId) throws PersistenceException {
+		return alm.updateApproval(lectureId);
+	}
+
 }

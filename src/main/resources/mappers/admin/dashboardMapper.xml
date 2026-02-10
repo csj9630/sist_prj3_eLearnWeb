@@ -29,20 +29,26 @@ from lecture
 </select>
 
 <!-- 가장 수익이 높은 강의 조회 -->
-<select id="selectTopPayLecture" resultType="int">
+<select id="selectTopPayLecture" resultType="dashboardDomain">
 select
   l.lect_id,
   l.name as lect_name,
-  sum(l.price * l.usercount) as estimated_profit
+  sum(l.price * l.usercount) as estimated_profit,
+  l.usercount as user_count
 from lecture l
-group by l.lect_id, l.name
+group by l.lect_id, l.name, l.usercount
 order by estimated_profit desc
 </select>
 
-<!-- 가장 수강생이 많은 과목 조회 -->
-<select id="selectMostUserLecture" resultType="int">
-select l.name as lect_name
+<!-- 가장 수강생이 많은 강의 조회 -->
+<select id="selectMostUserLecture" resultType="dashboardDomain">
+select 
+  l.lect_id, 
+  l.name as lect_name,
+  sum(l.price * l.usercount) as estimated_profit, 
+  l.usercount as user_count
 from lecture l
+group by l.lect_id, l.name, l.usercount
 order by usercount desc
 </select>
 

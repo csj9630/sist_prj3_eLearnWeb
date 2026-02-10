@@ -7,4 +7,4 @@ import org.apache.ibatis.annotations.Mapper;
 public interface UserMyLectureMapper {
     // 내 수강 목록 조회
     List<UserMyLectureDomain> selectMyLectureList(String userId);
-}
+}//interface

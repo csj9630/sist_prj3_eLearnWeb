@@ -127,21 +127,19 @@ $(function(){
             <article class="stat-card highlight-card">
               <div class="stat-header">
                 <div>
-                  <p class="stat-label">최고 수익 강사</p>
-                  <!-- <p class="highlight-name" th:text="${topInstructor.name}">김수민</p> -->
+                  <p class="stat-label">최고 수익 강의</p>
+                  <p class="highlight-name" th:text="${payList[0].lect_name}"></p>
                 </div>
               </div>
-              <!-- <div class="highlight-value" th:text="${topInstructor.totalRevenue}">₩12,340,000</div>
-              <p class="highlight-meta" th:text="'총 수강생 ' + ${topInstructor.totalStudents} + '명'"> 
-                총 수강생 384명
-              </p> -->
+              <div class="highlight-value" th:text="${payList[0].estimated_profit}"></div>
+              <p class="highlight-meta" th:text="'총 수강생 ' + ${payList[0].user_count} + '명'"> </p>
             </article>
 
             <article class="stat-card highlight-card">
               <div class="stat-header">
                 <div>
                   <p class="stat-label">최다 수강 과목</p>
-                  <!-- <p class="highlight-name" th:text="${topCourse.name}">실전 자바 프로젝트</p> -->
+                  <p class="highlight-name" th:text="${userList[0].lect_name}"></p>
                 </div>
               </div>
               <!-- <div class="highlight-value" th:text="${topCourse.studentCount} + '명'">1,245명</div>
@@ -151,23 +149,22 @@ $(function(){
             </article>
           </div>
 
-          <div class="table-wrap">
             <table class="data-table">
               <thead>
                 <tr>
                   <th>순위</th>
                   <th>이름</th>
                   <th>구분</th>
-                  <th>값</th>
+                  <th>수강생 수</th>
                 </tr>
               </thead>
               <tbody>
-               <!--  <tr th:each="row : ${topHighlightList}">
-                  <td th:text="${row.rank}">1</td>
-                  <td th:text="${row.name}">김수민</td>
-                  <td th:text="${row.type}">강사 수익</td>
-                  <td th:text="${row.value}">₩12,340,000</td>
-                </tr> -->
+                <tr th:each="pay , i : ${payList}">
+                  <td th:text="${i.count}"></td>
+                  <td th:text="${pay.lect_name}"></td>
+                  <td th:text="${pay.estimated_profit}"></td>
+                  <td th:text="${pay.user_count}"></td>
+                </tr>
               </tbody>
             </table>
           </div>

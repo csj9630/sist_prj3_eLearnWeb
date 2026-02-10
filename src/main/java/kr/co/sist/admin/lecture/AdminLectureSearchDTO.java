@@ -11,6 +11,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ManageLectureSearchDTO {
+public class AdminLectureSearchDTO {
 	private String categoryName;
 }
