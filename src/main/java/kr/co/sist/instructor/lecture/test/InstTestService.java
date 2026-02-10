@@ -85,23 +85,50 @@ public class InstTestService {
 	}// removeTest
 
 	// 시험문제 - 수정
-	public int modifyTest(InstTestDTO iDTO) {
-		int testPage = 0;
+	public String modifyTest(InstTestDTO iDTO) {
+		boolean updateResult = false;
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("flag", false);
+		try {
+			//수정 성공 시 true 반환
+			if(iMapper.updateInstTest(iDTO) == 1) {
+				updateResult = true;
+			}
 
-		return testPage;
+				jsonObj.put("updateResult", updateResult);
+				jsonObj.put("flag", true);
+		} catch (PersistenceException pe) {
+			pe.printStackTrace();
+		} // end catch
+		return jsonObj.toJSONString();
 	}// modifyTest
 
 	// 시험문제 - 생성
-	public boolean writeTest(InstTestDTO iDTO) {
-		boolean flag = false;
-
+	public String writeTest(InstTestDTO iDTO) {
+		boolean Insertflag = false;
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("flag", false);
 		try {
-			int cnt = iMapper.insertTest(iDTO);
-			flag = cnt == 1;
+			//존재하는 시험인지 확인
+			String flagtestId = iMapper.selectTestIdByLectId(iDTO.getLectId());
+			
+			if (flagtestId == null) {
+	            // 시험이 없다면 새로운 시험지(test테이블에) 생성.(T1,T2...)
+	            iMapper.insertTest(iDTO); 
+	        } else {
+	            // test에 id값이 이미 존재한다면 ID를 생성하지 말고 재사용.
+	            iDTO.setId(flagtestId); 
+	        }
+			
+			if(iMapper.insertTestQuestion(iDTO) == 1) {
+				Insertflag = true;
+			}
+			jsonObj.put("updateResult", Insertflag);
+			jsonObj.put("flag", true);
 		} catch (PersistenceException pe) {
 			pe.printStackTrace();
 		}
-		return flag;
+		return jsonObj.toJSONString();
 	}// writeTest
 
 }// class
