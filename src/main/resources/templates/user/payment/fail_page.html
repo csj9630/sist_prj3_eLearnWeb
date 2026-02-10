@@ -3,21 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <title>결제 실패</title>
+<link rel="stylesheet" href="/css/user-mypage.css">
 <style>
-    body { text-align: center; padding: 50px; font-family: 'Noto Sans KR', sans-serif; }
-    .fail-icon { color: #e74c3c; font-size: 50px; }
-    h2 { margin-top: 20px; color: #e74c3c; }
+    .result-box { text-align: center; padding: 80px 0; }
+    .fail-icon { color: #ff6b6b; font-size: 60px; margin-bottom: 20px; }
     .btn-retry { 
-        display: inline-block; margin-top: 30px; padding: 10px 20px; 
-        background-color: #e74c3c; color: white; text-decoration: none; border-radius: 5px; 
+        display: inline-block; margin-top: 30px; padding: 12px 30px; 
+        background-color: #ff6b6b; color: white; text-decoration: none; border-radius: 4px; 
     }
 </style>
 </head>
 <body>
-    <div class="fail-icon">⚠</div>
-    <h2>결제 실패</h2>
-    <p th:text="${msg}">오류가 발생했습니다.</p>
-    
-    <a href="/user/payment/searchMyCart" class="btn-retry">장바구니로 돌아가기</a>
+    <div th:replace="~{fragments/MyHeader :: header}"></div>
+
+    <div class="mypage-container" style="display:block; width:1000px; margin:0 auto;">
+        <div class="result-box">
+            <div class="fail-icon"><i class="fas fa-exclamation-circle"></i></div>
+            <h2>결제 실패</h2>
+            <p th:text="${msg}" style="color:#666; margin-top:10px;">오류가 발생했습니다.</p>
+            
+            <a href="/user/payment/cart" class="btn-retry">장바구니로 돌아가기</a>
+        </div>
+    </div>
 </body>
 </html>
