@@ -12,7 +12,6 @@
 <script type="text/javascript">
 $(function(){
 
-
 });
 </script>
 </head>
@@ -63,34 +62,34 @@ $(function(){
       </section>
 	  
 	  <!-- 하단 section -->
-      <section class="dashboard-panel">
-      	<!-- 강의 수익 영역 -->
+      <!-- <section class="dashboard-panel">
+      	강의 수익 영역
         <div class="panel-header">
           <div>
             <h2>강의 수익</h2>
           </div>
           <div class="panel-controls">
-            <select class="panel-select" id="instName">
-              <!-- 강사 select 해서 option에 생성  -->
+            <select class="panel-select" onchange="">
+              강사 select 해서 option에 생성 
               <th:block th:each="lectProfit:${lectProfitList}">
               <option th:value="${lectProfit.inst_name}" th:text="${lectProfit.inst_name}"></option>
             </select>
-            <!-- 강의 총 수익 -->
+            강의 총 수익
             <div class="pill">
               <span class="pill-value" th:text="${totalProfit}+'원'"></span>
             </div>
-            <!-- 나의 수익 -->
+            나의 수익
             <div class="pill">
               <span class="pill-value">0</span>
             </div>
-            <!-- 강사별 수익 -->
+            강사별 수익
             <div class="pill">
               <span class="pill-value">0</span>
             </div>
           </div>
         </div>
 
-		<!-- 초기 화면은 전체 강사를 날짜 순서대로 표시하고 추후에 option 선택되는거에 따라 바뀌게 설정 -->
+		초기 화면은 전체 강사를 날짜 순서대로 표시하고 추후에 option 선택되는거에 따라 바뀌게 설정
         <div class="panel-body">
           <div class="table-wrap">
             <table class="data-table">
@@ -114,6 +113,65 @@ $(function(){
           </div>
         </div>
         
+      </section> -->
+
+      <section class="dashboard-panel" id="top-metrics">
+        <div class="panel-header">
+          <div>
+            <h2>강의 수익</h2>
+          </div>
+        </div>
+
+        <div class="panel-body panel-body--highlight">
+          <div class="highlight-cards">
+            <article class="stat-card highlight-card">
+              <div class="stat-header">
+                <div>
+                  <p class="stat-label">최고 수익 강사</p>
+                  <!-- <p class="highlight-name" th:text="${topInstructor.name}">김수민</p> -->
+                </div>
+              </div>
+              <!-- <div class="highlight-value" th:text="${topInstructor.totalRevenue}">₩12,340,000</div>
+              <p class="highlight-meta" th:text="'총 수강생 ' + ${topInstructor.totalStudents} + '명'"> 
+                총 수강생 384명
+              </p> -->
+            </article>
+
+            <article class="stat-card highlight-card">
+              <div class="stat-header">
+                <div>
+                  <p class="stat-label">최다 수강 과목</p>
+                  <!-- <p class="highlight-name" th:text="${topCourse.name}">실전 자바 프로젝트</p> -->
+                </div>
+              </div>
+              <!-- <div class="highlight-value" th:text="${topCourse.studentCount} + '명'">1,245명</div>
+              <p class="highlight-meta" th:text="'강사: ' + ${topCourse.instructorName}">
+                강사: 박유진
+              </p> -->
+            </article>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>순위</th>
+                  <th>이름</th>
+                  <th>구분</th>
+                  <th>값</th>
+                </tr>
+              </thead>
+              <tbody>
+               <!--  <tr th:each="row : ${topHighlightList}">
+                  <td th:text="${row.rank}">1</td>
+                  <td th:text="${row.name}">김수민</td>
+                  <td th:text="${row.type}">강사 수익</td>
+                  <td th:text="${row.value}">₩12,340,000</td>
+                </tr> -->
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
     </main>
     

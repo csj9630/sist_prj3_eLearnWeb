@@ -15,13 +15,25 @@ public class AdminLectureService {
 	@Autowired(required=false)
 	private AdminLectureMapper alm;
 	
-	public List<ManageLectureDomain> searchLectureList() throws PersistenceException{
-		List<ManageLectureDomain> lectureList;
-		lectureList=alm.selectLectList();
-		
-		return lectureList;
-	}//searchLectureList
+	//카테고리 옵션
+	public List<String> searchAllCategory() throws PersistenceException{
+		return alm.selectAllCategory();
+	}
 	
+	//비공개 상태 변경
+	public int disableLecture(String lectureId) throws PersistenceException{
+		return alm.updateStatus(lectureId);
+	}
+	
+	//교육 과목 관리 데이터
+	public List<ManageLectureDomain> searchLectureByCategory(ManageLectureSearchDTO mlsDTO) throws PersistenceException{
+		List<ManageLectureDomain> lectureByCategory;
+		lectureByCategory=alm.selectLectureByCategory(mlsDTO);
+		System.out.println(lectureByCategory);
+		return lectureByCategory;
+	}//searchLectureByCategory
+	
+	//강의 관리 데이터
 	public List<ManageNotApprLectureDomain> searchNotApprLectList() throws PersistenceException{
 		List<ManageNotApprLectureDomain> notApprLectureList;
 		notApprLectureList=alm.selectNotApprLectList();

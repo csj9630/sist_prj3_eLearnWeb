@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.sist.user.payment.UserPaymentMapper">
+
+    <select id="checkCartDuplicate" parameterType="java.util.Map" resultType="int">
+        SELECT COUNT(*) FROM MY_CART WHERE USER_ID = #{userId} AND LECT_ID = #{lectId}
+    </select>
+
+    <insert id="insertCart" parameterType="kr.co.sist.user.payment.MyCartDTO">
+        INSERT INTO MY_CART (MYCART_ID, USER_ID, LECT_ID)
+        VALUES ('CART' || SEQ_MY_CART_ID.nextval, #{userId}, #{lectId})
+    </insert>
+
+    <select id="selectCartByUserId" parameterType="String" resultType="kr.co.sist.user.payment.MyCartDTO">
+        SELECT 
+            c.MYCART_ID AS cartId, c.USER_ID AS userId, l.LECT_ID AS lectId,
+            l.NAME AS lectName, l.THUMBNAIL AS lectThumbnail, l.PRICE AS price,
+            i.NAME AS instName, l.INST_ID AS instId
+        FROM MY_CART c
+        JOIN LECTURE l ON c.LECT_ID = l.LECT_ID
+        JOIN INSTRUCTOR i ON l.INST_ID = i.INST_ID
+        WHERE c.USER_ID = #{userId}
+        ORDER BY c.MYCART_ID DESC
+    </select>
+    
+    <delete id="deleteCartList" parameterType="java.util.Map">
+        DELETE FROM MY_CART WHERE USER_ID = #{userId} AND LECT_ID = #{lectId}
+    </delete>
+
+    <insert id="insertPaymentRecord" parameterType="java.util.Map">
+        INSERT INTO PAYMENT_DETAIL (PAYREC_ID, USER_ID)
+        VALUES (#{payRecId}, #{userId})
+    </insert>
+
+<insert id="insertPayment" parameterType="java.util.Map">
+    <selectKey keyProperty="payId" resultType="String" order="BEFORE">
+        SELECT 'P' || SEQ_PAYMENT_ID.nextval FROM DUAL
+    </selectKey>
+    INSERT INTO PAYMENT (PAY_ID, PAYREC_ID, METHOD, PRICE, STATE, TIME)
+    VALUES (#{payId}, #{payRecId}, 'CARD', #{totalPrice}, 1, SYSDATE)
+</insert>
+
+    <insert id="insertPaymentItem" parameterType="java.util.Map">
+        INSERT INTO PAYMENT_DETAIL2 (LECT_ID, PAYREC_ID)
+        VALUES (#{lectId}, #{payRecId})
+    </insert>
+
+    <select id="checkMyLectureDuplicate" parameterType="java.util.Map" resultType="int">
+        SELECT COUNT(*) FROM MY_LECTURE WHERE USER_ID = #{userId} AND LECT_ID = #{lectId}
+    </select>
+
+    <insert id="insertMyLecture" parameterType="java.util.Map">
+        INSERT INTO MY_LECTURE (MYLECT_ID, USER_ID, LECT_ID, REGDATE)
+        VALUES ('ML' || SEQ_MY_LECTURE_ID.nextval, #{userId}, #{lectId}, SYSDATE)
+    </insert>
+
+    <update id="updateLectureUserCount" parameterType="String">
+        UPDATE LECTURE SET USERCOUNT = USERCOUNT + 1 WHERE LECT_ID = #{lectId}
+    </update>
+
+    <select id="selectMyPurchaseList" parameterType="String" resultType="kr.co.sist.user.payment.PayDetailDTO">
+        SELECT 
+            pd.PAYREC_ID AS payrecId,
+            p.PAY_ID AS payId,
+            l.LECT_ID AS lectId,
+            l.NAME AS lectName,
+            l.THUMBNAIL AS lectThumbnail,
+            i.NAME AS instName,
+            l.PRICE AS lectPrice,
+            p.TIME AS time
+        FROM PAYMENT p
+        JOIN PAYMENT_DETAIL pd ON p.PAYREC_ID = pd.PAYREC_ID
+        JOIN PAYMENT_DETAIL2 pd2 ON pd.PAYREC_ID = pd2.PAYREC_ID
+        JOIN LECTURE l ON pd2.LECT_ID = l.LECT_ID
+        JOIN INSTRUCTOR i ON l.INST_ID = i.INST_ID
+        WHERE pd.USER_ID = #{userId}
+        AND p.STATE = 1
+        ORDER BY p.TIME DESC
+    </select>
+
+</mapper>

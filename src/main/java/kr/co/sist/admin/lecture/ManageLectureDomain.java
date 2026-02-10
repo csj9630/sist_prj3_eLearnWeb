@@ -17,6 +17,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ManageLectureDomain {
-	private String lect_name, inst_name, thumbnail;
+	private String lect_id, lect_name, inst_name, thumbnail;
 	private int score, usercount, total_profit, availability;
 }

@@ -36,10 +36,4 @@ public class AdminDashBoardService {
 		return count;
 	}//getTotalProfit
 	
-	public List<LectProfitDomain> getLectProfit() throws PersistenceException {
-		List<LectProfitDomain> lectProfitList;
-		
-		lectProfitList=adbm.selectLectProfit();
-		return lectProfitList;
-	}//getLectProfit
 }

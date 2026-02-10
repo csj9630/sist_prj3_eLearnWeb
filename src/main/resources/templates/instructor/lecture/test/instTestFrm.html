@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head >
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<!-- bootstrap CDN 시작-->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+<!-- bootstrap CDN 끝-->
+<style type="text/css">
+
+</style>
+<!-- jquery CDN 시작-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<!-- jquery CDN 끝-->
+<script type="text/javascript">
+$(function(){
+	
+	//좌측 문제 번호 클릭 -> 해당 번호의 문제 정보를 오른쪽에 ajax로 뿌림.
+	$(".ajaxTestATeg").click(function(){
+		var num = $(this).data("num");
+		searchOneTest(num);	
+	});
+	
+	/* //번호 클릭 -> 저장된 정보 가지고 오른쪽 문제 내역 채우기 및 hidden에 값 넣기 
+    $("tbody a").click(function(e){
+        // 클릭한 링크가 포함된 <td>를 찾고, 그 안의 hidden 값들을 추출
+        //클릭한 <a>에서 제일 가까운 td 찾기
+        var $td = $(this).closest("td");
+	
+        //클릭한 <a>에 제일 가까운 td의 h-변수명 class 넣은 태그들의 값 가져와서 저장하기.
+        var qid = $td.find(".h-qid").val();
+        var content = $td.find(".h-content").val();
+        var opt1 = $td.find(".h-opt1").val();
+        var opt2 = $td.find(".h-opt2").val();
+        var opt3 = $td.find(".h-opt3").val();
+        var opt4 = $td.find(".h-opt4").val();
+        var ans = $td.find(".h-ans").val();
+        var exp = $td.find(".h-exp").val();
+        var testId = $td.find(".h-id").val();
+        
+		//위에서 찾은 값들을 오른쪽 form에 뿌려주기
+        $("input[name='question']").val(content);
+        
+        // 보기 1~4 (id="opt1" 등)
+        $("#opt1").val(opt1);
+        $("#opt2").val(opt2);
+        $("#opt3").val(opt3);
+        $("#opt4").val(opt4);
+        
+        // 정답 라디오 버튼 (name="ans" 중 value가 일치하는 것 체크)
+        $("input:radio[name='ans'][value='" + ans + "']").prop("checked", true);
+       
+        // 해설 (textarea name="exp")
+        $("#exp").val(exp);
+
+        $("#qid").val(qid);
+        $("#id").val(testId);
+        
+    }); */
+	
+	//오른쪽 영역 초기화
+    $(".btn-success").click(function(){
+       
+    	// 오른쪽 영역의 form을 찾아 초기화
+        var $rightForm = $("#rightForm");
+        
+        $rightForm[0].reset();
+        
+        $("#qid").val("");
+    });
+    
+	/* //ajax
+    $("#createTest").click(function() {
+        var formData = $("#rightForm").serialize(); 
+
+        $.ajax({
+            url: "/instructor/lecture/test/createTest",
+            type: "POST",
+            data: formData,
+            success: function(response) {
+                // response는 서버에서 새로 추가된 문제 객체(JSON)를 보내준다고 가정
+                alert("문제가 성공적으로 추가되었습니다!");
+
+                var newRow = `<tr>
+                    <td><a href="javascript:void(0)">${$("tbody tr").length + 1}</a></td>
+                    <td>${$("input[name='question']").val()}</td>
+                </tr>`;
+                $("tbody").append(newRow);
+
+                $("#rightForm")[0].reset();
+                $("#qid, #id").val("");
+            },
+            error: function() {
+                alert("추가 중 오류가 발생했습니다.");
+            }
+        });
+    }); */
+});//ready
+//ajax 시작
+function searchOneTest(num) {
+	
+	var qid = $("#test-"+ num).data("qid");
+    var instId = $("#instId").val();
+    var lectId = $("#lectId").val();
+    var ajaxData = {"qid":qid, "instId":instId, "lectId":lectId};
+    
+    console.log("보낼 데이터:", qid, instId, lectId);
+	$.ajax({
+		url:"/instructor/lecture/test/instTestOneFrm",
+		dataType:"JSON",
+		data : ajaxData,
+		error:function(xhr) {
+			alert("어찌하여 오류가 뜨는 것인가!!!");
+			console.log( xhr.status );
+		},
+		success:function(jsonObj) {
+			// 문제 번호 클릭시, 해당 문제 정보를 AJAX로 나온 값들로 채워주기
+			$("#question").val(jsonObj.data.content);
+			$("#opt1").val(jsonObj.data.opt1);
+			$("#opt2").val(jsonObj.data.opt2);
+			$("#opt3").val(jsonObj.data.opt3);
+			$("#opt4").val(jsonObj.data.opt4);
+			$("#exp").val(jsonObj.data.exp);
+			//정답 체크
+		    $("input:radio[name='ans'][value='" + jsonObj.data.ans + "']").prop("checked",true);
+		}
+	});//ajax
+}
+</script>
+</head>
+<body>
+<div id = "container">
+<th:block th:if="${testList != null and !testList.empty}">
+<form method="GET">
+<div id="leftView" style="float: left; width:50%;" >
+<label>Step1. 제작된 문제 목록(개수)</label>
+과연!!!<div th:text="${testList}"></div>
+<table class="table table-hover">
+<thead>
+<tr>
+<th>번호</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<th:block th:if="${testList.empty}">
+<tr>
+<td colspan="2">검색된 시험 정보가 존재하지 않습니다?</td>
+</tr>
+</th:block>
+<tr th:each="instTestDomain : ${testList}" th:object="${instTestDomain}">
+<td >
+
+<input type="hidden" class="h-instId" th:value="${param.instId}">
+<input type="hidden" class="h-lectId " th:value="${param.lectId}">
+<input type="hidden" class="h-id" th:value="*{id}">
+<input type="hidden" class="h-qid" th:value="*{qid}">
+<input type="hidden" class="h-content" th:value="*{content}">
+<input type="hidden" class="h-opt1" th:value="*{opt1}">
+<input type="hidden" class="h-opt2" th:value="*{opt2}">
+<input type="hidden" class="h-opt3" th:value="*{opt3}">
+<input type="hidden" class="h-opt4" th:value="*{opt4}">
+<input type="hidden" class="h-ans" th:value="*{ans}">
+<input type="hidden" class="h-exp" th:value="*{exp}">
+
+<span class="ajaxTestATeg" 
+      th:data-qid="*{qid}" 
+      th:text="*{num}"
+      th:data-num="*{num}"
+      th:id="'test-'+*{num}"
+      style="color: blue; text-decoration: underline; cursor: pointer;">
+</span>
+<td th:text="*{content}">
+</td>
+<td>
+<input type="button" value="수정" style="margin: 10px;" class="btn btn-sm btn-info">
+<input type="button" value="삭제" class="btn btn-sm btn-danger">
+</td>
+
+</tr>
+</tbody>
+</table>
+<input type="button" value="추가" style="margin: 10px;" class="btn btn-sm btn-success">
+<input type="button" value="수정" style="margin: 10px;" class="btn btn-sm btn-info">
+<input type="button" value="삭제" class="btn btn-sm btn-danger">
+</div>
+</form>
+</th:block>
+테스트 원 확인용!!!<div th:text="${testOne}"></div>
+
+<form th:action="@{/instructor/lecture/test/createTest}" method="POST" id="rightForm">
+<div id="rightView" style="float:right; width:50%;">
+입력된 강사 아이디 : <input type="text" name = "instId" id="instId" th:value="${param.instId}" ><br>
+입력된 강의 아이디 : <input type="text" name = "lectId" id="lectId" th:value="${param.lectId}" ><br>
+<input type="hidden" id="qid" name="qid" value="">
+<input type="hidden" id="id" name="id" value="">
+<label>Step2. 문제 정보 입력</label><br>
+<label>질문 내용(Question)</label><br>
+<input type="text" placeholder="질문 내용을 입력해주세요." name="question" value="" id="question">
+<label>보기 입력 & 정답 선택</label><br>
+A<input type="text" name="opt1" id="opt1" placeholder="보기 1 입력"><input type="radio" name="ans" value="1"><br>
+B<input type="text" name="opt2" id="opt2" placeholder="보기 2 입력"><input type="radio" name="ans" value="2"><br>
+C<input type="text" name="opt3" id="opt3" placeholder="보기 3 입력"><input type="radio" name="ans" value="3"><br>
+D<input type="text" name="opt4" id="opt4" placeholder="보기 4 입력"><input type="radio" name="ans" value="4"><br>
+<label>오답 해설 (Explanation) *사용자가 틀렸을 때 보여줄 설명입니다.</label><br>
+<textarea rows="5" cols="50" placeholder="해설 내용을 입력하세요." name="exp" id="exp"></textarea><br>
+<input type="button" name="createTest" id="createTest" value="문제 리스트 추가" class="btn btn-info">
+</div>
+
+</form>
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>강사 수익 확인</title>
+<style>
+    body { font-family: 'Noto Sans KR', sans-serif; padding: 30px; text-align: center; background-color: #fff8e1; }
+    .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; border: 1px solid #e67e22; }
+    h1 { color: #d35400; }
+    
+    .summary-box { display: flex; justify-content: space-around; margin: 30px 0; padding: 20px; background: #fdf2e9; border-radius: 10px; }
+    .summary-item h2 { margin: 0; color: #e67e22; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border-bottom: 1px solid #ddd; padding: 12px; }
+    th { background-color: #e67e22; color: white; }
+    
+    .btn-home { background-color: #555; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; float: right; margin-bottom: 20px;}
+</style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="/" class="btn-home">🏠 초기 화면으로</a>
+        <div style="clear:both;"></div>
+        
+        <h1>💰 강사 정산 센터</h1>
+        
+        <div class="summary-box">
+            <div class="summary-item">
+                <h3>총 누적 매출액</h3>
+                <h2 th:text="${#numbers.formatInteger(totalSum, 0, 'COMMA')} + '원'">0원</h2>
+            </div>
+            <div class="summary-item">
+                <h3>총 수강생 수</h3>
+                <h2 th:text="${userCount} + '명'">0명</h2>
+            </div>
+        </div>
+        
+        <h3>강의별 상세 매출</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>강의명</th>
+                    <th>매출액</th>
+                    <th>수강생 수</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${#lists.isEmpty(list)}">
+                    <td colspan="3">매출 내역이 없습니다.</td>
+                </tr>
+                <tr th:each="item : ${list}">
+                    <td th:text="${item.lectName}"></td>
+                    <td th:text="${#numbers.formatInteger(item.totalPrice, 0, 'COMMA')} + '원'"></td>
+                    <td th:text="${item.userCount} + '명'"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

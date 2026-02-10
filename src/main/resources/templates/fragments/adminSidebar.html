@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>관리자 사이드바</title>
+<script type="text/javascript">
+$(function(){
+	/* 사이드바에서 클릭하면 클릭한 li 태그 is-acitve로 활성화 
+	$(".admin-sidebar-list").click(function(){
+		alert("dwdw");
+	}) */
+});//ready
+</script>
+</head>
+<body>
+<th:block th:fragment="adminSidebar">
+  <link rel="stylesheet" th:href="@{/common/css/admin-sidebar.css}" />
+    <nav class="admin-sidebar-nav">
+      <ul class="admin-sidebar-list">
+        <li><a class="admin-sidebar-link" th:href="@{/admin/dashboard}">대시보드</a></li>
+        <li><a class="admin-sidebar-link" th:href="@{/admin/lecture/searchAllLect}">교육 과목 관리</a></li>
+        <li><a class="admin-sidebar-link" th:href="@{/admin/question/adminQuestionFrm}">문의 관리</a></li>
+        <li><a class="admin-sidebar-link" th:href="@{/admin/member/searchUser}">회원 관리</a></li>
+        <li><a class="admin-sidebar-link" th:href="@{/admin/member/searchInst}">강사 관리</a></li>
+        <li><a class="admin-sidebar-link" th:href="@{/admin/announcement/searchAllAnn}">공지사항 관리</a></li>
+        <li><a class="admin-sidebar-link" th:href="@{/admin/lecture/searchNotApprLect}">강의 관리</a></li>
+        <li><a class="admin-sidebar-link" th:href="@{/admin/payment/searchPayPriceSum}">수익 관리</a></li>
+        <li><a class="admin-sidebar-link" th:href="@{/admin/review/adminReviewList}">리뷰 관리</a></li>
+      </ul>
+    </nav>
+</th:block>
+</body>
+</html>
