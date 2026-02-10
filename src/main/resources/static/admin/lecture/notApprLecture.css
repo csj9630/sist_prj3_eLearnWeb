@@ -164,3 +164,23 @@
     display: none;
   }
 }
+
+.curriculum-table {
+  table-layout: auto; /* 고정폭 해제 */
+}
+
+.curriculum-table th,
+.curriculum-table td {
+  white-space: normal; /* 필요시 줄바꿈 허용 */
+}
+
+.curriculum-table th:nth-child(1),
+.curriculum-table td:nth-child(1) { width: 20%; }
+.curriculum-table th:nth-child(2),
+.curriculum-table td:nth-child(2) { width: 20%; }
+.curriculum-table th:nth-child(3),
+.curriculum-table td:nth-child(3) { width: 20%; }
+.curriculum-table th:nth-child(4),
+.curriculum-table td:nth-child(4) { width: 20%; }
+.curriculum-table th:nth-child(5),
+.curriculum-table td:nth-child(5) { width: 20%; }
