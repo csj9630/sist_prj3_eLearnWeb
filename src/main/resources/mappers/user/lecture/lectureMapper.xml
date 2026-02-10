@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- /kr/co/sist/user/lecture/chapter/ChapterMapper.java  -->
+<mapper namespace="kr.co.sist.user.lecture.LectureMapper">
+
+	<!--메인화면용 강의리스트, 리뷰정보까지 조회-->
+	<select id="getLectureList" resultType="lectureDomain">
+	    select 
+	        l.lect_id as lectId, 
+	        l.name, 
+	      	i.name as instname,
+	        l.thumbnail, 
+	        l.price, 
+	        l.usercount,
+	        count(r.review_id) as reviewcount,
+	        nvl(avg(r.score), 0) as avgscore
+	    from lecture l
+	    join instructor i on l.inst_id = i.inst_id -- 강사id에서 강사명 가져오기
+	    left outer join review r on l.lect_id = r.lect_id
+	    where l.approval = 1  -- 승인된 강의만 출력
+	    group by i.name, l.lect_id, l.name, l.inst_id, l.thumbnail,  l.price, l.usercount
+	</select>
+		
+</mapper>
