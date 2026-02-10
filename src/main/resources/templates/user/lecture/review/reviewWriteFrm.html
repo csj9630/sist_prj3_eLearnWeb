@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<th:block th:replace = "~{//fragments/cdn :: cdn}"/>
+<th:block th:replace = "~{fragments/cdn :: cdn}"/>
 <style type = "text/css">
 #wrap{margin: 0px auto; width: 1200px; height: 1000px;}
 #header{height: 150px;}
@@ -33,14 +33,6 @@ $(function() {
 		$("#title").focus();
 		return;
 	} // end if
-	
-	/* 
-	if($("#id").val().trim() == "") {
-		alert("아이디는 필수 입력입니다.");
-		$("#id").focus();
-		return;
-	} // end if
-	*/
 	
 	if($("#content").val() == "" || $("#content").val() == "<p></p>") {
 		alert("내용은 필수 입력입니다.");
@@ -75,10 +67,11 @@ $(function() {
 <body>
 <div id = "wrap">
 <div id = "header">
+<th:block th:replace = "~{fragments/header :: header}"/>
 </div>
 <div id = "container">
 <h2><span th:text = "${param.lectId}"></span>강의 리뷰 작성</h2>
-<form th:action = "@{/lecture/review/reviewWriteFrmProcess}" method = "post" name = "frm" id = "frm">
+<form th:action = "@{{url}(url = '/lecture/review/reviewWriteFrmProcess', lectId = ${param.lectId}, currentPage = ${param.currentPage})}" method = "post" name = "frm" id = "frm">
 <table>
 <tr>
 	<td style = "width: 100px">평점</td>
@@ -90,23 +83,19 @@ $(function() {
 </tr>
 <tr>
 	<td>ID / IP</td>
-	<td><span th:text = "${session.user_id}"></span> / <span th:text = "${ip}"></span></td>
+	<td><span th:text = "${session.user_id}"></span> / <span th:text = "${ip}"></span><input type = "hidden" name = "lect_id" th:value = "${param.lectId}"/></td>
 </tr>
 <tr>
 	<td colspan = "2" style = "text-align: center;">
 		<button onclick = "return false" class = "btn btn-success"  id = "btnWrite">글쓰기</button>
 		<a href = "javascript:history.back()" class = "btn btn-info">리스트</a>
 	</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
 </tr>
 </table>
 </form>
 </div>
 <div id = "footer">
+<th:block th:replace = "~{fragments/footer :: footer}"/>
 </div>
 </div>
 </body>

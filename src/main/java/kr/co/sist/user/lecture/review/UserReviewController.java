@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * 
+ */
 @RequestMapping("/lecture/review")
 @Controller
 public class UserReviewController {
@@ -28,6 +31,7 @@ public class UserReviewController {
 		int currentPage = rDTO.getCurrentPage();				// 현재 페이지
 		int startNum = rs.startNum(currentPage, pageScale); 	// 시작 번호
 		int endNum = rs.endNum(startNum, pageScale);			// 끝 번호
+		double avgScore = rs.avgScore(rDTO);
 		
 		rDTO.setStartNum(startNum);
 		rDTO.setEndNum(endNum);
@@ -39,6 +43,8 @@ public class UserReviewController {
 		List<UserReviewDomain> reviewList = rs.searchReviewList(rDTO); // 게시글 내용
 		String pagination = rs.pagination2(rDTO); // 페이지네이션
 		
+		model.addAttribute("totalCount", totalCount);
+		model.addAttribute("avgScore", avgScore);
 		model.addAttribute("listNum", totalCount - (currentPage - 1)*pageScale);
 		model.addAttribute("reviewList", reviewList);
 		model.addAttribute("pagination", pagination);
@@ -62,7 +68,7 @@ public class UserReviewController {
 	@PostMapping("/reviewWriteFrmProcess")
 	public String writeFormProcess(HttpSession session, UserReviewDTO rDTO, HttpServletRequest request, Model model) {
 		rDTO.setRegip(request.getRemoteAddr());
-		
+		 
 		// 임시
 //		session.setAttribute("user_id", "user2");
 		String userId = (String) session.getAttribute("user_id");
@@ -88,12 +94,12 @@ public class UserReviewController {
 		return "/user/lecture/review/reviewDetail";
 	} // reviewDetail
 	
-	@PostMapping("/modifyReviewProcess")
+	@PostMapping("/reviewModifyProcess")
 	public String modifyReviewProcess(HttpSession session, UserReviewDTO rDTO, HttpServletRequest request, Model model) {
 		rDTO.setRegip(request.getRemoteAddr());
 		
 		// 임시
-		session.setAttribute("user_id", "user1");
+		session.setAttribute("user_id", "user2");
 		String userId = (String) session.getAttribute("user_id");
 		rDTO.setUser_id(userId);
 		// 임시
@@ -101,14 +107,14 @@ public class UserReviewController {
 		boolean flag = rs.modifyReview(rDTO);
 		model.addAttribute("flag", flag);
 		
-		return "/user/lecture/review/modifyReviewProcess";
+		return "/user/lecture/review/reviewModifyProcess";
 	} // modifyReviewProcess
 	
-	@PostMapping("/removeReviewProcess")
+	@PostMapping("/reviewRemoveProcess")
 	public String removeReviewProcess(HttpSession session, UserReviewDTO rDTO, Model model) {
 		
 		// 임시
-		session.setAttribute("user_id", "user1");
+		session.setAttribute("user_id", "user2");
 		String userId = (String) session.getAttribute("user_id");
 		rDTO.setUser_id(userId);
 		// 임시
@@ -116,7 +122,7 @@ public class UserReviewController {
 		boolean flag = rs.removeReview(rDTO);
 		model.addAttribute("flag", flag);
 		
-		return "/user/lecture/review/removeReviewProcess";
+		return "/user/lecture/review/reviewRemoveProcess";
 	} // removeReviewProcess
 	
-} // clrss
+} // class
