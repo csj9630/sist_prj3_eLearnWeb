@@ -34,10 +34,27 @@
         justify-content: space-between;
       }
 
+      /* 동영상과 한번에 보여주기 위해 처음에는 투명하게 숨김 */
       .playerSection {
         display: flex;
         justify-content: left;
         text-align: center;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out; /* 부드러운 등장 효과 */
+      }
+      /* 로딩 CSS */
+      #loading {
+        height: 390px;
+        display: flex; /* Flexbox 활성화 */
+        flex-direction: column; /* 세로 정렬 */
+        justify-content: center; /* 수직 정앙 정렬 */
+        align-items: center; /* 수평 중앙 정렬 */
+        gap: 15px; /* 스피너와 문구 사이의 간격 */
+      }
+
+      /* 로딩이 완료되면 이 클래스를 붙여서 보여줌 */
+      .playerSection.loaded {
+        opacity: 1;
       }
     </style>
 
@@ -46,17 +63,24 @@
       //IDE에서 에러 표시 나서 주석 기법으로 변경
       const videoJSONArr = /*[[${vdList}]]*/ "default_value";
       const startNum = /*[[${startNum}]]*/ "default_value";
+      const exitUrl = /*[[@{/csj}]]*/ "/";
+      
+      console.log(videoJSONArr);
 
+      //*********전역변수*****************
       var videoData; // 현재 화면에서 볼 영상정보.
       var currentIndex = 0; //vdList의 현재 index 번호
 
+      //*********document.ready***********
       $(function () {
         //JSONArr에서 num 컬럼으로 videoJSON과 index번호 Settin
         getJsonAndIndexByNum(startNum, videoJSONArr);
-
+        
+        //테스트를 위해 일단 다 보여주면서 시작.
+        $(".playerSection").addClass("loaded");
         //************ 버튼 할당 ******************
         $("#btnExit").click(function () {
-          location.href = /*[[@{/csj}]]*/ "이전 링크";
+          location.href = exitUrl;
         }); //click
         $("#btnPrev").click(function () {
           playVideoByIndex(currentIndex - 1);
@@ -78,7 +102,7 @@
           currentIndex = 0; // 에러 방지용 기본값
         }
         videoData = jsonArr[currentIndex]; //index로 videoJson을 전역 저장.
-        updateRowHighlight(currentIndex);  //목록에서 현재 영상 하이라이트.
+        updateRowHighlight(currentIndex); //목록에서 현재 영상 하이라이트.
       } //function
 
       function playVideoByIndex(index) {
@@ -102,10 +126,9 @@
         updateRowHighlight(index);
       } //function
 
-
       //목록에서 현재 영상에 하이라이트 효과.
-      function updateRowHighlight(num) {
-        const $targetRow = $("#row-" + num); // ID로 대상 행 선택
+      function updateRowHighlight(index) {
+        const $targetRow = $("#row-" + index); // ID로 대상 행 선택
 
         if ($targetRow.length > 0) {
           // 1. 해당 행에 Bootstrap 강조 클래스 추가
@@ -125,8 +148,7 @@
         }
       } //function
 
-      //<!-- ************* Youtube API Setting *******************  -->
-
+      //************* Youtube API Setting *******************
       // 2. This code loads the IFrame Player API code asynchronously.
       var tag = document.createElement("script");
 
@@ -135,7 +157,7 @@
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
       // 3. This function creates an <iframe> (and YouTube player)
-      //    after the API code downloads.
+      //          after the API code downloads.
       var player;
       function onYouTubeIframeAPIReady() {
         if (videoData && videoData.progTime) {
@@ -161,10 +183,13 @@
       function onPlayerReady(event) {
         moveTime(videoData.progTime); //model값으로 시간 설정
         event.target.playVideo(); //영상 재생
+
+        // 플레이어가 준비되었을 때 로딩 스피너 숨기고, 화면을 한번에 보여줌
+        $("#loading").hide();
+        $(".playerSection").addClass("loaded");
       } //func
 
       //***************동영상 함수**********************
-
       var done = false;
       function onPlayerStateChange(event) {
         if (event.data == YT.PlayerState.PLAYING && !done) {
@@ -216,6 +241,15 @@
     <div id="wrap">
       <div id="container">
         <h3 class="title">유튜브 강의화면</h3>
+
+        <!--로딩 화면 -->
+        <div id="loading" class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p>강의를 불러오는 중입니다...</p>
+        </div>
+        <!-- 동영상 영역  -->
         <div class="playerSection">
           <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
           <div>
