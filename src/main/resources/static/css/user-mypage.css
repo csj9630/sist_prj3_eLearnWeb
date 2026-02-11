@@ -16,6 +16,9 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 ul { list-style: none; }
 
 /* --- 1. 헤더 (New Design) --- */
+/* ============================
+   1. 헤더 (Header) - 디자인 수정
+   ============================ */
 header {
     background: white;
     border-bottom: 1px solid var(--gray-border);
@@ -23,40 +26,178 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: sticky; top: 0; z-index: 1000;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
-.header-inner {
-    width: 1200px; padding: 0 15px;
-    display: flex; justify-content: space-between; align-items: center;
-}
-.logo { font-size: 24px; font-weight: 700; color: var(--green-primary); }
-.header-nav { display: flex; align-items: center; gap: 32px; }
-.nav-text { font-size: 16px; font-weight: 500; color: var(--text-black); transition: 0.2s; }
-.nav-text:hover { color: var(--green-primary); font-weight: 700; }
-.header-icon { font-size: 20px; color: var(--text-black); transition: 0.2s; }
-.header-icon:hover { color: var(--green-primary); }
-.profile-btn i { font-size: 32px; color: #ccc; }
-.profile-btn:hover i { color: var(--text-gray); }
 
+.header-inner {
+    width: 1200px;
+    padding: 0 15px;
+    display: flex;
+    align-items: center; /* 전체 세로 중앙 정렬 */
+    /* justify-content: space-between; 제거 -> 개별 그룹으로 제어 */
+}
+
+/* 1. 로고 */
+.logo {
+    display: flex;
+    align-items: center;
+    margin-right: 40px; /* 로고와 메뉴 사이 간격 */
+}
+.logo-img {
+    height: 60px; /* 로고 높이 적절히 조절 (원본 비율 유지) */
+    width: auto;
+    display: block;
+}
+
+/* 2. 중앙 메뉴 그룹 (강의, 커뮤니티) */
+.header-menu {
+    position: absolute;       /* 위치 절대 지정 */
+    left: 50%;                /* 부모의 50% 지점으로 이동 */
+    transform: translateX(-50%); /* 요소 크기의 절반만큼 왼쪽으로 이동 -> 정확한 중앙 */
+    
+    display: flex;
+    align-items: center;
+    gap: 30px;                /* 메뉴 간 간격 */
+}
+
+/* 메뉴 텍스트 + 아이콘 정렬 수정 */
+.nav-text {
+    display: flex;       /* Flexbox 적용 */
+    align-items: center; /* 수직 중앙 정렬 (텍스트 내려감 해결) */
+    gap: 8px;            /* 아이콘과 텍스트 사이 간격 */
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-black);
+    text-decoration: none;
+    transition: color 0.2s;
+    height: 100%; /* 부모 높이에 맞춤 */
+}
+
+.nav-text:hover {
+    color: var(--green-primary);
+    font-weight: 700;
+}
+
+/* 메뉴 아이콘 이미지 */
+.nav-icon {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    display: block; /* 이미지 하단 여백 제거 */
+}
+
+/* 3. 우측 아이콘 그룹 (장바구니, 프로필) */
+.header-actions {
+    margin-left: auto;        /* 왼쪽 여백을 다 차지해서 오른쪽으로 붙음 */
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-icon {
+    font-size: 20px;
+    color: var(--text-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+    width: 32px; height: 32px; /* 클릭 영역 확보 */
+}
+.header-icon:hover {
+    color: var(--green-primary);
+}
+
+/* 프로필 버튼 */
+.profile-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-btn i {
+    font-size: 32px;
+    color: #ccc;
+    transition: color 0.2s;
+}
+
+.profile-btn:hover i {
+    color: var(--text-gray);
+}
+
+/* 프로필 이미지 (로그인 시) */
+.profile-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #dee2e6;
+}
 /* --- 2. 레이아웃 & 사이드바 --- */
 .mypage-container {
     width: 1200px; margin: 0 auto; padding: 40px 15px;
     display: flex; gap: 40px;
 }
-.mypage-sidebar { width: 180px; flex-shrink: 0; }
-.profile-section { text-align: center; margin-bottom: 30px; }
-.profile-icon { font-size: 64px; color: #e0e0e0; margin-bottom: 12px; }
-.profile-text { font-weight: 700; font-size: 18px; }
-
-.sidebar-menu li { margin-bottom: 8px; }
-.sidebar-menu a {
-    display: flex; align-items: center; padding: 10px 12px;
-    color: var(--text-gray); border-radius: 4px; font-size: 15px; font-weight: 500;
+.mypage-sidebar {
+    width: 250px;
+    background: white;
+    border: 1px solid var(--gray-border);
+    border-radius: 8px;
+    padding: 20px; /* 내부 여백 */
+    height: fit-content;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
-.sidebar-menu a i { width: 24px; margin-right: 10px; text-align: center; }
-.sidebar-menu a:hover { background-color: #f1f3f5; color: var(--text-black); }
-.sidebar-menu a.active { background-color: #e5f9f0; color: var(--green-primary); font-weight: 700; }
 
+/* 메뉴 리스트 컨테이너 */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 개별 메뉴 아이템 간격 */
+.sidebar-menu li {
+    margin-bottom: 8px;
+}
+
+/* [중요] 모든 메뉴 링크 스타일 통일 (프로필, 대시보드 등 모두 동일) */
+.sidebar-menu a {
+    display: flex;          /* 아이콘과 텍스트 가로 정렬 */
+    align-items: center;    /* 세로 중앙 정렬 */
+    padding: 12px 15px;     /* 버튼 내부 여백 */
+    color: var(--text-gray);
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+/* 메뉴 아이콘 스타일 (프로필 아이콘도 이 스타일을 따름) */
+.sidebar-menu i {
+    width: 28px;        /* 아이콘 영역 너비 고정 (텍스트 라인 맞춤) */
+    text-align: center;
+    margin-right: 12px; /* 아이콘과 텍스트 사이 간격 */
+    font-size: 18px;    /* 아이콘 크기 */
+}
+
+/* 마우스 올렸을 때 (Hover) */
+.sidebar-menu a:hover {
+    background-color: #f1f3f5;
+    color: var(--text-black);
+}
+
+/* 현재 선택된 메뉴 (Active) */
+.sidebar-menu a.active {
+    background-color: #e5f9f0; /* 연한 초록 배경 */
+    color: var(--green-primary);
+    font-weight: 700;
+}
+
+.sidebar-menu a.active i {
+    color: var(--green-primary);
+}
 /* --- 3. 본문 공통 --- */
 .mypage-content { flex: 1; min-height: 600px; }
 .page-title { font-size: 24px; font-weight: 700; margin-bottom: 24px; }
