@@ -16,11 +16,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Alias("videoDomain")
-public class VideoDomain {
+@Alias("videoDomain2")
+public class VideoDomain2 {
 	private String stuId, chptrId ;
-	private String title, videoUrl, prevVideoUrl, nextVideoUrl;
-	int progTime, videoLength;
-	List<String> videoList;
+	private String title, videoUrl;
+	int num, progTime, videoLength, progress, state;
+	
+	//List<String> videoList;
 	//Date lastDate;
 }

@@ -3,6 +3,7 @@ package kr.co.sist.user.lecture.chapter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,14 +40,28 @@ public class ChapterController {
 		return "user/lecture/chapter/chapterProgressList" ;
 	}// method
 	
-	@GetMapping("/video")
+	@GetMapping("/videoV1")
 	public String watchVideo(@RequestParam String chptrId,  Model model) {
 		
 		VideoDomain vd = cs.getVideoInfo("user1", chptrId);
 		
+		
 		model.addAttribute("vd", vd);
 		
 		return "user/lecture/chapter/watchVideo" ;
+	}// method
+	
+	@GetMapping("/videoV2")
+	public String getVideoList( @RequestParam(required = false, defaultValue = "1") int num, @RequestParam String lectId, @RequestParam String stuId,  Model model) {
+		//stuId = "user1"; //나중에 Session에서 받아올 것.
+		
+		ChapterDTO cdto = new ChapterDTO(stuId, lectId);
+		List<VideoDomain2> vdList  = cs.getVideoInfoList(cdto);
+		
+		model.addAttribute("vdList", vdList);
+		model.addAttribute("startNum", num); // 처음 재생할 번호
+		
+		return "user/lecture/chapter/watchVideo2" ;
 	}// method
 
 }// class

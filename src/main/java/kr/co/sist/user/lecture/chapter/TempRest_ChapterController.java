@@ -27,14 +27,16 @@ public class TempRest_ChapterController {
 
 	@GetMapping("/tempviewList")
 	// @GetMapping("/")
-//	public String viewChapter(Model model) {
-	public List<ChapterDomain> viewChapter(Model model) {
+	public List<VideoDomain2> viewChapter(Model model) {
 		String lectId = "L1";
-		List<ChapterDomain> list = cs.searchChapterList(lectId);
-		model.addAttribute("chapterList", list);
+		String userId="user1";
+		ChapterDTO cdto = new ChapterDTO(userId, lectId);
+		List<VideoDomain2> list = cs.getVideoInfoList(cdto);
+		model.addAttribute("list", list);
 
 		return list;
 	}// method
 
+	
 
 }// class

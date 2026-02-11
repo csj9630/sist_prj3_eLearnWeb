@@ -61,4 +61,16 @@ public class ChapterService {
 		return vd;
 	}//method
 	
+	
+	public List<VideoDomain2> getVideoInfoList(	ChapterDTO cdto) {
+		List<VideoDomain2> vdList = null;
+		
+		try { 
+			vdList = cm.selectVideoData(cdto);
+		}catch(PersistenceException pe) {
+			pe.printStackTrace();
+		}
+		return vdList;
+	}//method
+	
 }//class
