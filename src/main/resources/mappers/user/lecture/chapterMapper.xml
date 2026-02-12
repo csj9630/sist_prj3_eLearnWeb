@@ -62,4 +62,44 @@
 	    order by 
 	        c.num asc
 	</select>	
+	
+		<!--
+		사용처 : 동영상 시청이력 저장
+		입력값 : videoDTO
+		결과값 : int insert결과 
+		-->
+	 <insert id="insertMyChapter" parameterType="videoDTO" >
+	
+		INSERT INTO 
+			my_chapter(my_chapter_id, chptr_id, user_id, lastdate, progress, progtime, state)
+		 VALUES (
+		  'MC' || SEQ_MY_CHAPTER_ID.NEXTVAL,
+		   #{chptrId},
+		   #{stuId},
+		    SYSDATE,
+	     	 #{progress},
+		     #{progTime},
+		     #{state}
+		    )
+	 </insert>
+	 
+	 	<!--
+		사용처 : 동영상 시청이력 저장, 기존 값이 있으면 update, 없으면 insert 수행.
+		입력값 : videoDTO
+		결과값 : int insert결과 
+		-->
+	 <update id="mergeRecordtoMyChapter" parameterType="VideoDTO">
+		    MERGE INTO my_chapter m
+		    USING dual
+		    ON (m.user_id = #{stuId} AND m.chptr_id = #{chptrId})
+		    WHEN MATCHED THEN
+		        UPDATE SET 
+		            progtime = #{progTime},
+		            progress = #{progress},
+		            state = #{state},
+		            lastdate = SYSDATE
+		    WHEN NOT MATCHED THEN
+		        INSERT (my_chapter_id, chptr_id, user_id, lastdate, progress, progtime, state)
+		        VALUES ('MC' || SEQ_MY_CHAPTER_ID.NEXTVAL, #{chptrId}, #{stuId}, SYSDATE, #{progress}, #{progTime}, #{state})
+	</update>
 </mapper>

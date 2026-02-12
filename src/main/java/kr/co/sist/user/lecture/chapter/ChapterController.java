@@ -1,14 +1,20 @@
 package kr.co.sist.user.lecture.chapter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @RequestMapping("/lecture/chapter")
 @Controller
@@ -64,4 +70,27 @@ public class ChapterController {
 		return "user/lecture/chapter/watchVideo2" ;
 	}// method
 
+	@PostMapping("/saveRecord")
+	@ResponseBody
+    public ResponseEntity<Map<String, Object>> saveRecord(@RequestBody VideoDTO vdto) {
+        Map<String, Object> result = new HashMap<>();
+        System.out.println("----받은 데이터------");
+        System.out.println(vdto);
+       // vdto.recalculate();
+        //System.out.println("----변환 데이터------");
+        //System.out.println(vdto);
+        
+        // 서비스 호출
+        boolean isSaved = cs.saveVideoRecord(vdto);
+        
+        if (isSaved) {
+            result.put("status", "success");
+            result.put("message", "시청 기록이 저장되었습니다.");
+            return ResponseEntity.ok(result);
+        } else {
+            result.put("status", "fail");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
+	}// method
+	
 }// class

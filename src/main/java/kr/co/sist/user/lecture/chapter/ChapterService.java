@@ -1,10 +1,12 @@
 package kr.co.sist.user.lecture.chapter;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service 
 public class ChapterService {
@@ -73,4 +75,14 @@ public class ChapterService {
 		return vdList;
 	}//method
 	
+	//@Transactional // Service 메서드 안의 모든 쿼리가 성공 시 커밋, 하나라도 실패 시 rollBack;
+	public boolean saveVideoRecord(VideoDTO vdto) {
+		boolean flag =false;
+		try {
+			flag = cm.mergeRecordtoMyChapter(vdto) ==1;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} // end catch
+		return flag;
+	}//method
 }//class
