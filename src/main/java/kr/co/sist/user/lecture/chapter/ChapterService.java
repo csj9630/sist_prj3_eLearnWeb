@@ -1,12 +1,10 @@
 package kr.co.sist.user.lecture.chapter;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service 
 public class ChapterService {

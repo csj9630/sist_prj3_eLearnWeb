@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.instructor.lecture.InstLectureMapper">
+
+
+	<!--
+	사용처 : 강사 강의 관리 - 강의리스트
+	입력값 : instId(강사id)
+	결과값 : List<InstLectureDomain>
+	-->
+	<select id="selectInstLectureList" resultType="instLectureDomain">
+		SELECT 
+		    L.THUMBNAIL,
+		    L.LECT_ID AS "lectId",
+		    L.INST_ID AS "instId",
+		    I.NAME AS "instName",
+		    L.NAME,
+		    L.CAT_ID AS "catId",
+		    C.NAME AS "catName",
+		    -- 평점 계산 (리뷰가 없을 경우 0)
+		    (SELECT NVL(ROUND(AVG(R.SCORE), 1), 0) FROM REVIEW R WHERE R.LECT_ID = L.LECT_ID) AS "reviewAvg",
+		    L.USERCOUNT,
+		    -- 질문 수 계산
+		    (SELECT COUNT(*) FROM QUESTION Q WHERE Q.LECT_ID = L.LECT_ID) AS "questCnt",
+		    -- 총 수입 (가격 * 수강생 수)
+		    (L.PRICE * L.USERCOUNT) AS "cash",
+		    L.AVAILABILITY,
+		    -- UI 요구사항: 승인 상태 및 거절 사유
+		    CASE 
+		        WHEN L.APPROVAL = 1 THEN '승인'
+		        WHEN L.APPROVAL = 0 AND L.REJECT_REASON IS NOT NULL THEN '거절'
+		        ELSE '대기'
+		    END AS "approvalStatus",
+		    nvl(L.REJECT_REASON, '없음' ) AS "rejectReason"
+		    
+		FROM 
+		    LECTURE L 
+		JOIN 
+		    INSTRUCTOR I ON L.INST_ID = I.INST_ID
+		JOIN 
+		    CATEGORY C ON L.CAT_ID = C.CAT_ID
+		WHERE 
+		    L.INST_ID = #{instId}  -- 특정 강사의 강의만 조회
+		ORDER BY 
+		    L.REGDATE DESC
+	</select>
+
+</mapper>
