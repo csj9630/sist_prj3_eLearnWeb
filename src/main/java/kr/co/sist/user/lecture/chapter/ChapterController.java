@@ -43,7 +43,7 @@ public class ChapterController {
 	@GetMapping("/videoV1")
 	public String watchVideo(@RequestParam String chptrId,  Model model) {
 		
-		VideoDomain vd = cs.getVideoInfo("user1", chptrId);
+		VideoDomain0 vd = cs.getVideoInfo("user1", chptrId);
 		
 		
 		model.addAttribute("vd", vd);
@@ -56,7 +56,7 @@ public class ChapterController {
 		//stuId = "user1"; //나중에 Session에서 받아올 것.
 		
 		ChapterDTO cdto = new ChapterDTO(stuId, lectId);
-		List<VideoDomain2> vdList  = cs.getVideoInfoList(cdto);
+		List<VideoDomain> vdList  = cs.getVideoInfoList(cdto);
 		
 		model.addAttribute("vdList", vdList);
 		model.addAttribute("startNum", num); // 처음 재생할 번호

@@ -47,8 +47,8 @@ public class ChapterService {
 		return list;
 	}//method
 	
-	public VideoDomain getVideoInfo(String stuId, String chptrId) {
-		VideoDomain vd = new VideoDomain();
+	public VideoDomain0 getVideoInfo(String stuId, String chptrId) {
+		VideoDomain0 vd = new VideoDomain0();
 		
 		vd.setStuId(stuId);
 		vd.setChptrId(chptrId);
@@ -62,8 +62,8 @@ public class ChapterService {
 	}//method
 	
 	
-	public List<VideoDomain2> getVideoInfoList(	ChapterDTO cdto) {
-		List<VideoDomain2> vdList = null;
+	public List<VideoDomain> getVideoInfoList(	ChapterDTO cdto) {
+		List<VideoDomain> vdList = null;
 		
 		try { 
 			vdList = cm.selectVideoData(cdto);

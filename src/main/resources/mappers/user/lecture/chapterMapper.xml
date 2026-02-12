@@ -46,7 +46,7 @@
 	입력값 : 학생id, LectId
 	결과값 : 해당 lect에 대한 수강 진척 리스트.
 	-->
-	<select id="selectVideoData" parameterType="chapterDTO" resultType="videoDomain2">
+	<select id="selectVideoData" parameterType="chapterDTO" resultType="videoDomain">
 		select 
 	        m.user_id as stuId, c.chptr_id as chptrId, c.name as title, c.length as videoLength, c.video as videoUrl, c.num,
 	        nvl(m.progtime, 0) as progtime,

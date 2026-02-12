@@ -9,5 +9,5 @@ public interface ChapterMapper {
 	public int selectTest();
 	public List<ChapterDomain> selectChapterList(String lectId) throws PersistenceException;
 	public List<StuChapterDomain> selectChapterProgress(ChapterDTO cdto) throws PersistenceException;
-	public List<VideoDomain2> selectVideoData(ChapterDTO cdto) throws PersistenceException;
+	public List<VideoDomain> selectVideoData(ChapterDTO cdto) throws PersistenceException;
 }
