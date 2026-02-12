@@ -70,6 +70,7 @@
       //*********전역변수*****************
       var videoData; // 현재 화면에서 볼 영상정보.
       var currentIndex = 0; //vdList의 현재 index 번호
+      var beforeIndex = 0; //vdList의 현재 index 번호
       var player;
       //*********document.ready***********
       $(function () {
@@ -80,9 +81,12 @@
         $(".playerSection").addClass("loaded");
         //************ 버튼 할당 ******************
         $("#btnExit").click(function () {
+          uploadRecord();
           location.href = exitUrl;
         }); //click
         $("#btnPrev").click(function () {
+          uploadRecord();
+          updateCurrentTimeOnTable(currentIndex);
           playVideoByIndex(currentIndex - 1);
         }); //click
         $("#btnNext").click(function () {
@@ -118,18 +122,23 @@
         }
 
         videoData = videoJSONArr[index]; //전역 변수로 영상 정보 저장.
-        currentIndex = index; // 전역 변수로 현재 번호 저장.
+
         document.title = videoData.title; //브라우저 제목 변경
         $(".title").text(videoData.title); //<h3> 텍스트 변경
+
+        //변경 전 video 영상시간을 jsonArr에 갱신.
+        videoJSONArr[currentIndex].progTime = getTime();
 
         //index 번호로 영상 재생 및 시간 지정
         loadVideo(videoData.videoUrl, videoData.progTime);
 
         //목록에서 현재 영상 하이라이트.
         updateRowHighlight(index);
+
+        currentIndex = index; // 전역 변수로 현재 번호 저장.
       } //function
 
-      //목록에서 현재 영상에 하이라이트 효과.
+      //강의 목록에서 현재 영상에 하이라이트 효과.
       function updateRowHighlight(index) {
         const $targetRow = $("#row-" + index); // ID로 대상 행 선택
 
@@ -151,13 +160,7 @@
         }
       } //function
 
-      function updateCurrentTimeOnTable(index) {
-        const $targetRow = $("#row-" + index);
-        if ($targetRow.length > 0) {
-          $targetRow.find(".videoCurrentTime").text("asdasdasdasd");
-        }
-      } //func
-
+      //영상 기록을 ajax로 DB 저장.
       function uploadRecord() {
         console.log(player);
 
@@ -172,6 +175,7 @@
         };
 
         console.log(saveData);
+
         $.ajax({
           url: "/lecture/chapter/saveRecord",
           type: "POST",
@@ -184,6 +188,33 @@
             console.log(response);
           },
         }); //ajax
+      } //function
+
+      //강의 목록의 시청 시간을 갱신한다.
+      function updateCurrentTimeOnTable(index) {
+        const $targetRow = $("#row-" + index);
+        if ($targetRow.length > 0) {
+          $targetRow.find(".videoCurrentTime").text(convertHms(getTime()));
+        }
+      } //function
+
+      //초 -> 시:분:초로 변환.
+      function convertHms(seconds) {
+        if (seconds < 61) {
+          return "00:" + addZero(seconds);
+        }
+        // sec
+        var hours = Math.floor(seconds / 3600);
+        var mins = Math.floor((seconds - hours * 3600) / 60);
+        var secs = seconds - hours * 3600 - mins * 60;
+        if (hours > 0) {
+          return addZero(hours) + ":" + addZero(mins) + ":" + addZero(secs);
+        } else {
+          return addZero(mins) + ":" + addZero(secs);
+        }
+        function addZero(num) {
+          return (num < 10 ? "0" : "") + num;
+        }
       } //function
 
       //************* Youtube API Setting *******************
