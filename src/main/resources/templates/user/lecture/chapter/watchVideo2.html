@@ -74,11 +74,11 @@
       var player;
       //*********document.ready***********
       $(function () {
-        //JSONArr에서 num 컬럼으로 videoJSON과 index번호 Settin
+        //JSONArr에서 num 컬럼으로 videoJSON과 index번호 Setting
         getJsonAndIndexByNum(startNum, videoJSONArr);
 
         //테스트를 위해 일단 다 보여주면서 시작.
-        $(".playerSection").addClass("loaded");
+        //$(".playerSection").addClass("loaded");
         //************ 버튼 할당 ******************
         $("#btnExit").click(function () {
           uploadRecord();
@@ -87,7 +87,7 @@
         $("#btnPrev").click(function () {
           uploadRecord();
           updateCurrentTimeOnTable(currentIndex);
-          playVideoByIndex(currentIndex - 1);
+          playVideoByIndex(currentIndex -1);
         }); //click
         $("#btnNext").click(function () {
           uploadRecord();
@@ -97,6 +97,13 @@
       }); //document.ready
 
       //************ 함수 정의 ******************
+      function changeView(i){
+    	  updateCurrentTimeOnTable(currentIndex);
+          playVideoByIndex(i);
+          
+      }
+      
+      
       //num 컬럼으로 videoList에서 일치하는 videoJson 하나를 전역 저장.
       //currentIndex에 찾은 index 번호 전역 저장.
       function getJsonAndIndexByNum(num, jsonArr) {
@@ -351,7 +358,7 @@
                   th:id="'row-' + ${i.index}"
                   class="video-row"
                   style="cursor: pointer"
-                  th:onclick="|playVideoByIndex(${i.index})|"
+                  th:onclick="|changeView(${i.index})|"
                 >
                   <td th:text="*{num}">번호</td>
                   <td th:text="*{title}">강의명</td>
