@@ -20,7 +20,7 @@ import lombok.ToString;
 public class VideoDomain {
 	private String stuId, chptrId ;
 	private String title, videoUrl;
-	int num, progTime, videoLength, progress, state;
+	int num, progTime, videoLength, progress, state, actualTime;
 	
 	
 	/** 초 시간을 '시:분:초'의 문자열로 변환.

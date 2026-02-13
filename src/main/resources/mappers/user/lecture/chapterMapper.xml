@@ -51,7 +51,8 @@
 	        m.user_id as stuId, c.chptr_id as chptrId, c.name as title, c.length as videoLength, c.video as videoUrl, c.num,
 	        nvl(m.progtime, 0) as progtime,
 			nvl(m.progress, 0) as progress,
-	        nvl(m.state, 0) as state
+	        nvl(m.state, 0) as state,
+	        nvl(m.actualtime, 0) as actualtime
 	    from 
 	        chapter c
 	    left join 
@@ -71,7 +72,7 @@
 	 <insert id="insertMyChapter" parameterType="videoDTO" >
 	
 		INSERT INTO 
-			my_chapter(my_chapter_id, chptr_id, user_id, lastdate, progress, progtime, state)
+			my_chapter(my_chapter_id, chptr_id, user_id, lastdate, progress, progtime, state, actualtime)
 		 VALUES (
 		  'MC' || SEQ_MY_CHAPTER_ID.NEXTVAL,
 		   #{chptrId},
@@ -97,9 +98,10 @@
 		            progtime = #{progTime},
 		            progress = #{progress},
 		            state = #{state},
-		            lastdate = SYSDATE
+		            lastdate = SYSDATE,
+		            actualtime = #{actualTime}
 		    WHEN NOT MATCHED THEN
-		        INSERT (my_chapter_id, chptr_id, user_id, lastdate, progress, progtime, state)
-		        VALUES ('MC' || SEQ_MY_CHAPTER_ID.NEXTVAL, #{chptrId}, #{stuId}, SYSDATE, #{progress}, #{progTime}, #{state})
+		        INSERT (my_chapter_id, chptr_id, user_id, lastdate, progress, progtime, state,actualtime)
+		        VALUES ('MC' || SEQ_MY_CHAPTER_ID.NEXTVAL, #{chptrId}, #{stuId}, SYSDATE, #{progress}, #{progTime}, #{state},#{actualTime})
 	</update>
 </mapper>
