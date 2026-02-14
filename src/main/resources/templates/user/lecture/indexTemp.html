@@ -23,6 +23,7 @@ $(function() {
 </div>
 <div id = "container">
 <h3>작업용 링크 - 최승준</h3>
+<h5>🗂️ 임시 session의 userId : 🧑‍🎓<span th:text="${session.userId}"></span></h5>
 <ul>
 	<li>
 		<a th:href="@{/user/lecture/lectureList}">강의 목록</a>
@@ -34,7 +35,7 @@ $(function() {
 		<a th:href="@{/lecture/chapter/videoV1?chptrId=L1}">동영상 강의 시청</a>
 	</li>
 	<li>
-		<a th:href="@{/lecture/chapter/videoV2?lectId=L1&stuId=user1&num=1}">동영상 강의 시청2(테스트중)</a>
+		<a th:href="@{/lecture/chapter/video?lectId=L1&num=1}">동영상 강의 시청2(테스트중)</a>
 	</li>
 	<li>
 		<a th:href="@{/csj/tempviewList}">테스트용 restController</a>

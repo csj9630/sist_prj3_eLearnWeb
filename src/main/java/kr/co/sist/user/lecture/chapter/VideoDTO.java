@@ -17,7 +17,7 @@ import lombok.ToString;
 @Alias("videoDTO")
 public class VideoDTO {
 	@Setter
-	private String stuId, chptrId;
+	private String userId, chptrId;
 
 	// state를 계산하기 위해 setter를 custom
 	private Integer progTime; // 시청 시간

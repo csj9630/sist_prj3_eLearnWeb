@@ -18,7 +18,7 @@ import lombok.ToString;
 @ToString
 @Alias("videoDomain0")
 public class VideoDomain0 {
-	private String stuId, chptrId ;
+	private String userId, chptrId ;
 	private String title, videoUrl, prevVideoUrl, nextVideoUrl;
 	int progTime, videoLength;
 	List<String> videoList;

@@ -57,6 +57,11 @@
         opacity: 1;
       }
     </style>
+    <script th:if="${errorMsg != null}">
+      //출석체크 실패 시 에러메시지 후 이전 페이지로 복귀.
+      alert("[[${errorMsg}]]");
+      history.back();
+    </script>
 
     <script th:inline="javascript" type="text/javascript">
       //************* ThymeLeaf로 DB 값 저장 ** *****************
@@ -88,6 +93,14 @@
         }
       }, interval);
 
+      //페이지 벗어날 때 알림메시지(종료 외 방법으로)
+      var checkUnload = true;
+      $(window).on("beforeunload", function () {
+        if (checkUnload) {
+          return "종료 버튼 외 방법으로 페이지를 벗어나면  내용은 저장되지 않습니다.";
+        }
+      });
+
       //*********document.ready***********
       $(function () {
         //JSONArr에서 num 컬럼으로 videoJSON과 index번호 Setting
@@ -97,6 +110,7 @@
         //$(".playerSection").addClass("loaded");
         //************ 버튼 할당 ******************
         $("#btnExit").click(function () {
+          checkUnload = false; //알림 안뜨고 나가기.
           uploadRecord();
           location.href = exitUrl;
         }); //click
@@ -215,7 +229,7 @@
         const actualTime = totalTime;
 
         const saveData = {
-          stuId: videoData.stuId || "noName", //나중에 id는 session에서 받아올 것.
+          userId: videoData.userId || "noName", //나중에 id는 session에서 받아올 것.-> 완료
           chptrId: videoData.chptrId || "unknown",
           progTime: currentTime || 0,
           videoLength: videoLength || 0,
@@ -360,10 +374,17 @@
     <div id="wrap">
       <div id="container">
         <h3 class="title">유튜브 강의화면</h3>
-        <span>마지막 시청시간 : </span>
-        <h4 id="lastTime">시간</h4>
-        <span>실제 시청인정시간 : </span>
-        <h4 id="totalTime">시간</h4>
+        <div class="testSection">
+          <h5>
+            🗂️ 임시 session의 userId : 🧑‍🎓<span
+              th:text="${session.userId}"
+            ></span>
+          </h5>
+          <span>마지막 시청시간 : </span>
+          <h4 id="lastTime">시간</h4>
+          <span>실제 시청인정시간 : </span>
+          <h4 id="totalTime">시간</h4>
+        </div>
         <!--로딩 화면 -->
         <div id="loading" class="text-center">
           <div class="spinner-border text-primary" role="status">

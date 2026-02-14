@@ -10,11 +10,10 @@
 		from   CHAPTER
 	</select>
 
-	
 	<!--
-	강의id로 수강 강의표 조회
-		진척,동영상 등은 제외
-		강의 상세에서 보여줄 용도
+	사용처 : 강의id로 수강 강의표 조회, 진척,동영상 등은 제외하고 강의 커리큘럼으로 보여줄 용도
+	입력값 : LectId
+	결과값 : 해당 lect에 대한 챕터 정보 리스트
 	-->
 	<select id="selectChapterList" parameterType="String" resultType="chapterDomain">
 	select chptr_id, name, length, regdate, doc
@@ -48,7 +47,7 @@
 	-->
 	<select id="selectVideoData" parameterType="chapterDTO" resultType="videoDomain">
 		select 
-	        m.user_id as stuId, c.chptr_id as chptrId, c.name as title, c.length as videoLength, c.video as videoUrl, c.num,
+	        m.user_id as userId, c.chptr_id as chptrId, c.name as title, c.length as videoLength, c.video as videoUrl, c.num,
 	        nvl(m.progtime, 0) as progtime,
 			nvl(m.progress, 0) as progress,
 	        nvl(m.state, 0) as state,
@@ -76,7 +75,7 @@
 		 VALUES (
 		  'MC' || SEQ_MY_CHAPTER_ID.NEXTVAL,
 		   #{chptrId},
-		   #{stuId},
+		   #{userId},
 		    SYSDATE,
 	     	 #{progress},
 		     #{progTime},
@@ -92,7 +91,7 @@
 	 <update id="mergeRecordtoMyChapter" parameterType="VideoDTO">
 		    MERGE INTO my_chapter m
 		    USING dual
-		    ON (m.user_id = #{stuId} AND m.chptr_id = #{chptrId})
+		    ON (m.user_id = #{userId} AND m.chptr_id = #{chptrId})
 		    WHEN MATCHED THEN
 		        UPDATE SET 
 		            progtime = #{progTime},
@@ -102,6 +101,17 @@
 		            actualtime = #{actualTime}
 		    WHEN NOT MATCHED THEN
 		        INSERT (my_chapter_id, chptr_id, user_id, lastdate, progress, progtime, state,actualtime)
-		        VALUES ('MC' || SEQ_MY_CHAPTER_ID.NEXTVAL, #{chptrId}, #{stuId}, SYSDATE, #{progress}, #{progTime}, #{state},#{actualTime})
+		        VALUES ('MC' || SEQ_MY_CHAPTER_ID.NEXTVAL, #{chptrId}, #{userId}, SYSDATE, #{progress}, #{progTime}, #{state},#{actualTime})
 	</update>
+	
+		 
+	 	<!--
+		사용처 : 학생 출석 체크, 영상 시청 시 출석 테이블에 insert..
+		입력값 : String userId
+		결과값 : int insert결과 
+		-->
+	 <insert id="insertStuAttendence" parameterType="String">
+		insert INTO ATTENDANCE (ATTEND_ID, USER_ID, ATTDATE)
+	 	VALUES  (SEQ_ATTENDANCE_ID.NEXTVAL,#{userId}, SYSDATE )
+	</insert>
 </mapper>
