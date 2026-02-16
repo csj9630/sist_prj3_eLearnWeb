@@ -2,8 +2,10 @@ package kr.co.sist.user.lecture.chapter;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.exceptions.PersistenceException;
 @Mapper
 public interface ChapterMapper {
@@ -14,4 +16,8 @@ public interface ChapterMapper {
 	public int insertMyChapter(VideoDTO vdto) throws PersistenceException, SQLException;
 	public int mergeRecordtoMyChapter(VideoDTO vdto) throws PersistenceException, SQLException;
 	public int insertStuAttendence(String userId) throws PersistenceException, SQLException;
+	public FileDomain selectFileInfo(String chptrId);
+	public Map<String, Object> getChapterProgress(String userId, String lectId);
+	public Integer selectLatestTestScore(String userId, String lectId);
+	
 }

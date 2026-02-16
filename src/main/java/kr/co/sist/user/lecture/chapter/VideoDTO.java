@@ -75,8 +75,12 @@ public class VideoDTO {
 		} // if
 
 		// 2. 상태(state) 결정 : 95% 이상이면 완료 처리
-		if (this.progress >= 95 || this.actualTime >= this.videoLength) {
+		if (this.state != null && this.state == 2) {
+	        // 이미 완료된 강의이므로 state는 2 고정
+	        // 단, 시청 시간(progTime)은 0부터 다시 시작하더라도 progress는 100 유지
+		} else if (this.progress >= 95 || this.actualTime >= this.videoLength) {
 			this.state = 2; // 완료
+			//this.progress=0;//처음으로 돌아가기.
 		} else if (this.progress > 0 || this.actualTime > 0 || this.progTime > 0) {
 			this.state = 1; // 시청 중
 		} else {

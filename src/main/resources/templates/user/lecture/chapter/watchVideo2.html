@@ -67,7 +67,7 @@
       //************* ThymeLeaf로 DB 값 저장 ** *****************
       //IDE에서 에러 표시 나서 주석 기법으로 변경
       const videoJSONArr = /*[[${vdList}]]*/ "default_value";
-      const startNum = /*[[${startNum}]]*/ "default_value";
+      const startChptrId = /*[[${startChptrId}]]*/ "default_id";
       const exitUrl = /*[[@{/csj}]]*/ "/";
 
       console.log(videoJSONArr);
@@ -79,7 +79,7 @@
       var player;
 
       var lastTime = 0; // 현재 시청시간
-      var totalTime = 0; //실제 시청시간
+      var realTime = 0; //실제 시청시간
       const interval = 1000; //반복 추적시간.
 
       //지정 시간마다 실제 시청 시간을 추척함.
@@ -89,7 +89,7 @@
 
           //테스트용.
           $("#lastTime").text(lastTime);
-          $("#totalTime").text(totalTime);
+          $("#realTime").text(realTime);
         }
       }, interval);
 
@@ -104,7 +104,7 @@
       //*********document.ready***********
       $(function () {
         //JSONArr에서 num 컬럼으로 videoJSON과 index번호 Setting
-        VideoChapterReady(startNum, videoJSONArr);
+        VideoChapterReady(startChptrId, videoJSONArr);
 
         //테스트를 위해 일단 다 보여주면서 시작.
         //$(".playerSection").addClass("loaded");
@@ -142,8 +142,8 @@
 
         //0< (현재 시간 - 마지막 저장시간) < 1.2 일때만 정상 재생 인정.
         if (zeta > 0 && zeta < range) {
-          totalTime += Math.floor(zeta / playbackRate);
-          //totalTime++;
+          realTime += Math.floor(zeta / playbackRate);
+          //realTime++;
         } //if
 
         //마지막 저장시간 업데이트
@@ -153,8 +153,10 @@
       //초기 시작 때 사용.
       //num 컬럼으로 videoList에서 일치하는 videoJson 하나를 전역 저장.
       //currentIndex에 찾은 index 번호 전역 저장.
-      function VideoChapterReady(num, jsonArr) {
-        const foundIndex = jsonArr.findIndex((item) => item.num == num);
+      function VideoChapterReady(targetId, jsonArr) {
+        const foundIndex = jsonArr.findIndex(
+          (item) => String(item.chptrId) == targetId,
+        );
 
         if (foundIndex !== -1) {
           currentIndex = foundIndex;
@@ -162,7 +164,7 @@
           currentIndex = 0; // 에러 방지용 기본값
         }
         videoData = jsonArr[currentIndex]; //index로 videoJson을 전역 저장.
-        totalTime = videoData.actualTime; //DB값 로드 :실제 시청시간
+        realTime = videoData.actualTime; //DB값 로드 :실제 시청시간
         updateRowHighlight(currentIndex); //목록에서 현재 영상 하이라이트.
       } //function
 
@@ -179,6 +181,12 @@
 
         videoData = videoJSONArr[index]; //전역 변수로 영상 정보 저장.
 
+        //시청 완료한 영상일 때 시작시간 지정(state=2)
+        let startTime = videoData.progTime;
+        if (videoData.state == 2) {
+          startTime = 0; // 완료된 영상은 처음부터 재생
+        } //if
+
         document.title = videoData.title; //브라우저 제목 변경
         $(".title").text(videoData.title); //<h3> 텍스트 변경
 
@@ -186,16 +194,16 @@
         videoJSONArr[currentIndex].progTime = getTime();
 
         //변경 전 video 실제 시청시간을 jsonArr에 갱신.
-        videoJSONArr[currentIndex].actualTime = totalTime;
+        videoJSONArr[currentIndex].actualTime = realTime;
 
         //index 번호로 영상 재생 및 시간 지정
-        loadVideo(videoData.videoUrl, videoData.progTime);
+        loadVideo(videoData.videoUrl, startTime);
 
         //목록에서 현재 영상 하이라이트.
         updateRowHighlight(index);
 
         currentIndex = index; // 전역 변수로 현재 번호 저장.
-        totalTime = 0; //실제 시청시간
+        realTime = videoData.actualTime; //실제 시청시간
       } //function
 
       //강의 목록에서 현재 영상에 하이라이트 효과.
@@ -226,7 +234,7 @@
 
         const currentTime = getTime();
         const videoLength = getVideoLength();
-        const actualTime = totalTime;
+        const actualTime = realTime;
 
         const saveData = {
           userId: videoData.userId || "noName", //나중에 id는 session에서 받아올 것.-> 완료
@@ -383,7 +391,7 @@
           <span>마지막 시청시간 : </span>
           <h4 id="lastTime">시간</h4>
           <span>실제 시청인정시간 : </span>
-          <h4 id="totalTime">시간</h4>
+          <h4 id="realTime">시간</h4>
         </div>
         <!--로딩 화면 -->
         <div id="loading" class="text-center">

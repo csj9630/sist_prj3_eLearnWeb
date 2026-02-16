@@ -1,6 +1,7 @@
 package kr.co.sist.user.lecture.chapter;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.slf4j.Logger;
@@ -16,6 +17,8 @@ public class ChapterService {
 //	@Autowired(required = false)
 	@Autowired
 	private ChapterMapper cm;
+	
+	
 
 	//로그 객체
 	private static final Logger log = LoggerFactory.getLogger(ChapterService.class);
@@ -55,19 +58,6 @@ public class ChapterService {
 		return list;
 	}// method
 
-	public VideoDomain0 getVideoInfo(String userId, String chptrId) {
-		VideoDomain0 vd = new VideoDomain0();
-
-		vd.setUserId(userId);
-		vd.setChptrId(chptrId);
-		vd.setTitle("유튜브 영상 제목");
-		vd.setVideoUrl("cg1xvFy1JQQ");
-		vd.setPrevVideoUrl("4VR-6AS0-l4");
-		vd.setNextVideoUrl("mNlxH0a6CfI");
-		vd.setProgTime(35);
-
-		return vd;
-	}// method
 
 	public List<VideoDomain> getVideoInfoList(ChapterDTO cdto) {
 		List<VideoDomain> vdList = null;
@@ -120,5 +110,34 @@ public class ChapterService {
 
 		log.info("출석 체크됨 - 사용자 ID: {}", userId);
 	}// method
+	
+
+    /**
+     * 챕터 ID로 파일 정보 조회
+     */
+    public FileDomain getFileInfo(String chptrId) {
+        FileDomain fileDomain = cm.selectFileInfo(chptrId);
+        
+        // 데이터가 없거나 파일명이 비어있는 경우 예외 처리 가능
+        if (fileDomain == null || fileDomain.getDoc() == null) {
+            throw new RuntimeException("해당 챕터에 등록된 자료가 없습니다. ID: " + chptrId);
+        }
+        
+        return fileDomain;
+	}// method
+    
+    //모든 영상 상태가 시청완료인지 체크.
+    public boolean isExamReady(List<StuChapterDomain> list) {
+    	if (list == null || list.isEmpty()) return false;
+        
+        // 모든 챕터의 state가 2인지 확인 (Java 8 스트림 활용)
+        return list.stream().allMatch(chapter -> "2".equals(chapter.getState()));
+	}// method
+    
+    //최신 시험 점수 가져옴.
+    public Integer getLatestScore(String userId, String lectId) {
+        // 최신 응시 기록이 없으면 MyBatis는 null을 반환합니다.
+        return cm.selectLatestTestScore(userId, lectId);
+    }
 
 }// class

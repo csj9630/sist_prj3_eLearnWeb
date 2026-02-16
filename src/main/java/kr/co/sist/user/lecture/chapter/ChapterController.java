@@ -1,10 +1,18 @@
 package kr.co.sist.user.lecture.chapter;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import kr.co.sist.common.member.CommonMemberController;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriUtils;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -27,6 +36,9 @@ public class ChapterController {
 
 	@Autowired
 	private ChapterService cs;
+	
+	@Value("${user.upload-dir}") // application.properties에 설정된 경로 (예: C:/uploads/)
+    private String uploadDir;
 
 	@GetMapping("/viewList")
 	public String viewChapterList(Model model) {
@@ -38,37 +50,34 @@ public class ChapterController {
 		return "user/lecture/chapter/chapterList";
 	}// method
 
-	@GetMapping("/viewProgressList")
-	public String viewChapterProgress(Model model) {
-		ChapterDTO cdto = new ChapterDTO("user1", "L1");
-		List<StuChapterDomain> list = cs.searchChapterProgress(cdto);
-
-		// 영상시간 변환테스트.
-		/* for (ChapterDomain cd : list) { cd.setLength(1204); } */
-
-		model.addAttribute("chapterProgress", list);
-
-		return "user/lecture/chapter/chapterProgressList";
-	}// method
-
 	/**
-	 * Youtube API 테스트용.
-	 * 
-	 * @param chptrId
+	 * 강의 수강한 학생의 수강 이력 포함된 챕터 리스트
+	 * @param lectId
+	 * @param session
 	 * @param model
 	 * @return
 	 */
-//	@GetMapping("/videoV1")
-//	public String watchVideo(@RequestParam String chptrId,  Model model) {
-//		
-//		String userId = "user1";
-//		VideoDomain0 vd = cs.getVideoInfo(userId, chptrId);
-//		
-//		
-//		model.addAttribute("vd", vd);
-//		
-//		return "user/lecture/chapter/watchVideo" ;
-//	}// method
+	@GetMapping("/viewProgressList")
+	public String viewChapterProgress( @RequestParam String lectId, HttpSession session,Model model) {
+		String userId = (String) session.getAttribute("userId");
+		ChapterDTO cdto = new ChapterDTO(userId, lectId);
+		List<StuChapterDomain> list = cs.searchChapterProgress(cdto); //수강 이력 리스트
+		boolean isExamReady = cs.isExamReady(list); //시험 버튼 활성화 여부
+		Integer latestScore = cs.getLatestScore(userId, lectId); // 최신 시험 점수
+		
+
+		model.addAttribute("chapterProgress", list);
+		model.addAttribute("lectId", lectId);
+		model.addAttribute("isExamReady", isExamReady);
+//		model.addAttribute("isExamReady", true);
+		model.addAttribute("examScore", latestScore);
+
+		
+		return "user/lecture/chapter/chapterProgressList";
+	}// method
+
+	
+	
 
 	/**
 	 * 강의 영상에 보여줄 lecture 별 chapter video 리스트.
@@ -80,7 +89,7 @@ public class ChapterController {
 	 * @return video dto list
 	 */
 	@GetMapping("/video")
-	public String getVideoList(@RequestParam(required = false, defaultValue = "1") int num, @RequestParam String lectId,
+	public String getVideoList(@RequestParam(required = false, defaultValue = "1") String chptrId, @RequestParam String lectId,
 			HttpSession session, Model model) {
 		String userId = (String) session.getAttribute("userId");
 		ChapterDTO cdto = new ChapterDTO(userId, lectId);
@@ -92,11 +101,11 @@ public class ChapterController {
 		} catch (RuntimeException e) {
 			model.addAttribute("errorMsg", e.getMessage());
 		} // end catch
+		
 
-		System.out.println("=======session 사용자 id =======" + userId);
 
 		model.addAttribute("vdList", vdList); // 영상 정보 리스트을 전송.
-		model.addAttribute("startNum", num); // 처음 재생할 번호 전송.
+		model.addAttribute("startChptrId", chptrId); // 처음 재생할 번호 전송.
 
 		return "user/lecture/chapter/watchVideo2";
 	}// method
@@ -123,5 +132,66 @@ public class ChapterController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
 		}
 	}// method
+	
+	
+	
+	/**
+	 * 파일 다운로드 전 파일 존재 여부 체크.
+	 * @param chptrId
+	 * @return
+	 */
+	@GetMapping("/checkFile")
+	@ResponseBody // JSON 데이터를 반환하기 위해 필요
+	public Map<String, Boolean> checkFile(@RequestParam("chptrId") String chptrId) {
+	    Map<String, Boolean> response = new HashMap<>();
+	    try {
+	        FileDomain fileDomain = cs.getFileInfo(chptrId);
+	        Path filePath = Paths.get(uploadDir).resolve(fileDomain.getDoc()).normalize();
+	        File file = filePath.toFile();
+	        
+	        // 파일이 존재하고 읽기 가능한지 확인
+	        response.put("exists", file.exists() && file.isFile());
+	    } catch (Exception e) {
+	        response.put("exists", false);
+	    }
+	    return response;
+	}
+	
+	/**
+	 * 파일 다운로드
+	 * @param chptrId
+	 * @return
+	 */
+	@GetMapping("/download")
+    public ResponseEntity<Resource> downloadFile(@RequestParam("chptrId") String chptrId) {
+        try {
+            // 1. Service를 통해 DB 조회
+            FileDomain fileDomain = cs.getFileInfo(chptrId);
+            String fileName = fileDomain.getDoc();
+
+            // 2. 물리적 경로 설정
+            Path filePath = Paths.get(uploadDir).resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // 3. 파일명 인코딩 및 헤더 설정
+            String encodedFileName = UriUtils.encode(fileName, StandardCharsets.UTF_8);
+            
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+                .body(resource);
+
+        } catch (RuntimeException e) {
+            // Service에서 던진 예외 처리
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 
 }// class

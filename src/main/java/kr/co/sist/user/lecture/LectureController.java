@@ -21,5 +21,7 @@ public class LectureController {
 
 		return "user/lecture/lecutureList";
 	}// method
+	
+	
 
 }// class

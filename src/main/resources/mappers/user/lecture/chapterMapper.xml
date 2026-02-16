@@ -39,7 +39,7 @@
 	        c.num asc
 	</select>
 	
-		
+	
 	<!--
 	사용처 : 동영상 시청용 데이터 조회
 	입력값 : 학생id, LectId
@@ -114,4 +114,39 @@
 		insert INTO ATTENDANCE (ATTEND_ID, USER_ID, ATTDATE)
 	 	VALUES  (SEQ_ATTENDANCE_ID.NEXTVAL,#{userId}, SYSDATE )
 	</insert>
+	
+	<!--파일 다운로드용 조회-->
+	<select id="selectFileInfo" resultType="FileDomain">
+	    SELECT CHPTR_ID, DOC 
+	    FROM CHAPTER 
+	    WHERE CHPTR_ID = #{chptrId}
+	</select>
+	
+		<!--파일 다운로드용 조회-->
+	<select id="getChapterProgress" parameterType="chapterDTO" resultType="map">
+		SELECT 
+		    COUNT(*) as total_chapters,
+		    COUNT(CASE WHEN mc.state = 2 THEN 1 END) as completed_chapters
+		FROM chapter c
+		LEFT JOIN my_chapter mc ON c.chapter_id = mc.chapter_id AND mc.user_id = #{userId}
+		WHERE c.course_id = #{lectId};
+	</select>
+	
+	<!-- 시험  최신 점수 조회-->
+	<select id="selectLatestTestScore" resultType="java.lang.Integer">
+	SELECT score
+	    FROM (
+	        SELECT 
+	            mt.score,
+	            ROW_NUMBER() OVER (ORDER BY mt.takedate DESC) as rnum
+	        FROM 
+	            test t
+	        JOIN 
+	            my_test mt ON t.test_id = mt.test_id
+	        WHERE 
+	            t.lect_id = #{lectId} 
+	            AND mt.user_id = #{userId}
+	    )
+	    WHERE rnum = 1
+	</select>
 </mapper>

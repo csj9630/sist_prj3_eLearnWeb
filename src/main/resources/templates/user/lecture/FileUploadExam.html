@@ -2,7 +2,7 @@
 <html xmlns:th = "http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>작업용 링크</title>
+<title>Insert title here</title>
 <th:block th:replace = "~{fragments/cdn :: cdn}"/>
 <style type = "text/css">
 #wrap{margin: 0px auto; width: 1000px; height: 1200px}
@@ -22,23 +22,16 @@ $(function() {
 <th:block th:replace = "~{fragments/header :: header}"/>
 </div>
 <div id = "container">
-<h3>작업용 링크 - 최승준</h3>
-<h5>🗂️ 임시 session의 userId : 🧑‍🎓<span th:text="${session.userId}"></span></h5>
-<ul>
-	<li>
-		<a th:href="@{/user/lecture/lectureList}">강의 목록</a>
-	</li>
-	<li>
-		<a th:href="@{/lecture/chapter/viewProgressList?lectId=L1}">챕터 목록</a>
-	</li>
-	<li>
-		<a th:href="@{/lecture/chapter/video?lectId=L1&chpterId=CH1}">동영상 강의 시청</a>
-	</li>
-	<li>
-		<a th:href="@{/csj/tempviewList}">테스트용 restController</a>
-	</li>
-</ul>
+	<h2>파일 업로드 테스트</h2>
+    
+    <div th:if="${message}">
+        <p th:text="${message}" style="color: blue;"></p>
+    </div>
 
+    <form method="POST" th:action="@{/user/lecture/upload}" enctype="multipart/form-data">
+        <input type="file" name="file" /><br/><br/>
+        <button type="submit">업로드 시작</button>
+    </form>
 </div>
 <div id = "footer">
 <th:block th:replace = "~{fragments/footer :: footer}"/>
