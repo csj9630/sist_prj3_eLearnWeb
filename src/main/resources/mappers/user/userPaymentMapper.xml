@@ -17,7 +17,7 @@
     <select id="selectCartByUserId" parameterType="String" resultType="kr.co.sist.user.payment.MyCartDTO">
         SELECT 
             c.MYCART_ID AS cartId, c.USER_ID AS userId, l.LECT_ID AS lectId,
-            l.NAME AS lectName, l.THUMBNAIL AS lectThumbnail, l.PRICE AS price,
+            l.NAME AS lectName, '/common/images/lecture_thumb_njwVersion/' || 	l.THUMBNAIL AS lectThumbnail, l.PRICE AS price,
             i.NAME AS instName, l.INST_ID AS instId
         FROM MY_CART c
         JOIN LECTURE l ON c.LECT_ID = l.LECT_ID
@@ -67,7 +67,7 @@
             p.PAY_ID AS payId,
             l.LECT_ID AS lectId,
             l.NAME AS lectName,
-            l.THUMBNAIL AS lectThumbnail,
+            '/common/images/lecture_thumb_njwVersion/' || l.THUMBNAIL AS lectThumbnail,
             i.NAME AS instName,
             l.PRICE AS lectPrice,
             p.TIME AS time

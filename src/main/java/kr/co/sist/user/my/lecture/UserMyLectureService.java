@@ -11,8 +11,8 @@ public class UserMyLectureService {
     private UserMyLectureMapper userMyLectureMapper;
 
     // 내 강의 목록 조회
-    public List<UserMyLectureDomain> searchMyLectureList(String userId) {
-        return userMyLectureMapper.selectMyLectureList(userId);
+    public List<UserMyLectureDomain> searchMyLectureList(String userId, String title) {
+        return userMyLectureMapper.selectMyLectureList(userId, title);
     }//searchMyLectureList
 
 }//class

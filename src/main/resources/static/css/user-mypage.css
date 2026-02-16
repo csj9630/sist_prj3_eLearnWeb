@@ -217,8 +217,25 @@ header {
     display: flex; flex-direction: column;
 }
 .course-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-.card-thumb { height: 145px; background: #eee; overflow: hidden; }
-.card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+/* .card-thumb { height: 145px; background: #eee; overflow: hidden; } */
+.card-thumb { 
+    width: 100%;       /* 부모 너비에 맞춤 */
+    padding-top: 100%; /* 높이를 너비와 1:1 비율로 만듦 (반응형 정사각형 기법) */
+    position: relative; /* 자식(img)의 기준점 */
+    background: #eee; 
+    overflow: hidden; 
+}
+
+/* .card-thumb img { width: 100%; height: 100%; object-fit: cover; }*/
+.card-thumb img { 
+    position: absolute; /* 영역 안에 꽉 차게 배치 */
+    top: 0;
+    left: 0;
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; /* 꽉 채움 */
+}
+
 .card-body { padding: 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
 .card-title {
     font-size: 15px; font-weight: 700; line-height: 1.4; height: 42px;
@@ -302,3 +319,176 @@ header {
 /* --- 6. Empty State (데이터 없음) --- */
 .empty-state { text-align: center; padding: 60px 0; color: var(--text-gray); }
 .empty-state i { font-size: 48px; margin-bottom: 16px; color: #ddd; }
+
+
+
+
+
+
+/* --- 내 학습 페이지 검색 기능 --- */
+/* --- 검색창 디자인 수정 --- */
+
+/* 폼 전체 컨테이너 (가로 배치) */
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* 입력창과 버튼 사이 간격 */
+}
+
+/* 입력창을 감싸는 div (아이콘 위치 기준점) */
+.input-wrapper {
+    position: relative;
+    width: 400px; /* [요청사항] 텍스트 박스 길이 늘림 (기존 320px -> 400px) */
+}
+
+/* 실제 텍스트 입력창 */
+.input-wrapper input {
+    width: 100%;
+    height: 40px;
+    padding: 0 40px 0 15px; /* 오른쪽 여백(40px)을 줘서 아이콘과 겹치지 않게 함 */
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+.input-wrapper input:focus {
+    border-color: #00c471; /* 포커스 시 초록색 테두리 */
+}
+
+/* 돋보기 아이콘 (입력창 내부 오른쪽 끝) */
+.input-wrapper i {
+    position: absolute;
+    right: 12px; /* 오른쪽 끝에서 12px 떨어짐 */
+    top: 50%;
+    transform: translateY(-50%); /* 수직 중앙 정렬 */
+    color: #888;
+    pointer-events: none; /* 아이콘 클릭 시에도 입력창에 포커스 가도록 설정 */
+}
+
+/* 검색 버튼 (입력창 밖) */
+.search-btn {
+    height: 40px; /* 입력창 높이와 맞춤 */
+    padding: 0 20px;
+    background-color: #00c471;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap; /* 버튼 글자 줄바꿈 방지 */
+}
+.search-btn:hover {
+    background-color: #00a860;
+}
+
+/* 강의 목록 그리드 레이아웃 설정 */
+.lecture-grid {
+    display: grid;
+    /* 1fr(비율)을 3번 반복 -> 가로 3개 고정 */
+    grid-template-columns: repeat(3, 1fr); 
+    /* 카드 사이의 가로/세로 간격 24px */
+    gap: 24px; 
+    width: 100%;
+}
+
+/* (선택사항) 화면이 작아지면(모바일 등) 3개가 너무 좁아보일 수 있으므로 반응형 추가 */
+@media (max-width: 1024px) {
+    .lecture-grid {
+        grid-template-columns: repeat(2, 1fr); /* 중간 화면에선 2개 */
+    }
+}
+@media (max-width: 768px) {
+    .lecture-grid {
+        grid-template-columns: repeat(1, 1fr); /* 모바일에선 1개 */
+    }
+}
+
+/* 강의 카드 내 강사명 스타일 */
+.card-instructor {
+    font-size: 13px;
+    color: #858a8d;       /* 연한 회색 */
+    margin-bottom: 12px;  /* 진행률 바와의 간격 */
+    margin-top: -15px;      /* 제목과의 간격 */
+    font-weight: 500;
+}
+
+/* (참고) 기존 card-title의 마진이 너무 크다면 조금 줄여주는 것이 좋습니다 */
+/* .card-title {
+    margin-bottom: 4px;   제목 아래 여백을 줄임
+    기존 스타일 유지...
+} */
+
+
+
+
+
+/* --- [New] 구매 내역 테이블 스타일 --- */
+.purchase-table-wrap {
+    margin-top: 20px;
+    border-top: 2px solid #333; /* 상단 굵은 선 */
+}
+
+.purchase-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    table-layout: fixed; /* 칸 크기 고정 */
+}
+
+.purchase-table th, 
+.purchase-table td {
+    padding: 16px 10px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+    text-align: center; /* 기본 가운데 정렬 */
+    font-size: 14px;
+}
+
+.purchase-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* 썸네일 이미지 스타일 */
+.purchase-table .td-thumb img {
+    width: 100px;
+    height: 60px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #eee;
+    display: block;
+    margin: 0 auto;
+}
+
+/* 강의명은 왼쪽 정렬 */
+.purchase-table .td-name {
+    text-align: center;
+    font-weight: 500;
+    color: #333;
+    padding-left: 20px;
+    /* 긴 제목 말줄임표 처리 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 가격 스타일 */
+.purchase-table .td-price {
+    font-weight: bold;
+    color: #1b1c1d;
+}
+
+/* 결제완료 뱃지 */
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #e5f9f0; /* 연한 초록 배경 */
+    color: #00c471;            /* 인프런 초록 글자 */
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}

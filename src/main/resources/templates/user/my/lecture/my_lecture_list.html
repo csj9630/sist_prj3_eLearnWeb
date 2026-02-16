@@ -25,13 +25,18 @@
                 <div class="tab-btn active">강의</div>
             </div>
 
-            <div class="filter-row">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="강의명, 지식공유자 이름 검색">
-                </div>
-            </div>
 
+			<div class="filter-row">
+			    <form action="/user/my/lecture" method="get" class="search-form">
+				    <div class="input-wrapper">
+				        <input type="text" name="title" placeholder="강의명, 강사명 검색" th:value="${param.title}">
+				        <i class="fas fa-search"></i>
+				    </div>
+				    <button type="submit" class="search-btn">검색</button>
+				</form>
+			</div>
+				
+					
             <div class="lecture-grid">
                 
                 <div th:if="${#lists.isEmpty(myLectureList)}" style="grid-column: 1/-1; text-align:center; padding:50px; color:#888;">
@@ -40,13 +45,19 @@
                 </div>
 
                 <th:block th:each="lect : ${myLectureList}">
-                    <div class="course-card" style="width: 100%;">
+                    <!-- <div class="course-card" style="width: 100%;"> -->
+                    
+                    <div class="course-card">
+                        
                         <div class="card-thumb">
                             <img th:src="${lect.thumbnail != null ? lect.thumbnail : 'https://via.placeholder.com/260x145?text=No+Image'}" 
                                  alt="강의 썸네일">
                         </div>
+                        
                         <div class="card-body">
                             <div class="card-title" th:text="${lect.lectName}">강의 제목</div>
+                            
+                            <div class="card-instructor" th:text="${lect.instName}">강사 이름</div>
                             
                             <div class="progress-bg">
                                 <div class="progress-bar" th:style="'width:' + ${lect.progRate} + '%'"></div>

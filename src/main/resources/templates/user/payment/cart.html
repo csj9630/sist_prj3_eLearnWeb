@@ -8,19 +8,37 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://js.tosspayments.com/v1/payment"></script>
 
+<style>
+    .btn-delete-selected {
+        padding: 6px 14px; background-color: #fff; border: 1px solid #dee2e6;
+        border-radius: 4px; color: #495057; font-size: 13px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-delete-selected:hover { background-color: #f8f9fa; border-color: #c1c8cd; color: #333; }
+</style>
+
 <script>
-    // [기존 스크립트 유지]
+    //  토스 결제 키 설정
     var clientKey = 'test_ck_Z1aOwX7K8mz4qRa9nBwA3yQxzvNP';
     var tossPayments = TossPayments(clientKey);
 
+    // 가격 계산 및 개수 업데이트
     function calcTotal() {
         let total = 0;
-        document.querySelectorAll('input[name="chkLect"]:checked').forEach(function(chk) {
+        const checkboxes = document.querySelectorAll('input[name="chkLect"]:checked');
+        const allCheckboxes = document.querySelectorAll('input[name="chkLect"]');
+        
+        checkboxes.forEach(function(chk) {
             total += parseInt(chk.getAttribute('data-price'));
         });
         document.getElementById('totalPrice').innerText = total.toLocaleString();
+
+        // 선택 개수 / 전체 개수 업데이트
+        if(document.getElementById('selectedCountText')) {
+            document.getElementById('selectedCountText').innerText = checkboxes.length + ' / ' + allCheckboxes.length;
+        }
     }
 
+    // 결제 요청 (토스 SDK 사용)
     function requestPayment() {
         let totalAmount = parseInt(document.getElementById('totalPrice').innerText.replace(/,/g, ''));
         if (totalAmount === 0) { alert("결제할 강의를 선택해주세요."); return; }
@@ -41,7 +59,46 @@
         });
     }
     
-    // 페이지 로드 시 초기 계산 및 이벤트 바인딩
+    // 개별 삭제 (X 버튼)
+    function removeCartItem(lectId) {
+        if(!confirm("이 강의를 장바구니에서 삭제하시겠습니까?")) return;
+        requestRemoveCart([lectId]); // 배열로 담아서 보냄
+    }
+
+    // 선택 삭제 (버튼)
+    function removeSelectedCartItems() {
+        const checkboxes = document.querySelectorAll('input[name="chkLect"]:checked');
+        if(checkboxes.length === 0) { alert("삭제할 강의를 선택해주세요."); return; }
+        if(!confirm("선택한 " + checkboxes.length + "개의 강의를 삭제하시겠습니까?")) return;
+
+        const lectIds = [];
+        checkboxes.forEach(cb => lectIds.push(cb.value));
+        requestRemoveCart(lectIds);
+    }
+
+    // 삭제 AJAX (traditional: true 필수)
+    function requestRemoveCart(lectIds) {
+        $.ajax({
+            url: "/user/payment/delLectFromCart",
+            type: "GET",       
+            data: { lectIds: lectIds },
+            success: function(response) {
+                if(response === "success") {
+                    alert("삭제되었습니다.");
+                    location.reload();
+                } else {
+                    alert("삭제 실패");
+                }
+            },
+            error: function(xhr, status, error) { 
+                console.error("Error:", error);
+                console.error("Status:", status);
+                alert("서버 통신 오류"); 
+            }
+        });
+    }
+    
+    // 이벤트 바인딩
     $(document).ready(function() {
         calcTotal();
         $("#checkAll").change(function(){
@@ -50,7 +107,9 @@
         });
         $("input[name='chkLect']").change(function(){
             calcTotal();
-            if(!$(this).prop("checked")) $("#checkAll").prop('checked', false);
+            var total = $("input[name='chkLect']").length;
+            var checked = $("input[name='chkLect']:checked").length;
+            $("#checkAll").prop('checked', total === checked);
         });
     });
 </script>
@@ -72,8 +131,16 @@
         </div>
 
         <div th:unless="${#lists.isEmpty(cartList)}" class="purchase-list-container">
-            <div style="padding: 10px; border-bottom: 1px solid #eee; margin-bottom: 10px;">
-                <label><input type="checkbox" id="checkAll" checked> 전체 선택</label>
+            
+            <div style="padding: 10px; border-bottom: 1px solid #eee; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <label style="cursor:pointer;">
+                        <input type="checkbox" id="checkAll" checked> 
+                        <span style="font-weight:bold; margin-left:5px;">전체 선택</span>
+                    </label>
+                    <span id="selectedCountText" style="margin-left: 10px; font-size: 14px; color: #666;">0 / 0</span>
+                </div>
+                <button type="button" class="btn-delete-selected" onclick="removeSelectedCartItems()">선택 삭제</button>
             </div>
 
             <th:block th:each="cart : ${cartList}">
@@ -90,7 +157,14 @@
                     </div>
                     <div class="p-right">
                         <span class="p-price" th:text="${#numbers.formatInteger(cart.price, 0, 'COMMA') + '원'}">가격</span>
-                        <button type="button" style="border:none; background:none; cursor:pointer; color:#888;"><i class="fas fa-times"></i></button>
+                        
+                        <button type="button" 
+                                th:data-id="${cart.lectId}"
+                                onclick="removeCartItem(this.getAttribute('data-id'))"
+                                style="border:none; background:none; cursor:pointer; color:#888;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        
                     </div>
                 </div>
             </th:block>
