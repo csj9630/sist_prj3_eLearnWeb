@@ -66,11 +66,66 @@
     <div id="wrap">
       <div id="container" class="container">
         <h3 class="my-4">전체 강의 리스트</h3>
+        <div class="search-bar container mt-4 mb-5">
+          <form
+            action="/user/lecture/lectureList"
+            method="get"
+            class="row g-3 align-items-end justify-content-center"
+          >
+            <div class="col-md-2">
+              <label class="form-label small text-muted">카테고리</label>
+              <select name="catId" class="form-select">
+                <option value="">전체 카테고리</option>
+                <option
+                  th:each="cat : ${categoryList}"
+                  th:value="${cat.catId}"
+                  th:text="${cat.name}"
+                  th:selected="${cat.catId == lectureRangeDTO.catId}"
+                ></option>
+              </select>
+            </div>
 
-        <div th:if="${#lists.isEmpty(lectureList)}" class="text-center py-5">
-          <p class="text-muted">등록된 강의가 존재하지 않습니다.</p>
+            <div class="col-md-2">
+              <label class="form-label small text-muted">스킬</label>
+              <select name="skillId" class="form-select">
+                <option value="">전체 스킬</option>
+                <option
+                  th:each="skill : ${skillList}"
+                  th:value="${skill.skillId}"
+                  th:text="${skill.name}"
+                  th:selected="${skill.skillId == lectureRangeDTO.skillId}"
+                ></option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label small text-muted">검색 조건</label>
+              <select name="field" class="form-select">
+                <option value="1" th:selected="${lectureRangeDTO.field == '1'}">
+                  강의명
+                </option>
+                <option value="2" th:selected="${lectureRangeDTO.field == '2'}">
+                  강사명
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label small text-muted">키워드</label>
+              <input
+                type="text"
+                name="keyword"
+                class="form-control"
+                placeholder="검색어를 입력하세요"
+                th:value="${lectureRangeDTO.keyword}"
+              />
+            </div>
+
+            <div class="col-md-1">
+              <button type="submit" class="btn btn-primary w-100">검색</button>
+            </div>
+          </form>
         </div>
-
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
           <div
             class="col"
@@ -80,65 +135,61 @@
             <div class="card h-100 border-0 shadow-sm course-card">
               <div class="position-relative">
                 <img
-                  th:src="@{/common/images/강의썸네일(임시)/{imgName}(imgName=*{thumbnail})}"
+                  th:src="|${imgPath}*{thumbnail}|"
                   class="card-img-top thumb-img"
                   alt="강의 썸네일"
                 />
               </div>
 
-              <div class="card-body px-2">
-                <h5 class="card-title fw-bold text-truncate" th:text="*{name}">
+              <div class="card-body px-3">
+                <h6
+                  class="card-title fw-bold text-truncate mb-1"
+                  th:text="*{name}"
+                >
                   강의명
-                </h5>
-                <p class="card-text text-muted mb-1" th:text="*{instName}">
+                </h6>
+                <p
+                  class="card-text text-muted small mb-2"
+                  th:text="*{instName}"
+                >
                   강사명
                 </p>
 
-                <div class="d-flex align-items-center mb-2">
-                  <span class="text-warning fw-bold me-1">
-                    ★
-                    <span th:text="*{#numbers.formatDecimal(avgScore, 1, 1)}"
-                      >4.9</span
-                    >
-                  </span>
-                  <span class="text-muted small" th:text="|(*{reviewCount})|"
-                    >(100)</span
-                  >
-                  <span
-                    class="ms-2 badge bg-light text-dark small"
-                    th:text="|*{userCount}명 수강|"
-                    >1,000+</span
-                  >
-                </div>
-
                 <div
-                  class="fw-bold fs-5 text-primary"
-                  th:text="|*{#numbers.formatInteger(price ?: 0, 3, 'COMMA')}원|"
+                  class="d-flex align-items-center mb-2"
+                  style="font-size: 0.85rem"
                 >
-                  0원
+                  <span class="text-warning fw-bold me-1">★</span>
+                  <span
+                    class="fw-bold"
+                    th:text="*{#numbers.formatDecimal(avgScore, 1, 1)}"
+                    >4.9</span
+                  >
+                  <span class="text-muted ms-1" th:text="|(*{reviewCount})|"
+                    >(0)</span
+                  >
+                  <span class="ms-auto badge bg-light text-dark border">
+                    <span th:text="|*{userCount}명 수강|">0명</span>
+                  </span>
+                </div>
+
+                <div class="fw-bold fs-5 text-primary">
+                  <span
+                    th:text="|*{#numbers.formatInteger(price ?: 0, 3, 'COMMA')}원|"
+                    >0원</span
+                  >
                 </div>
               </div>
 
-              <div class="card-footer bg-transparent border-0 p-0">
-                <a
-                  th:href="@{/lecture/detail(lectId=*{lectId})}"
-                  class="stretched-link"
-                ></a>
-              </div>
+              <a
+                th:href="@{/user/lecture/detail(lectId=*{lectId})}"
+                class="stretched-link"
+              ></a>
             </div>
           </div>
         </div>
-
-        <div
-          id="pagination"
-          style="
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          "
-        >
-          <div th:utext="${pagination}"></div>
+        <div class="mt-5 d-flex justify-content-center">
+          <div id="pagination" th:utext="${pagination}"></div>
         </div>
       </div>
       <!--"container" -->

@@ -1,4 +1,4 @@
-package kr.co.sist.user.lecture;
+package kr.co.sist.user.lecture.board;
 
 import org.apache.ibatis.type.Alias;
 

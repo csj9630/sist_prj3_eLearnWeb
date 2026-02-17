@@ -1,0 +1,195 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Insert title here</title>
+
+    <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+
+    <style type="text/css">
+      #wrap {
+        margin: 0px auto;
+        width: 1200px;
+        height: 1000px;
+      }
+
+      #header {
+        height: 150px;
+      }
+
+      #container {
+        height: 700px;
+      }
+
+      #footer {
+        height: 150px;
+      }
+
+      .thumb {
+        width: 80%;
+        border-radius: 5px;
+      }
+    </style>
+
+    <!--JS 실습 파트-->
+    <script type="text/javascript">
+      $(function () {}); //document.ready
+    </script>
+  </head>
+  <body>
+    <div id="header">
+      <th:block th:replace="~{fragments/header :: header}" />
+    </div>
+    <div id="wrap">
+      <div class="container mt-5">
+        <div class="row" th:object="${allDetail.detail}">
+          <div class="col-md-4">
+            <img
+              th:src="|${imgPath}*{thumbnail}|"
+              class="img-fluid"
+              alt="강의 썸네일"
+            />
+          </div>
+          <div class="col-md-8">
+            <h2 th:text="*{name}">강의 제목</h2>
+            <p class="lead" th:text="*{shortint}">짧은 소개글</p>
+            <div class="mb-3">
+              <span class="badge bg-primary" th:text="|*{count}개의 강의|"
+                >0강</span
+              >
+              <span class="badge bg-info" th:text="|총 *{length}분|">0분</span>
+              <span
+                class="ms-3 fw-bold"
+                th:text="|*{#numbers.formatInteger(price, 3, 'COMMA')}원|"
+                >가격</span
+              >
+            </div>
+            <button class="btn btn-success btn-lg">수강 신청하기</button>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item shadow-sm">
+              <button
+                class="nav-link active"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-intro"
+              >
+                강의 소개
+              </button>
+            </li>
+            <li class="nav-item shadow-sm">
+              <button
+                class="nav-link"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-curriculum"
+              >
+                교육 과정
+              </button>
+            </li>
+            <li class="nav-item shadow-sm">
+              <button
+                class="nav-link"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-reviews"
+              >
+                수강평
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content p-4 border border-top-0">
+            <div class="tab-pane fade show active" id="tab-intro">
+              <div th:utext="${allDetail.detail.intro}">강의 상세 내용</div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-curriculum">
+              <div class="content-box mt-3">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 10%">번호</th>
+                      <th style="width: 50%">강의명</th>
+                      <th style="width: 20%">강의시간</th>
+                      <th style="width: 20%; text-align: center">강의자료</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:if="${#lists.isEmpty(allDetail.chapter)}">
+                      <td colspan="4" class="text-center py-4 text-muted">
+                        등록된 커리큘럼이 없습니다.
+                      </td>
+                    </tr>
+
+                    <tr
+                      th:each="item, i : ${allDetail.chapter}"
+                      th:object="${item}"
+                    >
+                      <td th:text="${i.count}">1</td>
+
+                      <td>
+                        <i class="bi bi-play-circle me-2 text-primary"></i>
+                        <span th:text="*{name}">강의 제목</span>
+                      </td>
+
+                      <td th:text="*{lengthStr}">10:00</td>
+
+                      <td class="text-center">
+                        <th:block th:if="*{not #strings.isEmpty(doc)}">
+                          <span
+                            class="badge rounded-pill bg-light text-dark border"
+                          >
+                            <i class="bi bi-file-earmark-arrow-down"></i> 자료
+                            포함
+                          </span>
+                        </th:block>
+                        <span
+                          th:unless="*{not #strings.isEmpty(doc)}"
+                          class="text-muted small"
+                          >-</span
+                        >
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-reviews">
+              <div
+                th:if="${#lists.isEmpty(allDetail.review)}"
+                class="text-center py-5"
+              >
+                <p>
+                  아직 작성된 수강평이 없습니다. 첫 번째 수강평을 남겨보세요!
+                </p>
+              </div>
+              <div
+                th:each="rev : ${allDetail.review}"
+                class="mb-4 pb-3 border-bottom"
+              >
+                <div class="d-flex justify-content-between">
+                  <strong th:text="${rev.user_id}">작성자</strong>
+                  <span class="text-warning" th:text="${'★'.repeat(rev.score)}"
+                    >별점</span
+                  >
+                </div>
+                <p class="mt-2" th:text="${rev.content}">수강평 내용</p>
+                <small
+                  class="text-muted"
+                  th:text="${#dates.format(rev.regdate, 'yyyy-MM-dd')}"
+                  >날짜</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--"wrap" -->
+    <div id="footer">
+      <th:block th:replace="~{fragments/footer :: footer}" />
+    </div>
+  </body>
+</html>

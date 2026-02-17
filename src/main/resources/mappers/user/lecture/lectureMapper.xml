@@ -5,13 +5,35 @@
   <!-- /kr/co/sist/user/lecture/chapter/ChapterMapper.java  -->
 <mapper namespace="kr.co.sist.user.lecture.LectureMapper">
 
+	<!--검색 핃드용 카테고리 조회-->
+	<select id="selectAllCategories" resultType="categoryDomain">
+	    SELECT cat_id as catId, name 
+	    FROM   category
+	    ORDER BY name ASC
+	</select>
+	<!--검색 핃드용 스킬 조회-->
+	<select id="selectAllSkills" resultType="skillDomain">
+	    SELECT skill_id as skillId, name 
+	    FROM   RELATIVE_SKILL
+	    ORDER BY name ASC
+	</select>
+
 	<!--강의 개수 조회.-->
 	<select id="selectLectureCount" parameterType="lectureRangeDTO" resultType="int">
-	    SELECT COUNT(*) 
+		SELECT COUNT(DISTINCT l.lect_id) 
 	    FROM lecture l
 	    JOIN instructor i ON l.inst_id = i.inst_id
+	    <if test="skillId != null and skillId != ''">
+	    JOIN relative_skill rs ON l.lect_id = rs.lect_id
+	    </if>
 	    <where>
 	        l.approval = 1
+	        <if test="catId != null and catId != ''">
+	            AND l.cat_id = #{catId}
+	        </if>
+	        <if test="skillId != null and skillId != ''">
+	            AND rs.skill_id = #{skillId}
+	        </if>
 	        <if test="keyword != null and keyword != ''">
 	            AND INSTR(${fieldStr}, #{keyword}) != 0
 	        </if>
@@ -20,6 +42,43 @@
 
 	<!--메인화면용 강의리스트, 리뷰정보까지 조회-->
 	<select id="selectLectureList" parameterType="lectureRangeDTO" resultType="mainLectureDomain">
+		SELECT 
+	        lectId, name, instname, thumbnail, price, usercount, reviewCount, avgScore
+	    FROM (
+	        SELECT ROWNUM as rnum, temp.* FROM (
+	            SELECT DISTINCT
+	                l.lect_id as lectId, 
+	                l.name, 
+	                i.name as instname,
+	                l.thumbnail, 
+	                l.price, 
+	                l.usercount,
+	                COUNT(r.review_id) OVER(PARTITION BY l.lect_id) as reviewCount,
+	                AVG(r.score) OVER(PARTITION BY l.lect_id) as avgScore
+	            FROM lecture l
+	            JOIN instructor i ON l.inst_id = i.inst_id
+	            LEFT OUTER JOIN review r ON l.lect_id = r.lect_id
+	            <if test="skillId != null and skillId != ''">
+	            JOIN relative_skill rs ON l.lect_id = rs.lect_id
+	            </if>
+	            <where>
+	                l.approval = 1
+	                <if test="catId != null and catId != ''">
+	                    AND l.cat_id = #{catId}
+	                </if>
+	                <if test="skillId != null and skillId != ''">
+	                    AND rs.skill_id = #{skillId}
+	                </if>
+	                <if test="keyword != null and keyword != ''">
+	                    AND INSTR(${fieldStr}, #{keyword}) != 0
+	                </if>
+	            </where>
+	            ORDER BY l.lect_id DESC
+	        ) temp
+	    ) WHERE rnum BETWEEN #{startNum} AND #{endNum}
+	</select>
+	
+		<select id="selectLectureList0" parameterType="lectureRangeDTO" resultType="mainLectureDomain">
 	    SELECT * FROM (
 	        SELECT ROWNUM as rnum, temp.* FROM (
 	            SELECT 
@@ -41,14 +100,19 @@
 	    ) WHERE rnum BETWEEN #{startNum} AND #{endNum}
 	</select>
 	
-	
 	<!--==========강의 상세 페이지 ===================-->
 	<!-- 강의 / 강사 정보-->
 	<select id="selectLectureDetail" parameterType="String" resultType="lectureDetailDomain">
-	    SELECT 
-	        l.lect_id as lectId, l.name, l.price, l.thumbnail, 
-	        l.description, l.goal,
-	        i.name as instName, i.profile as instProfile
+		SELECT 
+	        l.lect_id as lectId, 
+	        l.name, 
+	        l.price, 
+	        l.thumbnail, 
+	        l.shortint, 
+	        l.intro, 
+	        l.count, 
+	        l.length,
+	        i.name as instName
 	    FROM lecture l
 	    JOIN instructor i ON l.inst_id = i.inst_id
 	    WHERE l.lect_id = #{lectId}
