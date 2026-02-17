@@ -2,11 +2,11 @@ package kr.co.sist.user.lecture;
 
 import org.apache.ibatis.type.Alias;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Alias("lectureDomain")
-@AllArgsConstructor
+@Alias("mainLectureDomain")
+@NoArgsConstructor
 @Data
 public class LectureDomain {
 	private String lectId;

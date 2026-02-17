@@ -1,93 +1,150 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Insert title here</title>
 
-<th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+    <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
 
-<style type="text/css">
-#wrap {
-	margin: 0px auto;
-	width: 1200px;
-	height: 1000px;
-}
+    <style type="text/css">
+      #wrap {
+        margin: 0px auto;
+        width: 1200px;
+        height: 1000px;
+      }
 
-#header {
-	height: 150px;
-}
+      #header {
+        height: 150px;
+      }
 
-#container {
-	height: 700px;
-}
+      #container {
+        height: 700px;
+      }
 
-#footer {
-	height: 150px;
-}
+      #footer {
+        height: 150px;
+      }
 
-.thumb {
-	width: 80%;
-	border-radius: 5px;
-}
-</style>
+      .thumb {
+        width: 80%;
+        border-radius: 5px;
+      }
 
-<!--JS 실습 파트-->
-<script type="text/javascript">
-	$(function() {
-	});//document.ready
-</script>
-</head>
-<body>
-	<div id="wrap">
-		<div id="container">
+      .course-card {
+        transition: transform 0.2s ease-in-out;
+        cursor: pointer;
+      }
 
-			<h3>강의리스트</h3>
+      .course-card:hover {
+        transform: translateY(-5px); /* 호버 시 살짝 들리는 효과 */
+      }
 
+      .thumb-img {
+        aspect-ratio: 16/10; /* 썸네일 비율 고정 */
+        object-fit: cover;
+        border-radius: 8px;
+      }
 
-			<table class="table table-hover">
-				<thead>
-					<tr>
-						<th style="width: 200px;"></th>
-						<th style="width: 200px;">강의명</th>
-						<th style="width: 120px;">강사 ID</th>
-						<th style="width: 120px;">가격</th>
-						<th style="width: 100px;">수강인원</th>
-						<th style="width: 100px;">리뷰수</th>
-						<th style="width: 100px;">평균평점</th>
-						<th style="width: 150px;">상세보기</th>
-					</tr>
-				</thead>
-				<tbody>
-					<th:block th:if="${#lists.isEmpty(lectureList)}">
-						<tr>
-							<td colspan="7" style="text-align: center;">등록된 강의가 존재하지
-								않습니다.</td>
-						</tr>
-					</th:block>
+      .text-truncate {
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* 제목 두 줄 넘어가면 말줄임 */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        white-space: normal;
+      }
+    </style>
 
-					<tr th:each="lecture : ${lectureList}" th:object="${lecture}">
-						<td><img
-							th:src="@{/common/images/강의썸네일(임시)/{imgName}(imgName=*{thumbnail})}"
-							alt="썸네일" class="thumb"></td>
-						<td th:text="*{name}">객체지향의 이해</td>
-						<td th:text="*{instName}">강사 곽우신</td>
-						<td
-							th:text="|${#numbers.formatInteger(lecture.price, 3, 'COMMA')}원|">0원</td>
-						<td th:text="|*{userCount}명|">0명</td>
-						<td th:text="|*{reviewCount}건|">0건</td>
-						<td><span th:text="*{#numbers.formatDecimal(avgScore, 1, 1)}">0.0</span>
-							<span style="color: #f39c12;">★</span></td>
-						<td><a th:href="@{/lecture/detail(lectId=*{lectId})}"
-							class="btn btn-sm btn-info">강의신청</a></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<!--"container" -->
+    <!--JS 실습 파트-->
+    <script type="text/javascript">
+      $(function () {}); //document.ready
+    </script>
+  </head>
+  <body>
+    <div id="header">
+      <th:block th:replace="~{fragments/header :: header}" />
+    </div>
+    <div id="wrap">
+      <div id="container" class="container">
+        <h3 class="my-4">전체 강의 리스트</h3>
 
+        <div th:if="${#lists.isEmpty(lectureList)}" class="text-center py-5">
+          <p class="text-muted">등록된 강의가 존재하지 않습니다.</p>
+        </div>
 
-	</div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+          <div
+            class="col"
+            th:each="lecture : ${lectureList}"
+            th:object="${lecture}"
+          >
+            <div class="card h-100 border-0 shadow-sm course-card">
+              <div class="position-relative">
+                <img
+                  th:src="@{/common/images/강의썸네일(임시)/{imgName}(imgName=*{thumbnail})}"
+                  class="card-img-top thumb-img"
+                  alt="강의 썸네일"
+                />
+              </div>
 
+              <div class="card-body px-2">
+                <h5 class="card-title fw-bold text-truncate" th:text="*{name}">
+                  강의명
+                </h5>
+                <p class="card-text text-muted mb-1" th:text="*{instName}">
+                  강사명
+                </p>
 
-</body>
+                <div class="d-flex align-items-center mb-2">
+                  <span class="text-warning fw-bold me-1">
+                    ★
+                    <span th:text="*{#numbers.formatDecimal(avgScore, 1, 1)}"
+                      >4.9</span
+                    >
+                  </span>
+                  <span class="text-muted small" th:text="|(*{reviewCount})|"
+                    >(100)</span
+                  >
+                  <span
+                    class="ms-2 badge bg-light text-dark small"
+                    th:text="|*{userCount}명 수강|"
+                    >1,000+</span
+                  >
+                </div>
+
+                <div
+                  class="fw-bold fs-5 text-primary"
+                  th:text="|*{#numbers.formatInteger(price ?: 0, 3, 'COMMA')}원|"
+                >
+                  0원
+                </div>
+              </div>
+
+              <div class="card-footer bg-transparent border-0 p-0">
+                <a
+                  th:href="@{/lecture/detail(lectId=*{lectId})}"
+                  class="stretched-link"
+                ></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="pagination"
+          style="
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <div th:utext="${pagination}"></div>
+        </div>
+      </div>
+      <!--"container" -->
+    </div>
+    <div id="footer">
+      <th:block th:replace="~{fragments/footer :: footer}" />
+    </div>
+  </body>
 </html>
