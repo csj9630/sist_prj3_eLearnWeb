@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header">
+<header>
+    <div class="header-inner">
+    
+    	<!-- intlearn로고 -->
+	    <a href="#" class="logo">
+	        <img src="/common/images/main_logo.png" alt="Intlearn" class="logo-img">
+	    </a>
+
+        <nav class="header-menu">
+        <!-- 강의 -->
+        <a href="/instructor/lecture/lectureList" class="nav-text">
+            <img src="/common/images/lecture.png" alt="강의" class="nav-icon">
+            <span>강의</span>
+        </a>
+        
+        <!-- 커뮤니티 -->
+        <a href="/instructor/community/index" class="nav-text">
+            <img src="/common/images/community.png" alt="커뮤니티" class="nav-icon">
+            <span>커뮤니티</span>
+        </a>
+        </nav>
+        
+        <!-- ------ --><!-- 위치설정을 위한 또 다른 div -->
+        <div class="header-actions">
+        
+        <!-- 내 수익확인 -->
+        <a href="/instructor/payment/inst_payment" class="header-icon" title="내 수익 조회">
+            <i class="fas fa-coins"></i>
+        </a>
+          
+        <!-- 마이페이지 --><!-- 로그인, 세션때문에 프로필이 아닌 우선 대시보드로 가게 만듦. 후에 수정 -->
+        <a href="/instructor/my/dashboard" class="profile-btn" title="마이페이지">
+        <img th:if="${session.userImg != null}" 
+             th:src="${session.userImg}" 
+             class="profile-img" alt="프로필">
+        <i th:unless="${session.userImg != null}" class="fas fa-user-circle"></i>
+        </a>
+        
+        </div>
+        <!-- ------ --><!-- 위치설정을 위한 또 다른 div -->
+        
+    </div>
+    
+    
+</header>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="/css/user-mypage.css">
+</div>
+</html>

@@ -5,34 +5,58 @@
 
 <mapper namespace="kr.co.sist.instructor.payment.InstPaymentMapper">
 
+	<!-- 이번 달 수익 조회 -->
     <select id="selectMyPaySum" parameterType="String" resultType="int">
         SELECT NVL(SUM(l.PRICE), 0)
-        FROM PAYMENT_DETAIL2 pd2
-        JOIN LECTURE l ON pd2.LECT_ID = l.LECT_ID
+        FROM LECTURE l
+        JOIN PAYMENT_DETAIL2 pd2 ON l.LECT_ID = pd2.LECT_ID
         JOIN PAYMENT p ON pd2.PAYREC_ID = p.PAYREC_ID
-        WHERE l.INST_ID = #{instId} 
-        AND p.STATE = 1
+        WHERE l.INST_ID = #{instId}
+        AND p.STATE = '1'  
+        AND TO_CHAR(p.TIME, 'YYYY-MM') = TO_CHAR(SYSDATE, 'YYYY-MM')
     </select>
-
+	
+	<!-- 강의별 상세 매출 조호히 -->
     <select id="selectMyPaySumByLect" parameterType="String" resultType="kr.co.sist.instructor.payment.PaymentSumDTO">
         SELECT 
             l.LECT_ID AS lectId,
             l.NAME AS lectName,
-            COUNT(p.PAY_ID) AS salesCount,
-            SUM(CASE WHEN p.PAY_ID IS NOT NULL THEN l.PRICE ELSE 0 END) AS totalPrice,
-            l.USERCOUNT AS userCount
+            l.INST_ID AS instId,
+            '/common/images/lecture_thumb_njwVersion/' || l.THUMBNAIL AS thumbnail,
+            TO_CHAR(l.REGDATE, 'YYYY-MM-DD') AS openDate,
+            l.USERCOUNT AS userCount,
+            
+            COUNT(CASE WHEN p.STATE = '1' THEN 1 END) AS salesCount,
+            
+            NVL(SUM(CASE WHEN p.STATE = '1' THEN l.PRICE ELSE 0 END), 0) AS totalPrice
+            
         FROM LECTURE l
         LEFT JOIN PAYMENT_DETAIL2 pd2 ON l.LECT_ID = pd2.LECT_ID
-        LEFT JOIN PAYMENT p ON pd2.PAYREC_ID = p.PAYREC_ID AND p.STATE = 1
+        LEFT JOIN PAYMENT p ON pd2.PAYREC_ID = p.PAYREC_ID
         WHERE l.INST_ID = #{instId}
-        GROUP BY l.LECT_ID, l.NAME, l.USERCOUNT
-        ORDER BY totalPrice DESC
+        GROUP BY l.LECT_ID, l.NAME, l.INST_ID, l.THUMBNAIL, l.REGDATE, l.USERCOUNT
+        ORDER BY l.REGDATE DESC
+    </select>
+    
+    <!-- 드롭다운으로 선택한 월의 수익 조회 -->
+    <select id="selectMonthPaySum" resultType="int">
+        SELECT NVL(SUM(l.PRICE), 0)
+        FROM LECTURE l
+        JOIN PAYMENT_DETAIL2 pd2 ON l.LECT_ID = pd2.LECT_ID
+        JOIN PAYMENT p ON pd2.PAYREC_ID = p.PAYREC_ID
+        WHERE l.INST_ID = #{instId}
+        AND p.STATE = '1'
+        AND TO_CHAR(p.TIME, 'YYYY-MM') = #{searchMonth}
     </select>
 
-    <select id="selectMyUserCount" parameterType="String" resultType="int">
-        SELECT NVL(SUM(USERCOUNT), 0)
-        FROM LECTURE
-        WHERE INST_ID = #{instId}
+	<!-- 전체 누적 총 수익 조회 -->
+    <select id="selectTotalPaySum" parameterType="String" resultType="int">
+        SELECT NVL(SUM(l.PRICE), 0)
+        FROM LECTURE l
+        JOIN PAYMENT_DETAIL2 pd2 ON l.LECT_ID = pd2.LECT_ID
+        JOIN PAYMENT p ON pd2.PAYREC_ID = p.PAYREC_ID
+        WHERE l.INST_ID = #{instId}
+        AND p.STATE = '1'
     </select>
 
 </mapper>
