@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>intlearn</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <style>
+        /* 기본 폰트 및 스타일 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Swiper Custom Styles */
+        .swiper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .swiper-pagination-bullet-active {
+            background-color: #10b981 !important;
+            /* Emerald-500 */
+        }
+
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: white !important;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+            opacity: 1;
+        }
+
+        /* Fade In Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900 selection:bg-emerald-100">
+
+    <!-- Header (mainHeader fragment) -->
+    <div th:replace="~{fragments/mainHeader :: header}"></div>
+
+    <main>
+        <!-- Swiper Banner: Full Width Background, Content Centered -->
+        <div class="relative overflow-hidden bg-slate-900">
+            <div class="swiper mySwiper h-[320px] md:h-[380px]">
+                <div class="swiper-wrapper">
+
+                    <!-- Slide 1 -->
+                    <div class="swiper-slide relative bg-slate-900">
+                        <!-- max-w-screen-xl mx-auto 로 콘텐츠 중앙 정렬 -->
+                        <div class="max-w-screen-xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
+                            <div class="max-w-2xl">
+                                <span
+                                    class="bg-emerald-500 text-white text-[11px] font-bold px-2 py-1 rounded mb-4 inline-block tracking-wide">EVENT</span>
+                                <h1 class="text-3xl md:text-5xl text-white font-bold mb-4 leading-tight">
+                                    2026년,<br>당신의 성장을 응원합니다.
+                                </h1>
+                                <p class="text-gray-300 mb-8 text-base md:text-lg">
+                                    최고의 강사진과 함께하는 실전 중심의 커리큘럼.<br>
+                                    지금 시작하면 수강료 최대 30% 할인 혜택까지!
+                                </p>
+                                <button
+                                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded transition-colors text-sm md:text-base">
+                                    강의 보러가기
+                                </button>
+                            </div>
+                        </div>
+                        <div
+                            class="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500 rounded-full opacity-10 translate-x-1/4 -translate-y-1/4 blur-3xl pointer-events-none">
+                        </div>
+                    </div>
+
+                    <!-- Slide 2 -->
+                    <div class="swiper-slide relative bg-[#1e1b4b]"> <!-- Indigo-950 -->
+                        <div class="max-w-screen-xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
+                            <div class="max-w-2xl">
+                                <span
+                                    class="bg-yellow-400 text-indigo-900 text-[11px] font-bold px-2 py-1 rounded mb-4 inline-block tracking-wide">NEW
+                                    CLASS</span>
+                                <h1 class="text-3xl md:text-5xl text-white font-bold mb-4 leading-tight">
+                                    GPT-5와 함께하는<br>AI 앱 개발 마스터
+                                </h1>
+                                <p class="text-indigo-200 mb-8 text-base md:text-lg">
+                                    프롬프트 엔지니어링부터 API 연동까지.<br>
+                                    나만의 AI 서비스를 직접 만들어보세요.
+                                </p>
+                                <button
+                                    class="bg-white hover:bg-gray-100 text-indigo-900 font-bold py-3 px-8 rounded transition-colors text-sm md:text-base">
+                                    자세히 보기
+                                </button>
+                            </div>
+                        </div>
+                        <div
+                            class="absolute bottom-0 right-20 w-96 h-96 bg-pink-500 rounded-full opacity-20 blur-[100px] pointer-events-none">
+                        </div>
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="swiper-slide relative bg-gray-800">
+                        <div class="max-w-screen-xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
+                            <div class="max-w-2xl">
+                                <span
+                                    class="bg-blue-500 text-white text-[11px] font-bold px-2 py-1 rounded mb-4 inline-block tracking-wide">CAREER</span>
+                                <h1 class="text-3xl md:text-5xl text-white font-bold mb-4 leading-tight">
+                                    비전공자를 위한<br>IT 취업 가이드북
+                                </h1>
+                                <p class="text-gray-400 mb-8 text-base md:text-lg">
+                                    현직자 100명이 말하는 리얼한 취업 성공기.<br>
+                                    지금 가입하고 무료로 받아보세요.
+                                </p>
+                                <button
+                                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded transition-colors text-sm md:text-base">
+                                    가이드북 받기
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="swiper-pagination"></div>
+                <!-- Navigation Arrows (Hidden on mobile) -->
+                <div class="swiper-button-next hidden md:block"></div>
+                <div class="swiper-button-prev hidden md:block"></div>
+            </div>
+        </div>
+
+        <!-- Main Content: max-w-screen-xl 적용으로 넓은 레이아웃 -->
+        <div class="max-w-screen-xl mx-auto px-4 py-12">
+
+            <!-- Filter Section -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-1">전체 강의</h2>
+                    <p class="text-gray-500 text-sm">성장을 위한 최고의 강의들을 만나보세요.</p>
+                </div>
+
+                <!-- Category Chips -->
+                <div id="category-container" class="flex flex-wrap gap-2">
+                    <!-- Javascript will populate this -->
+                </div>
+            </div>
+
+            <!-- Sort & Count -->
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-gray-800 text-sm">총 <span id="course-count"
+                            class="text-emerald-600">0</span>개</span>
+                </div>
+                <div class="flex gap-4 text-sm text-gray-500">
+                    <button class="font-bold text-gray-900">추천순</button>
+                    <button class="hover:text-gray-900 transition-colors">최신순</button>
+                    <button class="hover:text-gray-900 transition-colors">평점순</button>
+                </div>
+            </div>
+
+            <!-- Course Grid -->
+            <!-- Note: 'overflow-visible' allows the hover card to pop out -->
+            <div id="course-grid"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-10 min-h-[400px]">
+                <!-- Javascript will populate this -->
+            </div>
+
+            <!-- Sentinel & Pagination -->
+            <div id="scroll-sentinel"
+                class="w-full py-12 flex justify-center items-center hidden opacity-0 transition-opacity duration-300">
+                <div class="animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-emerald-600"></div>
+            </div>
+
+            <div id="pagination-container" class="flex justify-center items-center gap-2 mt-16 hidden">
+                <!-- Javascript will populate this -->
+            </div>
+
+            <!-- No Results -->
+            <div id="no-results"
+                class="hidden text-center py-24 bg-white rounded-xl border border-gray-200 mt-6 shadow-sm">
+                <div class="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="search" class="text-gray-400 w-8 h-8"></i>
+                </div>
+                <p class="text-gray-900 font-bold mb-1">검색 결과가 없습니다.</p>
+                <p class="text-gray-500 text-sm mb-6">다른 키워드로 검색해보거나 필터를 변경해보세요.</p>
+                <button id="reset-search-btn"
+                    class="text-white bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-lg font-bold text-sm transition-colors">
+                    전체 강의 보기
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Scroll to Top 버튼 -->
+    <button id="scroll-top-btn"
+        class="fixed bottom-8 right-8 z-50 hidden w-12 h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+        <i data-lucide="chevron-up" class="w-5 h-5"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-12 text-sm text-gray-500">
+        <div class="max-w-screen-xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div>
+                    <a href="#" class="flex items-center gap-2 mb-6">
+                        <i data-lucide="book-open" class="text-emerald-600 w-6 h-6"></i>
+                        <span class="text-xl font-bold text-gray-900">InLearn</span>
+                    </a>
+                    <p class="leading-relaxed mb-4">
+                        우리는 모두의 성장을 믿습니다.<br>
+                        지식의 공유를 통해 더 나은 세상을 만들어갑니다.
+                    </p>
+                    <div class="flex gap-4 mt-6">
+                        <a href="#" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><i
+                                data-lucide="youtube" class="w-4 h-4 text-gray-600"></i></a>
+                        <a href="#" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><i
+                                data-lucide="instagram" class="w-4 h-4 text-gray-600"></i></a>
+                        <a href="#" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><i
+                                data-lucide="facebook" class="w-4 h-4 text-gray-600"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="font-bold text-gray-900 mb-6 text-base">인런 소개</h5>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">인런 문화</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">채용 공고</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">파트너 안내</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-gray-900 mb-6 text-base">고객 지원</h5>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">자주 묻는 질문</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">수강신청 문의</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">기업 교육 문의</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-gray-900 mb-6 text-base">크리에이터</h5>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">지식공유자 지원</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">강사 가이드</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">스튜디오 대관</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p>© 2026 InLearn Inc. All Rights Reserved.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-gray-900 transition-colors">이용약관</a>
+                    <a href="#" class="font-bold text-gray-900 hover:text-emerald-600 transition-colors">개인정보처리방침</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script th:inline="javascript">
+        // --- Data (서버에서 주입) ---
+        const CATEGORIES = [{ id: 'all', name: '전체' }];
+        /*[# th:each="cat : ${categories}"]*/
+        CATEGORIES.push({ id: '[[${cat.catId}]]', name: '[[${cat.catName}]]' });
+        /*[/]*/
+
+        const COURSES = [];
+        /*[# th:each="c : ${courses}"]*/
+        COURSES.push({
+            id: '[[${c.lectId}]]',
+            title: '[[${c.title}]]',
+            instructor: '[[${c.instructor}]]',
+            price: [[${ c.price }]],
+            shortint: '[[${c.shortint}]]',
+            category: '[[${c.category}]]',
+            thumbnail: '[[${c.thumbnail}]]',
+            usercount: [[${ c.usercount }]],
+            rating: [[${ c.rating }]],
+            reviewCount: [[${ c.reviewCount }]]
+        });
+        /*[/]*/
+
+        // --- State ---
+        let state = {
+            activeCategory: 'all',
+            searchQuery: '',
+            cartCount: 0,
+            currentPage: 1,
+            page1Limit: 20,
+            page1Current: 10,
+            pageSize: 20
+        };
+
+        // --- DOM Elements ---
+        const categoryContainer = document.getElementById('category-container');
+        const courseGrid = document.getElementById('course-grid');
+        const scrollSentinel = document.getElementById('scroll-sentinel');
+        const paginationContainer = document.getElementById('pagination-container');
+        const noResults = document.getElementById('no-results');
+        const searchInput = document.getElementById('header-search-input');
+        const courseCount = document.getElementById('course-count');
+        const cartBadge = document.getElementById('cart-badge');
+        const resetSearchBtn = document.getElementById('reset-search-btn');
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+
+        // --- Helper Functions ---
+        const formatPrice = (price) => price.toLocaleString();
+        const getStarsHTML = (rating) => {
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                const fill = i < Math.floor(rating) ? 'currentColor' : 'none';
+                const color = 'text-yellow-400';
+                stars += `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star ${color}"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+            }
+            return stars;
+        };
+
+        // --- Render Functions ---
+        const renderCategories = () => {
+            categoryContainer.innerHTML = '';
+            CATEGORIES.forEach(cat => {
+                const btn = document.createElement('button');
+                const isActive = state.activeCategory === cat.id;
+
+                const baseClasses = "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border select-none";
+                const activeClasses = "bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-200";
+                const inactiveClasses = "bg-white text-gray-500 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900";
+
+                btn.className = `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
+                btn.innerHTML = cat.name;
+
+                btn.addEventListener('click', () => {
+                    state.activeCategory = cat.id;
+                    state.currentPage = 1;
+                    state.page1Current = 10;
+                    renderCategories();
+                    renderCourses(true, true);
+                });
+                categoryContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        };
+
+        const renderCourses = (reset = false, scrollToContent = false) => {
+            let filtered = COURSES;
+            if (state.activeCategory !== 'all') filtered = filtered.filter(c => c.category === state.activeCategory);
+            if (state.searchQuery) {
+                const query = state.searchQuery.toLowerCase();
+                filtered = filtered.filter(c => c.title.toLowerCase().includes(query) || c.instructor.toLowerCase().includes(query));
+            }
+
+            courseCount.textContent = filtered.length;
+
+            if (reset) {
+                courseGrid.innerHTML = '';
+                if (scrollToContent && state.currentPage === 1) window.scrollTo({ top: 400, behavior: 'smooth' });
+            }
+
+            let visibleData = [];
+            let showSentinel = false;
+            let showPagination = false;
+
+            if (state.currentPage === 1) {
+                visibleData = filtered.slice(0, state.page1Current);
+                if (state.page1Current < state.page1Limit && state.page1Current < filtered.length) {
+                    showSentinel = true;
+                } else if (filtered.length > state.page1Limit) {
+                    showPagination = true;
+                }
+            } else {
+                const startIndex = (state.currentPage - 1) * state.pageSize;
+                const endIndex = startIndex + state.pageSize;
+                visibleData = filtered.slice(startIndex, endIndex);
+                showPagination = true;
+            }
+
+            courseGrid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                courseGrid.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                scrollSentinel.classList.add('hidden');
+                paginationContainer.classList.add('hidden');
+            } else {
+                courseGrid.classList.remove('hidden');
+                noResults.classList.add('hidden');
+
+                visibleData.forEach(course => {
+                    const priceText = course.price === 0 ? '무료' : `₩${formatPrice(course.price)}`;
+                    const priceColor = course.price === 0 ? 'text-emerald-600' : 'text-gray-900';
+                    const categoryName = CATEGORIES.find(c => c.id === course.category)?.name || '';
+
+                    const cardHTML = `
+                        <div class="relative group hover:z-50 h-full">
+                            <div class="h-full bg-white rounded-xl overflow-hidden border border-gray-100 flex flex-col">
+                                <div class="h-[160px] w-full bg-gray-100 flex items-center justify-center relative overflow-hidden">
+                                    <i data-lucide="book-open" class="text-gray-900 opacity-20 w-20 h-20"></i>
+                                </div>
+                                <div class="p-4 flex flex-col flex-1">
+                                    <h3 class="text-gray-900 font-bold text-base mb-1 line-clamp-2 min-h-[3rem] leading-snug">${course.title}</h3>
+                                    <p class="text-gray-500 text-xs mb-3">${course.instructor}</p>
+                                    <div class="flex items-center gap-1 mb-3">
+                                        <div class="flex text-yellow-400 items-center gap-0.5">${getStarsHTML(course.rating)}</div>
+                                        <span class="text-xs font-bold text-gray-700">(${course.reviewCount})</span>
+                                    </div>
+                                    <div class="mt-auto pt-3 border-t border-gray-100">
+                                        <span class="font-bold text-lg ${priceColor}">${priceText}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- POPUP CARD (Overlay) -->
+                            <div class="hidden group-hover:block absolute top-[-10px] left-[-10px] w-[calc(100%+20px)] bg-white rounded-xl shadow-2xl border border-gray-200 z-50 animate-fade-in overflow-hidden">
+                                <div class="p-5 flex flex-col gap-3">
+                                    <div>
+                                        <h3 class="text-gray-900 font-bold text-lg leading-snug mb-1">${course.title}</h3>
+                                        <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                                            <span class="px-2 py-0.5 bg-gray-100 rounded font-bold text-gray-700">${categoryName}</span>
+                                            <span>수강생 ${course.usercount}명</span>
+                                        </div>
+                                    </div>
+
+                                    <p class="text-sm text-gray-600 leading-relaxed">
+                                        ${course.shortint}
+                                    </p>
+
+                                    <div class="pt-3 border-t border-gray-100 flex items-center justify-between mt-1">
+                                        <span class="font-bold text-xl ${priceColor}">${priceText}</span>
+                                        <button class="add-to-cart-btn p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors shadow-sm" data-id="${course.id}">
+                                            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    courseGrid.insertAdjacentHTML('beforeend', cardHTML);
+                });
+
+                document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        addToCart();
+                    });
+                });
+
+                if (showSentinel) {
+                    scrollSentinel.classList.remove('hidden');
+                    scrollSentinel.classList.remove('opacity-0');
+                    paginationContainer.classList.add('hidden');
+                } else {
+                    scrollSentinel.classList.add('hidden');
+                    if (showPagination) {
+                        paginationContainer.classList.remove('hidden');
+                        renderPagination(Math.ceil(filtered.length / state.pageSize));
+                    } else {
+                        paginationContainer.classList.add('hidden');
+                    }
+                }
+            }
+            lucide.createIcons();
+        };
+
+        const renderPagination = (totalPages) => {
+            paginationContainer.innerHTML = '';
+
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = `<i data-lucide="chevron-left" class="w-4 h-4"></i>`;
+            prevBtn.className = `p-2 rounded-lg border ${state.currentPage === 1 ? 'text-gray-300 border-gray-200 cursor-not-allowed' : 'text-gray-600 border-gray-300 hover:bg-gray-50'}`;
+            prevBtn.disabled = state.currentPage === 1;
+            prevBtn.onclick = () => {
+                if (state.currentPage > 1) {
+                    state.currentPage--;
+                    if (state.currentPage === 1) state.page1Current = state.page1Limit;
+                    renderCourses(true, true);
+                }
+            };
+            paginationContainer.appendChild(prevBtn);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                pageBtn.className = `w-9 h-9 rounded-lg text-sm font-bold border transition-colors ${state.currentPage === i
+                    ? 'bg-gray-900 text-white border-gray-900'
+                    : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                    }`;
+                pageBtn.onclick = () => {
+                    state.currentPage = i;
+                    if (i === 1) state.page1Current = state.page1Limit;
+                    renderCourses(true, true);
+                };
+                paginationContainer.appendChild(pageBtn);
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = `<i data-lucide="chevron-right" class="w-4 h-4"></i>`;
+            nextBtn.className = `p-2 rounded-lg border ${state.currentPage === totalPages ? 'text-gray-300 border-gray-200 cursor-not-allowed' : 'text-gray-600 border-gray-300 hover:bg-gray-50'}`;
+            nextBtn.disabled = state.currentPage === totalPages;
+            nextBtn.onclick = () => {
+                if (state.currentPage < totalPages) {
+                    state.currentPage++;
+                    renderCourses(true, true);
+                }
+            };
+            paginationContainer.appendChild(nextBtn);
+
+            lucide.createIcons();
+        };
+
+        const setupIntersectionObserver = () => {
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && state.currentPage === 1 && state.page1Current < state.page1Limit) {
+                    setTimeout(() => {
+                        state.page1Current = Math.min(state.page1Current + 10, state.page1Limit);
+                        renderCourses(false);
+                    }, 500);
+                }
+            }, { threshold: 0.1 });
+            observer.observe(scrollSentinel);
+        };
+
+        const addToCart = () => {
+            state.cartCount++;
+            cartBadge.textContent = state.cartCount;
+            if (state.cartCount > 0) {
+                cartBadge.classList.remove('hidden');
+                cartBadge.classList.add('flex');
+
+                // Animate Badge
+                cartBadge.classList.add('scale-125');
+                setTimeout(() => cartBadge.classList.remove('scale-125'), 200);
+            }
+        };
+
+        // --- Event Initializers ---
+        const handleSearch = (e) => {
+            state.searchQuery = e.target.value;
+            state.currentPage = 1;
+            state.page1Current = 10;
+            renderCourses(true);
+        };
+
+        searchInput.addEventListener('input', handleSearch);
+        resetSearchBtn.addEventListener('click', () => {
+            state.searchQuery = '';
+            state.activeCategory = 'all';
+            searchInput.value = '';
+            state.currentPage = 1;
+            state.page1Current = 10;
+            renderCategories();
+            renderCourses(true);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderCourses();
+            setupIntersectionObserver();
+
+            const swiper = new Swiper(".mySwiper", {
+                loop: true,
+                effect: 'fade', // Fade effect for cleaner look
+                fadeEffect: { crossFade: true },
+                autoplay: { delay: 4000, disableOnInteraction: false },
+                pagination: { el: ".swiper-pagination", clickable: true },
+                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+            });
+            lucide.createIcons();
+
+            // Scroll to Top 버튼
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    scrollTopBtn.classList.remove('hidden');
+                } else {
+                    scrollTopBtn.classList.add('hidden');
+                }
+            });
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+
+</html>

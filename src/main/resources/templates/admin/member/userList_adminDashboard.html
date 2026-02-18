@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>관리자 - 회원 목록</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
+    <style>
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .status--active {
+            color: #2f7d4f;
+        }
+
+        .status--inactive {
+            color: #d04b4b;
+        }
+
+        .member-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 40;
+            padding: 16px;
+        }
+
+        .member-modal-overlay.active {
+            display: flex;
+        }
+
+        .member-modal {
+            width: min(520px, 100%);
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.24);
+            overflow: hidden;
+        }
+
+        .member-modal__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 18px;
+            border-bottom: 1px solid #ebe7e3;
+            font-weight: 600;
+        }
+
+        .member-modal__close {
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .member-modal__body {
+            padding: 18px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .member-modal__field {
+            display: grid;
+            gap: 6px;
+        }
+
+        .member-modal__field label {
+            font-size: 13px;
+            color: #6e6a67;
+        }
+
+        .member-modal__field input,
+        .member-modal__field textarea {
+            width: 100%;
+            border: 1px solid #ebe7e3;
+            border-radius: 10px;
+            padding: 9px 10px;
+            font-size: 13px;
+            color: #1f2328;
+            background: #f9fafb;
+            resize: vertical;
+        }
+
+        .member-modal__body small {
+            display: block;
+            text-align: right;
+            color: #8b8682;
+            font-size: 11px;
+        }
+
+        .member-modal__footer {
+            border-top: 1px solid #ebe7e3;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .member-modal__footer .btn {
+            height: 32px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .member-modal__footer .btn--ghost {
+            background: #eef0f5;
+            color: #333;
+        }
+
+        .pagination {
+            margin-top: 14px;
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .page-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            padding: 0 10px;
+            border: 1px solid #ebe7e3;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #333;
+            text-decoration: none;
+            background: #fff;
+        }
+
+        .page-link.active {
+            background: #5f6ad7;
+            color: #fff;
+            border-color: #5f6ad7;
+        }
+
+        .page-link.disabled {
+            color: #aaa;
+            background: #f5f5f5;
+            cursor: default;
+        }
+    </style>
+</head>
+<body class="admin-dashboard">
+<div id="header">
+    <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+</div>
+
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <th:block th:replace="~{fragments/adminSidebar :: adminSidebar}"></th:block>
+    </aside>
+
+    <main class="admin-content">
+        <section class="course-page">
+            <header class="course-header">
+                <h1>회원 목록</h1>
+            </header>
+
+            <div class="course-toolbar">
+                <div class="course-filter">
+                    <a class="page-link active" href="userList_adminDashboard.html" th:href="@{/admin/member/userList}">회원</a>
+                    <a class="page-link" href="instructorList_adminDashboard.html" th:href="@{/admin/member/instructorList}">강사</a>
+                </div>
+                <div style="margin-left:auto; color:#6e6a67; font-size:13px;">
+                    총 <span th:text="${totalCount}">0</span>건
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>회원 ID</th>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th>연락처</th>
+                        <th>상태</th>
+                        <th>상세</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${userList}">
+                        <td th:text="${user.id}">user01</td>
+                        <td th:text="${user.name}">홍길동</td>
+                        <td th:text="${user.email}">user@test.com</td>
+                        <td th:text="${user.phone}">010-0000-0000</td>
+                        <td>
+                            <span th:if="${user.activation == 1}" class="status status--active">활성</span>
+                            <span th:if="${user.activation != 1}" class="status status--inactive">휴면</span>
+                        </td>
+                        <td class="course-actions">
+                            <button type="button" class="btn btn--primary"
+                                    th:data-user-id="${user.id}"
+                                    onclick="openUserModal(this.dataset.userId)">상세</button>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(userList)}">
+                        <td colspan="6" style="text-align:center; color:#9aa0a6;">등록된 회원이 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a th:if="${currentPage > 1}" class="page-link" th:href="@{/admin/member/userList(page=${currentPage - 1}, size=${pageSize})}">이전</a>
+                <span th:unless="${currentPage > 1}" class="page-link disabled">이전</span>
+
+                <th:block th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                    <a th:if="${i != currentPage}" class="page-link" th:href="@{/admin/member/userList(page=${i}, size=${pageSize})}" th:text="${i}">1</a>
+                    <span th:if="${i == currentPage}" class="page-link active" th:text="${i}">1</span>
+                </th:block>
+
+                <a th:if="${currentPage < totalPages}" class="page-link" th:href="@{/admin/member/userList(page=${currentPage + 1}, size=${pageSize})}">다음</a>
+                <span th:unless="${currentPage < totalPages}" class="page-link disabled">다음</span>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div id="memberModal" class="member-modal-overlay" aria-hidden="true">
+    <section class="member-modal" role="dialog" aria-modal="true">
+        <header class="member-modal__header">
+            <strong>회원 상세</strong>
+            <button type="button" class="member-modal__close" onclick="closeUserModal()">&times;</button>
+        </header>
+        <div class="member-modal__body">
+            <div class="member-modal__field">
+                <label>회원 ID</label>
+                <input id="modal-id" type="text" disabled>
+            </div>
+            <div class="member-modal__field">
+                <label>이름</label>
+                <input id="modal-name" type="text" disabled>
+            </div>
+            <div class="member-modal__field">
+                <label>이메일</label>
+                <input id="modal-email" type="text" disabled>
+            </div>
+            <div class="member-modal__field">
+                <label>연락처</label>
+                <input id="modal-phone" type="text" disabled>
+            </div>
+            <div class="member-modal__field">
+                <label>소개</label>
+                <textarea id="modal-intro" rows="3" disabled></textarea>
+            </div>
+            <div class="member-modal__field">
+                <label>상태</label>
+                <input id="modal-activation" type="text" disabled>
+            </div>
+            <small>조회된 값은 읽기 전용입니다.</small>
+        </div>
+        <div class="member-modal__footer">
+            <button type="button" class="btn btn--ghost" onclick="closeUserModal()">닫기</button>
+        </div>
+    </section>
+</div>
+
+<script>
+    function stripHtml(html) {
+        const tmp = document.createElement("div");
+        tmp.innerHTML = html || "";
+        return tmp.textContent || tmp.innerText || "";
+    }
+
+    function openUserModal(userId) {
+        fetch('/admin/member/userDetail?id=' + encodeURIComponent(userId))
+            .then(function (resp) {
+                return resp.json();
+            })
+            .then(function (data) {
+                document.getElementById('modal-id').value = data.id || '';
+                document.getElementById('modal-name').value = data.name || '';
+                document.getElementById('modal-email').value = data.email || '';
+                document.getElementById('modal-phone').value = data.phone || '';
+                document.getElementById('modal-intro').value = stripHtml(data.intro || '');
+                document.getElementById('modal-activation').value = (data.activation === 1 ? '활성' : '휴면');
+                document.getElementById('memberModal').classList.add('active');
+            })
+            .catch(function () {
+                alert('회원 정보를 불러오지 못했습니다.');
+            });
+    }
+
+    function closeUserModal() {
+        document.getElementById('memberModal').classList.remove('active');
+    }
+
+    document.getElementById('memberModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeUserModal();
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeUserModal();
+        }
+    });
+</script>
+</body>
+</html>
