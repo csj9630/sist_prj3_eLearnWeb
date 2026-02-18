@@ -20,7 +20,7 @@ public class LectureRangeDTO {
 	
 	//검색용 필드
 	private String catId; 
-	private String skillId;
+	private String skillName; //태그처럼 써서 id 말고 이름으로 조회.
 	
 	private int currentPage = 1;
 	private int totalPage = 0;

@@ -1,0 +1,294 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>강의 관리</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+
+    <style>
+      body {
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .form-group label {
+        font-weight: 600;
+        color: #333;
+      }
+
+      /* 상세 보기 모드 스타일 전용 */
+      input[readonly],
+      textarea[readonly],
+      select[disabled] {
+        background-color: #f9f9f9 !important;
+        border: 1px solid #ddd !important;
+        color: #555 !important;
+        cursor: not-allowed;
+      }
+      .skill-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+    </style>
+
+    <script th:inline="javascript">
+        $(document).ready(function () {
+          // 상세 보기 여부 확인 (서버에서 넘어온 값)
+          const isDetail = [[${isDetail ?: false}]];
+
+          // Summernote 초기화
+          $("#summernote").summernote({
+            height: 300,
+            lang: "ko-KR",
+            placeholder: "강의 내용을 입력하세요."
+          });
+
+          // 상세 보기일 경우 Summernote 비활성화
+          if (isDetail) {
+            $("#summernote").summernote('disable');
+          }
+        });
+
+        // 기존 스킬 동기화 로직
+        function syncSkill(selectElement) {
+          const inputElement = selectElement.parentElement.querySelector('input[name="skills"]');
+          inputElement.value = selectElement.value;
+        }
+
+        // 스킬 추가 로직
+        function addSkill() {
+          const container = document.getElementById("skill-area");
+
+      // 타임리프로 넘겨받은 전체 스킬 리스트 (JS 배열로 변환)
+      const existingSkills = [[${existingSkills}]];
+
+      // 셀렉트 박스의 옵션들을 미리 생성
+      let optionsHtml = '<option value="">-- 스킬 선택 --</option>';
+      existingSkills.forEach(skill => {
+          optionsHtml += `<option value="${skill.name}">${skill.name}</option>`;
+      });
+      optionsHtml += '<option value="direct">직접 입력</option>';
+
+      const newRow = document.createElement("div");
+      newRow.className = "input-group mb-2 skill-group";
+      newRow.style.marginTop = "5px";
+      newRow.innerHTML = `
+          <select class="form-control pre-skill" onchange="syncSkill(this)">
+              ${optionsHtml}
+          </select>
+          <input type="text" name="skills" class="form-control" placeholder="스킬을 입력하세요" />
+          <div class="input-group-append">
+              <button class="btn btn-danger" type="button" onclick="this.closest('.skill-group').remove()">-</button>
+          </div>
+      `;
+
+      // 버튼 바로 앞에 삽입
+      container.appendChild(newRow);
+        }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h2 th:text="${isDetail} ? '강의 상세 정보' : '강의 등록/수정'">
+        강의 관리
+      </h2>
+      <hr />
+
+      <div th:if="${ldto?.rejectReason != null}" class="alert alert-danger">
+        <strong>반려 사유:</strong>
+        <span th:text="${ldto.rejectReason}">사유 없음</span>
+      </div>
+
+      <form
+        th:action="${ldto?.lectId == null} ? @{/instructor/lecture/save} : @{/instructor/lecture/modify}"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <input type="hidden" name="lectId" th:value="${ldto?.lectId}" />
+
+        <div class="form-group">
+          <label>강의명</label>
+          <input
+            type="text"
+            name="name"
+            class="form-control"
+            th:value="${ldto?.name}"
+            th:readonly="${isDetail}"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>카테고리</label>
+          <select
+            name="catId"
+            class="form-control"
+            th:disabled="${isDetail}"
+            required
+          >
+            <option value="">-- 카테고리 선택 --</option>
+            <option
+              th:each="cat : ${categoryList}"
+              th:value="${cat.catId}"
+              th:text="${cat.name}"
+              th:selected="${cat.catId == ldto?.catId}"
+            ></option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>강의 요약</label>
+          <input
+            type="text"
+            name="shortint"
+            class="form-control"
+            th:value="${ldto?.shortint}"
+            th:readonly="${isDetail}"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>수강료 (원)</label>
+          <input
+            type="number"
+            name="price"
+            class="form-control"
+            th:value="${ldto?.price}"
+            th:readonly="${isDetail}"
+            min="0"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>스킬 태그 설정</label>
+          <div id="skill-area" class="skill-group-container">
+            <div
+              th:each="mySkill : ${ldto?.skills}"
+              class="input-group mb-2 skill-group"
+            >
+              <select
+                class="form-control pre-skill"
+                onchange="syncSkill(this)"
+                th:disabled="${isDetail}"
+                th:if="${!isDetail}"
+              >
+                <option value="">-- 스킬 선택 --</option>
+                <option
+                  th:each="skill : ${existingSkills}"
+                  th:value="${skill.name}"
+                  th:text="${skill.name}"
+                  th:selected="${skill.name == mySkill}"
+                ></option>
+                <option value="direct">직접 입력</option>
+              </select>
+              <input
+                type="text"
+                name="skills"
+                class="form-control"
+                th:value="${mySkill}"
+                th:readonly="${isDetail}"
+              />
+              <div class="input-group-append" th:if="${!isDetail}">
+                <button
+                  class="btn btn-danger"
+                  type="button"
+                  onclick="this.closest('.skill-group').remove()"
+                >
+                  -
+                </button>
+              </div>
+            </div>
+          </div>
+          <button
+            th:if="${!isDetail}"
+            class="btn btn-success btn-sm"
+            type="button"
+            onclick="addSkill()"
+            style="margin-top: 10px"
+          >
+            + 스킬 추가
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label>강의 상세 소개</label>
+          <textarea
+            id="summernote"
+            name="intro"
+            th:text="${ldto?.intro}"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>썸네일 이미지</label>
+          <div th:if="${ldto?.thumbnail != null}" style="margin-bottom: 10px">
+            <img
+              th:src="|${imgPath}${ldto.thumbnail}|"
+              style="
+                max-width: 200px;
+                border-radius: 4px;
+                display: block;
+                margin-bottom: 5px;
+              "
+            />
+            <p>파일명: <span th:text="${ldto.thumbnail}"></span></p>
+          </div>
+          <input
+            th:if="${!isDetail}"
+            type="file"
+            name="thumbFile"
+            class="form-control"
+          />
+        </div>
+
+        <div class="text-center" style="margin-top: 30px">
+          <th:block th:if="${isDetail}">
+            <a
+              th:href="@{/instructor/lecture/list}"
+              class="btn btn-default btn-lg"
+              >목록으로</a
+            >
+            <a
+              th:href="@{/instructor/lecture/edit(lectId=${ldto.lectId})}"
+              class="btn btn-warning btn-lg"
+              >정보 수정</a
+            >
+            <a
+              th:href="@{/instructor/chapter/manage(lectId=${ldto.lectId})}"
+              class="btn btn-success btn-lg"
+              >목록/영상 관리</a
+            >
+          </th:block>
+
+          <th:block th:unless="${isDetail}">
+            <button type="submit" class="btn btn-primary btn-lg">
+              저장하기
+            </button>
+            <a
+              th:href="@{/instructor/lecture/list}"
+              class="btn btn-default btn-lg"
+              >취소</a
+            >
+          </th:block>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

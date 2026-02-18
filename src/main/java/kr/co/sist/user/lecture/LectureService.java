@@ -9,6 +9,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import kr.co.sist.common.lecture.CommonLectureService;
 import kr.co.sist.user.lecture.board.LectureDomain;
 import kr.co.sist.user.lecture.board.LectureRangeDTO;
 import kr.co.sist.user.lecture.chapter.ChapterService;
@@ -25,6 +26,9 @@ public class LectureService {
 	
 	@Autowired
 	private ChapterService cs;
+	
+	@Autowired
+	private CommonLectureService commonService; // 공통 서비스 주입
 	
 	@Setter
 	private int pageScale;
@@ -45,8 +49,8 @@ public class LectureService {
 	    if("".equals(rangeDTO.getCatId())) { 
 	    	rangeDTO.setCatId(null); 
 	    }
-	    if("".equals(rangeDTO.getSkillId())) {
-	    	rangeDTO.setSkillId(null); 
+	    if("".equals(rangeDTO.getSkillName())) {
+	    	rangeDTO.setSkillName(null); 
 	    }
 	    
 	    
@@ -81,9 +85,9 @@ public class LectureService {
 	    Map<String, Object> map = new HashMap<>();
 	    // lectureMapper 하나로 다 처리
 	    try {
-	    	map.put("categoryList", lm.selectAllCategories());
-			map.put("skillList", lm.selectAllSkills());
-		} catch (PersistenceException | SQLException e) {
+	    	map.put("categoryList", commonService.getAllCategories());
+			map.put("skillList", commonService.getAllSkills());
+		} catch (PersistenceException  e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -278,8 +282,8 @@ public class LectureService {
 	    if (rDTO.getCatId() != null && !rDTO.getCatId().isEmpty()) {
 	        url.append("&catId=").append(rDTO.getCatId());
 	    }
-	    if (rDTO.getSkillId() != null && !rDTO.getSkillId().isEmpty()) {
-	        url.append("&skillId=").append(rDTO.getSkillId());
+	    if (rDTO.getSkillName() != null && !rDTO.getSkillName().isEmpty()) {
+	        url.append("&SkillName=").append(rDTO.getSkillName());
 	    }
 
 	    if (rDTO.getKeyword() != null && !rDTO.getKeyword().isEmpty()) {

@@ -71,18 +71,44 @@
           // 간단하게 alert로 띄우거나, 팀원의 다이얼로그 로직을 활용하세요.
           alert("🚨 반려 사유\n--------------------------\n" + reason);
         }
-      }
+      }//function
+      
+      function changeAvailability(lectId, currentStatus) {
+    	    // 1이면 0으로, 0이면 1로 반전
+    	    const nextStatus = (currentStatus == 1) ? 0 : 1;
+    	    const statusText = (nextStatus == 1) ? "공개" : "비공개";
+
+    	    if(!confirm(`강의를 ${statusText} 상태로 전환하시겠습니까?`)) return;
+
+    	    $.ajax({
+    	        url: '/instructor/lecture/updateAvailability',
+    	        type: 'POST',
+    	        data: { 
+    	            lectId: lectId, 
+    	            availability: nextStatus 
+    	        },
+    	        success: function(response) {
+    	            alert(statusText + " 상태로 변경되었습니다.");
+    	            location.reload(); // 간단하게 페이지 새로고침으로 반영
+    	        },
+    	        error: function() {
+    	            alert("상태 변경 중 오류가 발생했습니다.");
+    	        }
+    	    });
+      }//function
     </script>
   </head>
   <body class="admin-dashboard">
     <div id="header">
-      <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+      <th:block
+        th:replace="~{fragments/instructorHeader :: instructorHeader}"
+      ></th:block>
     </div>
 
     <div class="admin-layout">
       <aside class="admin-sidebar">
         <th:block
-          th:replace="~{fragments/adminSidebar :: adminSidebar}"
+          th:replace="~{fragments/instructorSidebar :: instructorSidebar}"
         ></th:block>
       </aside>
 
@@ -93,7 +119,7 @@
         </header>
 
         <section class="search-filter-wrap">
-          <form th:action="@{/instructor/lectureList}" method="get">
+          <form th:action="@{/instructor/lecture/list}" method="get">
             <select name="availability">
               <option value="">공개 여부(전체)</option>
               <option value="1" th:selected="${sDTO?.availability == '1'}">
@@ -127,7 +153,7 @@
             />
 
             <button type="submit" class="btn btn--primary">검색하기</button>
-            <a th:href="@{/instructor/lectureList}" class="btn btn--ghost"
+            <a th:href="@{/instructor/lecture/list}" class="btn btn--ghost"
               >초기화</a
             >
           </form>
@@ -144,6 +170,7 @@
                 <th>총 수입</th>
                 <th>상태/공개</th>
                 <th>관리</th>
+                <th>상세 보기</th>
               </tr>
             </thead>
             <tbody>
@@ -212,17 +239,23 @@
                     th:href="@{/instructor/lecture/edit(lectId=*{lectId})}"
                     class="btn btn--primary"
                     style="font-size: 12px; padding: 5px 10px"
-                    >수정</a
+                    >강의 수정</a
                   >
                   <button
-                    th:if="*{approval == 2}"
+                    
                     class="btn btn--ghost"
-                    th:onclick="alert([[*{rejectReason}]])"
-                    style="font-size: 12px; padding: 5px 10px"
+                    th:onclick="changeAvailability([[*{lectId}]], [[*{availability}]])"
+				    style="font-size: 12px; padding: 5px 10px"
+				    th:text="*{availability == 1} ? '비공개로 전환' : '공개로 전환'"
                   >
-                    사유
+                    공개 설정
                   </button>
                 </td>
+					<td class="course-actions">
+					    <a th:href="@{/instructor/lecture/detail(lectId=*{lectId})}" 
+					       class="btn btn--ghost" 
+					       style="font-size: 12px; padding: 5px 10px; border: 1px solid #ccc;">상세 보기</a>
+					</td>
               </tr>
             </tbody>
           </table>

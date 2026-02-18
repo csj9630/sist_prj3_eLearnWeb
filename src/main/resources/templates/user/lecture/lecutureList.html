@@ -87,13 +87,13 @@
 
             <div class="col-md-2">
               <label class="form-label small text-muted">스킬</label>
-              <select name="skillId" class="form-select">
+              <select name="skillName" class="form-select">
                 <option value="">전체 스킬</option>
                 <option
                   th:each="skill : ${skillList}"
-                  th:value="${skill.skillId}"
+                  th:value="${skill.name}"
                   th:text="${skill.name}"
-                  th:selected="${skill.skillId == lectureRangeDTO.skillId}"
+                  th:selected="${skill.name == lectureRangeDTO.skillName}"
                 ></option>
               </select>
             </div>
