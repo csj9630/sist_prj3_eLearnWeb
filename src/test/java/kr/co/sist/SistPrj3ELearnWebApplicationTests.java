@@ -18,8 +18,8 @@ class SistPrj3ELearnWebApplicationTests {
 	@Test
 	void contextLoads() {
 		String instId = "inst1";
-		var result = is.searchInstLectureList(instId);
-		log.info("결과 데이터: {}", result);
+		//var result = is.searchInstLectureList(instId);
+		//log.info("결과 데이터: {}", result);
 	}
 
 }

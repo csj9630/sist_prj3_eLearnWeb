@@ -1,0 +1,233 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>강사 - 강의 관리 시스템</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
+    <!-- 다이얼로그 용 라이브러리 -->
+    <link
+      rel="stylesheet"
+      href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+
+    <style>
+      /* 강사 대시보드용 추가 스타일 */
+      .search-filter-wrap {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .search-filter-wrap form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .search-filter-wrap select,
+      .search-filter-wrap input {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      .status-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-weight: bold;
+      }
+      .bg-wait {
+        background-color: #ffeeba;
+        color: #856404;
+      } /* 승인대기 */
+      .bg-pass {
+        background-color: #d4edda;
+        color: #155724;
+      } /* 승인완료 */
+      .bg-reject {
+        background-color: #f8d7da;
+        color: #721c24;
+      } /* 반려 */
+      .text-cash {
+        color: #28a745;
+        font-weight: bold;
+      }
+    </style>
+    <script>
+      function showRejectReason(reason) {
+        if (!reason || reason.trim() === "") {
+          alert("상세 반려 사유가 등록되지 않았습니다.");
+        } else {
+          // 간단하게 alert로 띄우거나, 팀원의 다이얼로그 로직을 활용하세요.
+          alert("🚨 반려 사유\n--------------------------\n" + reason);
+        }
+      }
+    </script>
+  </head>
+  <body class="admin-dashboard">
+    <div id="header">
+      <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+    </div>
+
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <th:block
+          th:replace="~{fragments/adminSidebar :: adminSidebar}"
+        ></th:block>
+      </aside>
+
+      <main class="admin-main">
+        <header class="main-header">
+          <h1>나의 강의 관리</h1>
+          <p>등록한 강의의 승인 상태와 판매 현황을 확인할 수 있습니다.</p>
+        </header>
+
+        <section class="search-filter-wrap">
+          <form th:action="@{/instructor/lectureList}" method="get">
+            <select name="availability">
+              <option value="">공개 여부(전체)</option>
+              <option value="1" th:selected="${sDTO?.availability == '1'}">
+                공개
+              </option>
+
+              <option value="0" th:selected="${sDTO?.availability == '0'}">
+                비공개
+              </option>
+            </select>
+
+            <select name="approval">
+              <option value="">승인 상태(전체)</option>
+              <option value="0" th:selected="${sDTO?.approval == '0'}">
+                반려
+              </option>
+              <option value="1" th:selected="${sDTO?.approval == '1'}">
+                승인완료
+              </option>
+              <option value="2" th:selected="${sDTO?.approval == '2'}">
+                승인대기
+              </option>
+            </select>
+
+            <input
+              type="text"
+              name="keyword"
+              th:value="${sDTO?.keyword}"
+              placeholder="강의명으로 검색..."
+              style="flex-grow: 1"
+            />
+
+            <button type="submit" class="btn btn--primary">검색하기</button>
+            <a th:href="@{/instructor/lectureList}" class="btn btn--ghost"
+              >초기화</a
+            >
+          </form>
+        </section>
+
+        <div class="dashboard-panel">
+          <table class="course-table">
+            <thead>
+              <tr>
+                <th>이미지</th>
+                <th>강의명</th>
+                <th>평점</th>
+                <th>수강생</th>
+                <th>총 수입</th>
+                <th>상태/공개</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:if="${#lists.isEmpty(lectureList)}">
+                <td colspan="7" style="text-align: center; padding: 50px 0">
+                  조회된 강의가 없습니다.
+                </td>
+              </tr>
+
+              <tr
+                class="course-row"
+                th:each="lect : ${lectureList}"
+                th:object="${lect}"
+              >
+                <td class="course-thumb">
+                  <img
+                    th:src="|${imgPath}*{thumbnail}|"
+                    alt="썸네일"
+                    onerror="this.src = '/common/images/default.png'"
+                  />
+                </td>
+                <td class="course-title">
+                  <strong th:text="*{name}">강의명</strong><br />
+                  <small class="text-muted" th:text="*{catName}"
+                    >카테고리</small
+                  >
+                </td>
+                <td>
+                  <span th:text="'⭐ ' + *{reviewAvg}">⭐ 4.5</span>
+                </td>
+                <td th:text="|*{userCount}명|">120명</td>
+                <td>
+                  <span
+                    class="text-cash"
+                    th:text="|${#numbers.formatInteger(lect.cash, 0, 'COMMA')}원|"
+                    >1,000,000원</span
+                  >
+                </td>
+                <td>
+                  <span
+                    th:if="*{approval == 0}"
+                    class="status-badge bg-reject"
+                    th:onclick="showRejectReason([[${lect.rejectReason}]])"
+                    style="cursor: pointer"
+                    title="클릭하여 사유 확인"
+                    >반려</span
+                  >
+                  <span th:if="*{approval == 1}" class="status-badge bg-pass"
+                    >승인</span
+                  >
+                  <span
+                    th:if="*{approval != 1 and approval != 0 }"
+                    class="status-badge bg-wait"
+                    >대기</span
+                  >
+                  <br />
+                  <small th:if="*{availability == 1}" style="color: blue"
+                    >[공개중]</small
+                  >
+                  <small th:unless="*{availability == 1}" style="color: red"
+                    >[비공개]</small
+                  >
+                </td>
+                <td class="course-actions">
+                  <a
+                    th:href="@{/instructor/lecture/edit(lectId=*{lectId})}"
+                    class="btn btn--primary"
+                    style="font-size: 12px; padding: 5px 10px"
+                    >수정</a
+                  >
+                  <button
+                    th:if="*{approval == 2}"
+                    class="btn btn--ghost"
+                    th:onclick="alert([[*{rejectReason}]])"
+                    style="font-size: 12px; padding: 5px 10px"
+                  >
+                    사유
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

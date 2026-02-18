@@ -6,5 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.exceptions.PersistenceException;
 @Mapper
 public interface InstLectureMapper {
-	public List<InstLectureDomain> selectInstLectureList(String instId) throws PersistenceException;
+	public List<InstLectureDomain> selectInstLectureList(InstLectureSearchDTO sdto) throws PersistenceException;
 }

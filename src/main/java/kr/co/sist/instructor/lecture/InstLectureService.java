@@ -17,13 +17,13 @@ public class InstLectureService {
 	
 	/**
 	 * 	사용처 : 강사 강의 관리 - 강의리스트
-	 * @param instId(강사id)
+	 * @param instId(강사id), 검색어, 공개여부, 승인여부
 	 * @return List<InstLectureDomain>
 	 */
-	public List<InstLectureDomain> searchInstLectureList(String instId) {
+	public List<InstLectureDomain> searchInstLectureList(InstLectureSearchDTO sDTO) {
 		List<InstLectureDomain> list = null;
 		try { 
-			list = im.selectInstLectureList(instId);
+			list = im.selectInstLectureList(sDTO);
 		}catch(PersistenceException pe) {
 			pe.printStackTrace();
 		}

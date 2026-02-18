@@ -10,7 +10,7 @@
 	입력값 : instId(강사id)
 	결과값 : List<InstLectureDomain>
 	-->
-	<select id="selectInstLectureList" resultType="instLectureDomain">
+	<select id="selectInstLectureList" parameterType="instLectureSearchDTO" resultType="instLectureDomain">
 		SELECT 
 		    L.THUMBNAIL,
 		    L.LECT_ID AS "lectId",
@@ -28,11 +28,12 @@
 		    (L.PRICE * L.USERCOUNT) AS "cash",
 		    L.AVAILABILITY,
 		    -- UI 요구사항: 승인 상태 및 거절 사유
-		    CASE 
+		    L.APPROVAL,
+		    <!--	CASE 
 		        WHEN L.APPROVAL = 1 THEN '승인'
 		        WHEN L.APPROVAL = 0 AND L.REJECT_REASON IS NOT NULL THEN '거절'
 		        ELSE '대기'
-		    END AS "approvalStatus",
+		    END AS "approvalStatus",-->
 		    nvl(L.REJECT_REASON, '없음' ) AS "rejectReason"
 		    
 		FROM 
@@ -43,6 +44,15 @@
 		    CATEGORY C ON L.CAT_ID = C.CAT_ID
 		WHERE 
 		    L.INST_ID = #{instId}  -- 특정 강사의 강의만 조회
+		    <if test="keyword != null and keyword != ''">
+		        AND L.NAME LIKE '%' || #{keyword} || '%'
+		    </if>
+		    <if test="availability != null and availability != ''">
+       			 AND L.AVAILABILITY = #{availability}
+    		</if>
+    		<if test="approval != null and approval != ''">
+		        AND L.APPROVAL = #{approval}
+		    </if>
 		ORDER BY 
 		    L.REGDATE DESC
 	</select>

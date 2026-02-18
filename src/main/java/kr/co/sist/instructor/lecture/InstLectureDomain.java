@@ -20,6 +20,7 @@ public class InstLectureDomain {
     private int cash;           // 총 수입
     private int availability;   // 공개/비공개 여부
     
-    private String approvalStatus; // "승인", "거절", "대기"
+    private int approval; // "승인" ==1 , "거절"==2, "대기" ==0
+//    private String approval; // "승인", "거절", "대기"
     private String rejectReason;   // 거절 사유
 }//class
