@@ -20,38 +20,44 @@
             </div>
 
             <div th:if="${#lists.isEmpty(purchaseList)}" class="empty-state">
-                <div class="empty-icon"><i class="fas fa-feather-alt"></i></div>
-                <p style="font-size:18px; font-weight:700; margin-bottom:8px;">아직 구매 내역이 없어요</p>
-                <p style="font-size:14px; color:#888; margin-bottom:24px;">나를 성장시켜줄 새로운 지식을 찾아보세요</p>
-                <a href="/" class="btn-outline">강의 리스트 보기</a>
-            </div>
+			    <div class="empty-icon"><i class="fas fa-feather-alt"></i></div>
+			    <p style="font-size:18px; font-weight:700; margin-bottom:8px;">아직 구매 내역이 없어요</p>
+			    <p style="font-size:14px; color:#888; margin-bottom:24px;">나를 성장시켜줄 새로운 지식을 찾아보세요</p>
+			    <a href="/" class="btn-outline">강의 보러가기</a>
+			</div>
 
-            <div th:unless="${#lists.isEmpty(purchaseList)}" style="display: flex; flex-direction: column; gap: 15px;">
-                <th:block th:each="pay : ${purchaseList}">
-                    <div class="cart-item" style="align-items: center;">
-                        <div class="item-left">
-                            <div class="item-thumb">
-                                <img th:src="${pay.lectThumbnail != null ? pay.lectThumbnail : 'https://via.placeholder.com/120x75?text=No+Img'}" 
-                                     onerror="this.src='https://via.placeholder.com/120x75?text=Inflearn'"
-                                     alt="강의 이미지">
-                            </div>
-                            <div class="item-infos">
-                                <div class="item-name" th:text="${pay.lectName}">강의 제목</div>
-                                <div style="font-size:13px; color:#888;">
-                                    <span th:text="${pay.instName}">강사명</span> • 
-                                    <span th:text="${#dates.format(pay.time, 'yyyy.MM.dd')}">2026.01.01</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item-right">
-                            <div class="price-box">
-                                <span class="final" th:text="${#numbers.formatInteger(pay.lectPrice, 0, 'COMMA') + '원'}">19,800원</span>
-                            </div>
-                            <div style="margin-top:5px; font-size:13px; color:#00c471; font-weight:bold;">결제완료</div>
-                        </div>
-                    </div>
-                </th:block>
-            </div>
+			<div th:unless="${#lists.isEmpty(purchaseList)}" class="purchase-table-wrap">
+			    <table class="purchase-table">
+			        <colgroup>
+			            <col width="15%"> <col width="35%"> <col width="15%"> <col width="15%"> <col width="10%"> <col width="10%"> </colgroup>
+			        <thead>
+			            <tr>
+			                <th>이미지</th>
+			                <th>강의명</th>
+			                <th>강사</th>
+			                <th>구매날짜</th>
+			                <th>가격</th>
+			                <th>결제 상태</th>
+			            </tr>
+			        </thead>
+			        <tbody>
+			            <th:block th:each="pay : ${purchaseList}">
+			                <tr>
+			                    <td class="td-thumb">
+			                        <img th:src="${pay.lectThumbnail}" 
+			                             onerror="this.src='https://via.placeholder.com/120x75?text=Inflearn'"
+			                             alt="강의 썸네일">
+			                    </td>
+			                    <td class="td-name" th:text="${pay.lectName}">강의 제목</td>
+			                    <td th:text="${pay.instName}">강사명</td>
+			                    <td th:text="${#dates.format(pay.time, 'yyyy.MM.dd')}">2026.01.01</td>
+			                    <td class="td-price" th:text="${#numbers.formatInteger(pay.lectPrice, 0, 'COMMA') + '원'}">19,800원</td>
+			                    <td><span class="status-badge">결제완료</span></td>
+			                </tr>
+			            </th:block>
+			        </tbody>
+			    </table>
+			</div>
 
         </div>
     </div>

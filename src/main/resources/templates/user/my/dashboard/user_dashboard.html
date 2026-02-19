@@ -78,21 +78,28 @@
                         </div>
                         <th:block th:each="lect : ${recentList}">
                             <div class="course-card">
+                            
                                 <div class="card-thumb">
                                     <img th:src="${lect.thumbnail != null ? lect.thumbnail : 'https://via.placeholder.com/260x145?text=No+Image'}" 
                                          onerror="this.src='https://via.placeholder.com/260x145?text=Inflearn'"
-                                         alt="강의 썸네일">
+                                         alt="강의 썸네일"
+                                         style="height: 100%">
                                 </div>
+                                
                                 <div class="card-body">
                                     <div class="card-title" th:text="${lect.lectName}">강의 제목</div>
+                                    
                                     <div class="progress-bg">
                                         <div class="progress-bar" th:style="'width:' + ${lect.progRate} + '%'"></div>
                                     </div>
+                                    
                                     <div class="card-meta">
                                         <span th:text="|${lect.myChapter}/${lect.totalChapter}강 (${lect.progRate}%)|"></span>
                                         <span th:if="${lect.progRate == 100}" style="color:#00c471; font-weight:bold;">완강</span>
                                         <span th:unless="${lect.progRate == 100}">수강중</span>
                                     </div>
+                                    
+                                    
                                 </div>
                             </div>
                         </th:block>

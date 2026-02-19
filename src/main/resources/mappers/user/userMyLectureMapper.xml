@@ -5,37 +5,41 @@
 
 <mapper namespace="kr.co.sist.user.my.lecture.UserMyLectureMapper">
 
-<select id="selectMyLectureList" parameterType="String" resultType="kr.co.sist.user.my.lecture.UserMyLectureDomain">
-        SELECT 
-            ml.MYLECT_ID AS myLectId,
-            ml.USER_ID AS userId,
-            ml.LECT_ID AS lectId,
-            l.NAME AS lectName,
-            l.THUMBNAIL AS thumbnail,
-            l.SHORTINT AS shortIntro,
-            i.NAME AS instName,
-            ml.REGDATE AS regDate,
-            l.COUNT AS totalChapter,
-            
-            -- 내 수강 챕터 수 (서브쿼리)
-            (SELECT COUNT(*) 
-             FROM MY_CHAPTER mc 
-             JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID 
-             WHERE c.LECT_ID = l.LECT_ID AND mc.USER_ID = ml.USER_ID) AS myChapter,
-             
-            -- 진도율 계산 (0으로 나누기 방지)
-            CASE WHEN l.COUNT > 0 THEN 
-                TRUNC((SELECT COUNT(*) FROM MY_CHAPTER mc 
-                       JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID 
-                       WHERE c.LECT_ID = l.LECT_ID AND mc.USER_ID = ml.USER_ID) 
-                       / l.COUNT * 100)
-            ELSE 0 END AS progRate
-            
-        FROM MY_LECTURE ml
-        JOIN LECTURE l ON ml.LECT_ID = l.LECT_ID
-        JOIN INSTRUCTOR i ON l.INST_ID = i.INST_ID
-        WHERE ml.USER_ID = #{userId}
-        ORDER BY ml.REGDATE DESC
-    </select>
+<select id="selectMyLectureList" resultType="kr.co.sist.user.my.lecture.UserMyLectureDomain">
+    SELECT 
+        ml.MYLECT_ID AS myLectId,
+        ml.USER_ID AS userId,
+        ml.LECT_ID AS lectId,
+        l.NAME AS lectName,
+        '/common/images/lecture_thumb_njwVersion/' || l.THUMBNAIL AS thumbnail,
+        l.SHORTINT AS shortIntro,
+        i.NAME AS instName,
+        ml.REGDATE AS regDate,
+        l.COUNT AS totalChapter,
+        
+        (SELECT COUNT(*) 
+         FROM MY_CHAPTER mc 
+         JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID 
+         WHERE c.LECT_ID = l.LECT_ID AND mc.USER_ID = ml.USER_ID) AS myChapter,
+         
+        CASE WHEN l.COUNT > 0 THEN 
+            TRUNC((SELECT COUNT(*) FROM MY_CHAPTER mc 
+                   JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID 
+                   WHERE c.LECT_ID = l.LECT_ID AND mc.USER_ID = ml.USER_ID) 
+                   / l.COUNT * 100)
+        ELSE 0 END AS progRate
+        
+    FROM MY_LECTURE ml
+    JOIN LECTURE l ON ml.LECT_ID = l.LECT_ID
+    JOIN INSTRUCTOR i ON l.INST_ID = i.INST_ID
+    WHERE ml.USER_ID = #{userId}
+    
+    <if test="title != null and title != ''">
+        AND (UPPER(l.NAME) LIKE '%' || UPPER(#{title}) || '%' 
+      	OR UPPER(i.NAME) LIKE '%' || UPPER(#{title}) || '%')
+    </if>
+    
+    ORDER BY ml.REGDATE DESC
+</select>
 
 </mapper>

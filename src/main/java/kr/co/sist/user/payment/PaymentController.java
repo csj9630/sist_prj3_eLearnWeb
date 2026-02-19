@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -60,25 +61,35 @@ public class PaymentController {
     }//searchMyCart
     
     // 장바구니 항목 삭제
+    @ResponseBody
     @GetMapping("/delLectFromCart")
-    public String delLectFromCart(String lectId, HttpSession session, Model model) {
+    public String delLectFromCart(
+            @RequestParam(value = "lectIds") List<String> lectIds, 
+            HttpSession session) {
+            
         String userId = (String) session.getAttribute("userId");
-        if(userId == null) return "redirect:/user/payment/searchMyCart"; // 방어 로직
-        
-        MyCartDTO dto = new MyCartDTO();
-        dto.setLectId(lectId);
-        List<MyCartDTO> list = new ArrayList<>();
-        list.add(dto);
-        
-        ps.deleteCartLectures(userId, list);
-        
-        return "redirect:/user/payment/searchMyCart"; 
-    }//delLectFromCart
-    
-    // 결제 과정 페이지 (필요 시 사용)
-    @PostMapping("/purchaseLect")
-    public String purchaseLect(String userId, Model model) {
-        return "user/payment/payment_process"; 
+        if (userId == null) {
+            return "fail"; 
+        }//end if
+
+        try {
+            // Service 메소드(deleteCartLectures)가 List<MyCartDTO>를 파라미터로 받으므로 변환
+            List<MyCartDTO> list = new ArrayList<>();
+            for (String lectId : lectIds) {
+                MyCartDTO dto = new MyCartDTO();
+                dto.setLectId(lectId); // ID만 담아서 보냄
+                list.add(dto);
+            }//end for
+
+            // 기존 서비스 메소드 재사용
+            boolean result = ps.deleteCartLectures(userId, list);
+            
+            return result ? "success" : "fail";
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        }//end catch
     }//purchaseLect
     
     // 구매 내역 조회
@@ -89,7 +100,7 @@ public class PaymentController {
         if(userId == null) {
             userId = "user1"; // 테스트용 기본값
             session.setAttribute("userId", userId);
-        }
+        }//end if
 
         List<PayDetailDTO> list = ps.searchPurchaseLectures(userId);
         model.addAttribute("purchaseList", list);

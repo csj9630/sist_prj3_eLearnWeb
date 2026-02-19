@@ -33,7 +33,7 @@ public class UserDashboardController {
         }//end if
 
         //최근 학습 강의(2개)
-        List<UserMyLectureDomain> list = userMyLectureService.searchMyLectureList(userId);
+        List<UserMyLectureDomain> list = userMyLectureService.searchMyLectureList(userId,null);
         //상위 2개만 자르기
         List<UserMyLectureDomain> recentList = list.stream().limit(2).collect(Collectors.toList());
         model.addAttribute("recentList", recentList);
