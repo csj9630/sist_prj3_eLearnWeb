@@ -20,6 +20,14 @@
 		</where>
 	</select>
 	
+	<select id="selectMyReview" parameterType="userReviewDTO" resultType="userReviewDomain">
+	    select  r.review_id, r.score, r.content, r.regdate, r.regip, r.lect_id, r.user_id,
+	            u.name, u.profile
+	    from    review r
+	    join    users u on r.user_id = u.user_id
+	    where   r.lect_id = #{lect_id} and r.user_id = #{user_id}
+	</select>
+	
 	<select id = "selectReviewAvgScore" parameterType = "userReviewRangeDTO" resultType = "double">
 		select	avg(score)
 		from	review

@@ -27,10 +27,10 @@ a:hover{color: #808080; text-decoration: none;}
 <script type="text/javascript">
 $(function() {
 	if(`[[${flag}]]`) {
-		alert("글 삭제 성공");
+		alert("수강평이 삭제되었습니다.");
 		location.href = "/lecture/review/reviewList?lectId=[[${param.lectId}]]&currentPage=[[${param.currentPage}]]";
 	} else {
-		alert("글 삭제 실패");
+		alert("수강평 삭제를 실패하였습니다.");
 		history.back();
 	} // end if ~ else
 }); // ready
