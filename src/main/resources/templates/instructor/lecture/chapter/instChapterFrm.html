@@ -268,60 +268,70 @@
     <div class="manage-container">
     <div class="view-card">
         <div class="form-header">
-            <span class="step-badge">STEP 1</span>
-            <h2 class="title">강의 챕터 구성</h2>
-            <p class="subtitle">학습 흐름에 맞춰 챕터를 추가해 주세요.</p>
+            <span class="step-badge" style="background-color: #e3f2fd; color: #1976d2;">LIST</span>
+            <h2 class="title">강의 커리큘럼</h2>
+            <p class="subtitle">등록된 챕터를 클릭하여 수정할 수 있습니다.</p>
         </div>
-
-        <form id="chapterFrm">
-            <div class="form-group">
-                <label class="form-label">챕터 제목 (Chapter Title)</label>
-                <input type="text" name="chapterName" id="chapterName" class="input-custom" placeholder="예: 자바의 기초와 변수">
+        
+        <div id="chapterListArea" class="mt-4">
+            <div class="test-item-card p-3 mb-3 border rounded shadow-sm">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="badge bg-primary mb-2">Chapter 01</span>
+                        <h5 class="mb-1">자바 기초 문법</h5>
+                        <p class="small text-muted mb-0">유튜브: https://youtu.be/...</p>
+                        <p class="small text-muted">자료: java_basic.pdf</p>
+                    </div>
+                    <div class="btn-group-vertical">
+                        <button class="btn btn-sm btn-outline-primary mb-1">수정</button>
+                        <button class="btn btn-sm btn-outline-danger">삭제</button>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label class="form-label">노출 순서 (Order)</label>
-                <input type="number" name="chapterOrder" id="chapterOrder" class="input-custom" placeholder="숫자만 입력 (예: 1)">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">챕터 개요 (Introduction)</label>
-                <textarea rows="4" name="chapterIntro" id="chapterIntro" class="input-custom" 
-                          style="resize: none; background-color: #fffaf0;" placeholder="이 챕터에서 배울 내용을 간단히 적어주세요."></textarea>
-            </div>
-
-            <div class="action-area">
-                <input type="button" id="addChapter" value="+ 챕터 추가하기" class="btn-main"> 
-                <input type="button" id="updateChapter" value="챕터 정보 수정" class="btn-main" style="display: none;"> 
-                <button type="button" id="cancelChapter" class="btn btn-link w-100 mt-2 text-secondary" style="display: none;">취소</button>
-            </div>
-
-            <input type="hidden" name="lectId" th:value="${param.lectId}">
-            <input type="hidden" id="chapId" name="chapId">
-        </form>
+        </div>
     </div>
 
     <div class="view-card">
         <div class="form-header">
-            <span class="step-badge">LIST</span>
-            <h2 class="title">구성된 챕터 목록</h2>
+            <span class="step-badge">EDIT</span>
+            <h2 class="title" id="formTitle">새 챕터 구성</h2>
         </div>
-        
-        <div id="chapterListArea">
-            <div class="test-item-card p-3 mb-3 border rounded shadow-sm bg-light">
-                <div class="d-flex justify-content-between">
-                    <strong>1장. 자바 기초</strong>
-                    <div>
-                        <button class="btn btn-sm btn-outline-primary me-1">수정</button>
-                        <button class="btn btn-sm btn-outline-danger">삭제</button>
-                    </div>
+
+        <form id="chapterFrm" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">챕터 제목</label>
+                <input type="text" name="title" id="title" class="input-custom" placeholder="챕터 명을 입력하세요">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">유튜브 강의 링크 (URL)</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-youtube text-danger"></i></span>
+                    <input type="text" name="ytLink" id="ytLink" class="input-custom border-start-0" placeholder="https://www.youtube.com/embed/...">
                 </div>
-                <p class="small text-muted mt-1 mb-0">변수와 자료형에 대해 학습합니다.</p>
             </div>
-            <div class="empty-state text-center py-5" style="display:none;">
-                <p class="text-secondary">등록된 챕터가 없습니다.</p>
+
+            <div class="form-group">
+                <label class="form-label">강의 자료 업로드</label>
+                <input type="file" name="uploadFile" id="uploadFile" class="form-control input-custom">
+                <div id="currentFile" class="mt-1 small text-primary"></div> </div>
+
+            <div class="form-group">
+                <label class="form-label">챕터 상세 설명</label>
+                <textarea rows="4" name="description" id="description" class="input-custom" style="resize: none; background-color: #fffaf0;"></textarea>
             </div>
-        </div>
+
+            <div class="action-area mt-4">
+                <input type="button" id="btnAdd" value="챕터 저장하기" class="btn-main w-100"> 
+                <div id="editButtons" style="display: none;">
+                    <input type="button" id="btnUpdate" value="수정 완료" class="btn-main w-100 mb-2"> 
+                    <button type="button" id="btnCancel" class="btn btn-link w-100 text-secondary">작성 취소</button>
+                </div>
+            </div>
+
+            <input type="hidden" name="chapId" id="chapId">
+            <input type="hidden" name="lectId" th:value="${param.lectId}">
+        </form>
     </div>
 </div>
     <div id = "footer">
