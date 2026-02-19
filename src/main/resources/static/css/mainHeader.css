@@ -146,6 +146,38 @@ header {
     gap: 20px;
 }
 
+/* 로그인/로그아웃 버튼 공통 스타일 */
+.header-auth-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+/* 로그인 버튼 - intlearn 초록색 배경 */
+.header-auth-btn.login-btn {
+    background: #1dc078;
+    color: #fff;
+}
+.header-auth-btn.login-btn:hover {
+    background: #17a86a;
+}
+
+/* 로그아웃 버튼 - intlearn 초록색 아웃라인 */
+.header-auth-btn.logout-btn {
+    background: #fff;
+    color: #1dc078;
+    border: 1.5px solid #1dc078;
+}
+.header-auth-btn.logout-btn:hover {
+    background: #e5f9f0;
+}
+
 .header-icon {
     font-size: 20px;
     color: var(--text-black);

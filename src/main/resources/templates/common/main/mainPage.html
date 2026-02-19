@@ -166,31 +166,38 @@
         <!-- Main Content: max-w-screen-xl 적용으로 넓은 레이아웃 -->
         <div class="max-w-screen-xl mx-auto px-4 py-12">
 
-            <!-- Filter Section -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-1">전체 강의</h2>
-                    <p class="text-gray-500 text-sm">성장을 위한 최고의 강의들을 만나보세요.</p>
-                </div>
-
-                <!-- Category Chips -->
-                <div id="category-container" class="flex flex-wrap gap-2">
+            <!-- Category Filter (한줄 아이콘 레이아웃) + 정렬 드롭다운 -->
+            <div class="relative py-4 mb-6 border-b border-gray-200">
+                <!-- 카테고리 버튼 영역 -->
+                <div id="category-container" class="flex items-center justify-center gap-1 overflow-x-auto">
                     <!-- Javascript will populate this -->
                 </div>
-            </div>
 
-            <!-- Sort & Count -->
-            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
-                <div class="flex items-center gap-2">
-                    <span class="font-bold text-gray-800 text-sm">총 <span id="course-count"
-                            class="text-emerald-600">0</span>개</span>
-                </div>
-                <div class="flex gap-4 text-sm text-gray-500">
-                    <button class="font-bold text-gray-900">추천순</button>
-                    <button class="hover:text-gray-900 transition-colors">최신순</button>
-                    <button class="hover:text-gray-900 transition-colors">평점순</button>
+                <!-- 정렬 드롭다운 (우상단) -->
+                <div class="absolute top-3 right-0" style="z-index:10;">
+                    <div id="sort-dropdown" class="relative">
+                        <button id="sort-toggle-btn"
+                            class="flex items-center gap-1 text-sm text-gray-600 font-medium hover:text-gray-900 transition-colors cursor-pointer px-2 py-1">
+                            <span id="sort-label">추천순</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </button>
+                        <div id="sort-menu"
+                            class="hidden absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[100px]">
+                            <button
+                                class="sort-option w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-900 font-bold"
+                                data-sort="recommend">추천순</button>
+                            <button
+                                class="sort-option w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-600"
+                                data-sort="latest">최신순</button>
+                            <button
+                                class="sort-option w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-600"
+                                data-sort="rating">평점순</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <!-- course-count는 숨기되 JS 오류 방지용으로 유지 -->
+            <span id="course-count" class="hidden">0</span>
 
             <!-- Course Grid -->
             <!-- Note: 'overflow-visible' allows the hover card to pop out -->
@@ -294,19 +301,19 @@
         // --- Data (서버에서 주입) ---
         const CATEGORIES = [{ id: 'all', name: '전체' }];
         /*[# th:each="cat : ${categories}"]*/
-        CATEGORIES.push({ id: '[[${cat.catId}]]', name: '[[${cat.catName}]]' });
+        CATEGORIES.push({ id: [[${ cat.catId }]], name: [[${ cat.catName }]] });
         /*[/]*/
 
         const COURSES = [];
         /*[# th:each="c : ${courses}"]*/
         COURSES.push({
-            id: '[[${c.lectId}]]',
-            title: '[[${c.title}]]',
-            instructor: '[[${c.instructor}]]',
+            id: [[${ c.lectId }]],
+            title: [[${ c.title }]],
+            instructor: [[${ c.instructor }]],
             price: [[${ c.price }]],
-            shortint: '[[${c.shortint}]]',
-            category: '[[${c.category}]]',
-            thumbnail: '[[${c.thumbnail}]]',
+            shortint: [[${ c.shortint }]],
+            category: [[${ c.category }]],
+            thumbnail: [[${ c.thumbnail }]],
             usercount: [[${ c.usercount }]],
             rating: [[${ c.rating }]],
             reviewCount: [[${ c.reviewCount }]]
@@ -349,18 +356,37 @@
         };
 
         // --- Render Functions ---
+        /* 카테고리별 Lucide 아이콘 매핑 */
+        const CATEGORY_ICONS = {
+            '전체': 'layout-grid',
+            '데이터베이스': 'database',
+            '교양': 'book-open',
+            '웹 프로그래밍': 'globe',
+            '인공지능': 'bot',
+            '모바일 앱': 'smartphone',
+            '게임 개발': 'gamepad-2',
+            '보안': 'shield-check',
+            '데이터 분석': 'pie-chart',
+            '클라우드': 'cloud',
+            '디자인': 'figma'
+        };
+
         const renderCategories = () => {
             categoryContainer.innerHTML = '';
             CATEGORIES.forEach(cat => {
                 const btn = document.createElement('button');
                 const isActive = state.activeCategory === cat.id;
 
-                const baseClasses = "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border select-none";
-                const activeClasses = "bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-200";
-                const inactiveClasses = "bg-white text-gray-500 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900";
+                /* 한줄 배치용 컴팩트 스타일 */
+                const baseClasses = "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 select-none whitespace-nowrap min-w-[72px]";
+                const activeClasses = "text-emerald-600 font-bold border-b-2 border-emerald-600";
+                const inactiveClasses = "text-gray-500 hover:text-gray-900";
 
                 btn.className = `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
-                btn.innerHTML = cat.name;
+
+                /* 아이콘 + 텍스트 구조 */
+                const iconName = CATEGORY_ICONS[cat.name] || 'layers';
+                btn.innerHTML = `<i data-lucide="${iconName}" class="w-5 h-5 mb-0.5"></i><span>${cat.name}</span>`;
 
                 btn.addEventListener('click', () => {
                     state.activeCategory = cat.id;
@@ -588,6 +614,35 @@
             renderCategories();
             renderCourses();
             setupIntersectionObserver();
+
+            /* 정렬 드롭다운 이벤트 */
+            const sortToggle = document.getElementById('sort-toggle-btn');
+            const sortMenu = document.getElementById('sort-menu');
+            const sortLabel = document.getElementById('sort-label');
+
+            sortToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sortMenu.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('.sort-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    sortLabel.textContent = opt.textContent;
+                    /* 선택된 항목 스타일 변경 */
+                    document.querySelectorAll('.sort-option').forEach(o => {
+                        o.classList.remove('text-gray-900', 'font-bold');
+                        o.classList.add('text-gray-600');
+                    });
+                    opt.classList.add('text-gray-900', 'font-bold');
+                    opt.classList.remove('text-gray-600');
+                    sortMenu.classList.add('hidden');
+                });
+            });
+
+            /* 외부 클릭 시 드롭다운 닫기 */
+            document.addEventListener('click', () => {
+                sortMenu.classList.add('hidden');
+            });
 
             const swiper = new Swiper(".mySwiper", {
                 loop: true,
