@@ -16,13 +16,11 @@ public interface AdminLectureMapper {
 	public int updateApproval(String lectureId);
 	//강의 거절 사유
 	public int rejcetLecture(String lectureId, String reason);
-	
 	public int updateAvailability(String lectureId, int availability);
 	//교육 과목 관리 강의 개수
 	public int selectLectureCount(AdminLectureSearchDTO alsDTO);
 	//강의 관리 강의 개수
 	public int selectNotApprCount(AdminLectureSearchDTO alsDTO);
-	
 	
 	public List<AdminLectureDomain> selectLectureByCategory(AdminLectureSearchDTO alsDTO);
 	public List<AdminNotApprLectureDomain> selectNotApprLectList(AdminLectureSearchDTO alsDTO);
