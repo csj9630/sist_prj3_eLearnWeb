@@ -12,6 +12,17 @@
     <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
     <link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
     <style>
+        /* data-table 6열 레이아웃 오버라이드 (dashboard.css의 4열 고정 너비 해제) */
+        .data-table {
+            table-layout: auto;
+        }
+
+        .data-table th,
+        .data-table td {
+            overflow: visible;
+            white-space: normal;
+        }
+
         .status {
             display: inline-flex;
             align-items: center;

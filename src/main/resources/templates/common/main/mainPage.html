@@ -422,7 +422,7 @@
                     const priceText = course.price === 0 ? '무료' : `₩${formatPrice(course.price)}`;
                     const priceColor = course.price === 0 ? 'text-emerald-600' : 'text-gray-900';
                     const categoryName = CATEGORIES.find(c => c.id === course.category)?.name || '';
-
+                    //instPaymentMapper에서 확인후 이미지추가하기
                     const cardHTML = `
                         <div class="relative group hover:z-50 h-full">
                             <div class="h-full bg-white rounded-xl overflow-hidden border border-gray-100 flex flex-col">

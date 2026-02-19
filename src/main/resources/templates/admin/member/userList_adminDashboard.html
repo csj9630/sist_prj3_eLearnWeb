@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,10 +8,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet" />
+        rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
     <link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
     <style>
+        /* data-table 6열 레이아웃 오버라이드 (dashboard.css의 4열 고정 너비 해제) */
+        .data-table {
+            table-layout: auto;
+        }
+
+        .data-table th,
+        .data-table td {
+            overflow: visible;
+            white-space: normal;
+        }
+
         .status {
             display: inline-flex;
             align-items: center;
@@ -160,163 +172,169 @@
         }
     </style>
 </head>
+
 <body class="admin-dashboard">
-<div id="header">
-    <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
-</div>
+    <div id="header">
+        <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+    </div>
 
-<div class="admin-layout">
-    <aside class="admin-sidebar">
-        <th:block th:replace="~{fragments/adminSidebar :: adminSidebar}"></th:block>
-    </aside>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <th:block th:replace="~{fragments/adminSidebar :: adminSidebar}"></th:block>
+        </aside>
 
-    <main class="admin-content">
-        <section class="course-page">
-            <header class="course-header">
-                <h1>회원 목록</h1>
+        <main class="admin-content">
+            <section class="course-page">
+                <header class="course-header">
+                    <h1>회원 목록</h1>
+                </header>
+
+                <div class="course-toolbar">
+                    <div class="course-filter">
+                        <a class="page-link active" href="userList_adminDashboard.html"
+                            th:href="@{/admin/member/userList}">회원</a>
+                        <a class="page-link" href="instructorList_adminDashboard.html"
+                            th:href="@{/admin/member/instructorList}">강사</a>
+                    </div>
+                    <div style="margin-left:auto; color:#6e6a67; font-size:13px;">
+                        총 <span th:text="${totalCount}">0</span>건
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>회원 ID</th>
+                                <th>이름</th>
+                                <th>이메일</th>
+                                <th>연락처</th>
+                                <th>상태</th>
+                                <th>상세</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user : ${userList}">
+                                <td th:text="${user.id}">user01</td>
+                                <td th:text="${user.name}">홍길동</td>
+                                <td th:text="${user.email}">user@test.com</td>
+                                <td th:text="${user.phone}">010-0000-0000</td>
+                                <td>
+                                    <span th:if="${user.activation == 1}" class="status status--active">활성</span>
+                                    <span th:if="${user.activation != 1}" class="status status--inactive">휴면</span>
+                                </td>
+                                <td class="course-actions">
+                                    <button type="button" class="btn btn--primary" th:data-user-id="${user.id}"
+                                        onclick="openUserModal(this.dataset.userId)">상세</button>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(userList)}">
+                                <td colspan="6" style="text-align:center; color:#9aa0a6;">등록된 회원이 없습니다.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <a th:if="${currentPage > 1}" class="page-link"
+                        th:href="@{/admin/member/userList(page=${currentPage - 1}, size=${pageSize})}">이전</a>
+                    <span th:unless="${currentPage > 1}" class="page-link disabled">이전</span>
+
+                    <th:block th:each="i : ${#numbers.sequence(startPage, endPage)}">
+                        <a th:if="${i != currentPage}" class="page-link"
+                            th:href="@{/admin/member/userList(page=${i}, size=${pageSize})}" th:text="${i}">1</a>
+                        <span th:if="${i == currentPage}" class="page-link active" th:text="${i}">1</span>
+                    </th:block>
+
+                    <a th:if="${currentPage < totalPages}" class="page-link"
+                        th:href="@{/admin/member/userList(page=${currentPage + 1}, size=${pageSize})}">다음</a>
+                    <span th:unless="${currentPage < totalPages}" class="page-link disabled">다음</span>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="memberModal" class="member-modal-overlay" aria-hidden="true">
+        <section class="member-modal" role="dialog" aria-modal="true">
+            <header class="member-modal__header">
+                <strong>회원 상세</strong>
+                <button type="button" class="member-modal__close" onclick="closeUserModal()">&times;</button>
             </header>
-
-            <div class="course-toolbar">
-                <div class="course-filter">
-                    <a class="page-link active" href="userList_adminDashboard.html" th:href="@{/admin/member/userList}">회원</a>
-                    <a class="page-link" href="instructorList_adminDashboard.html" th:href="@{/admin/member/instructorList}">강사</a>
+            <div class="member-modal__body">
+                <div class="member-modal__field">
+                    <label>회원 ID</label>
+                    <input id="modal-id" type="text" disabled>
                 </div>
-                <div style="margin-left:auto; color:#6e6a67; font-size:13px;">
-                    총 <span th:text="${totalCount}">0</span>건
+                <div class="member-modal__field">
+                    <label>이름</label>
+                    <input id="modal-name" type="text" disabled>
                 </div>
+                <div class="member-modal__field">
+                    <label>이메일</label>
+                    <input id="modal-email" type="text" disabled>
+                </div>
+                <div class="member-modal__field">
+                    <label>연락처</label>
+                    <input id="modal-phone" type="text" disabled>
+                </div>
+                <div class="member-modal__field">
+                    <label>소개</label>
+                    <textarea id="modal-intro" rows="3" disabled></textarea>
+                </div>
+                <div class="member-modal__field">
+                    <label>상태</label>
+                    <input id="modal-activation" type="text" disabled>
+                </div>
+                <small>조회된 값은 읽기 전용입니다.</small>
             </div>
-
-            <div class="table-wrap">
-                <table class="data-table">
-                    <thead>
-                    <tr>
-                        <th>회원 ID</th>
-                        <th>이름</th>
-                        <th>이메일</th>
-                        <th>연락처</th>
-                        <th>상태</th>
-                        <th>상세</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="user : ${userList}">
-                        <td th:text="${user.id}">user01</td>
-                        <td th:text="${user.name}">홍길동</td>
-                        <td th:text="${user.email}">user@test.com</td>
-                        <td th:text="${user.phone}">010-0000-0000</td>
-                        <td>
-                            <span th:if="${user.activation == 1}" class="status status--active">활성</span>
-                            <span th:if="${user.activation != 1}" class="status status--inactive">휴면</span>
-                        </td>
-                        <td class="course-actions">
-                            <button type="button" class="btn btn--primary"
-                                    th:data-user-id="${user.id}"
-                                    onclick="openUserModal(this.dataset.userId)">상세</button>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(userList)}">
-                        <td colspan="6" style="text-align:center; color:#9aa0a6;">등록된 회원이 없습니다.</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="pagination" th:if="${totalPages > 1}">
-                <a th:if="${currentPage > 1}" class="page-link" th:href="@{/admin/member/userList(page=${currentPage - 1}, size=${pageSize})}">이전</a>
-                <span th:unless="${currentPage > 1}" class="page-link disabled">이전</span>
-
-                <th:block th:each="i : ${#numbers.sequence(startPage, endPage)}">
-                    <a th:if="${i != currentPage}" class="page-link" th:href="@{/admin/member/userList(page=${i}, size=${pageSize})}" th:text="${i}">1</a>
-                    <span th:if="${i == currentPage}" class="page-link active" th:text="${i}">1</span>
-                </th:block>
-
-                <a th:if="${currentPage < totalPages}" class="page-link" th:href="@{/admin/member/userList(page=${currentPage + 1}, size=${pageSize})}">다음</a>
-                <span th:unless="${currentPage < totalPages}" class="page-link disabled">다음</span>
+            <div class="member-modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeUserModal()">닫기</button>
             </div>
         </section>
-    </main>
-</div>
+    </div>
 
-<div id="memberModal" class="member-modal-overlay" aria-hidden="true">
-    <section class="member-modal" role="dialog" aria-modal="true">
-        <header class="member-modal__header">
-            <strong>회원 상세</strong>
-            <button type="button" class="member-modal__close" onclick="closeUserModal()">&times;</button>
-        </header>
-        <div class="member-modal__body">
-            <div class="member-modal__field">
-                <label>회원 ID</label>
-                <input id="modal-id" type="text" disabled>
-            </div>
-            <div class="member-modal__field">
-                <label>이름</label>
-                <input id="modal-name" type="text" disabled>
-            </div>
-            <div class="member-modal__field">
-                <label>이메일</label>
-                <input id="modal-email" type="text" disabled>
-            </div>
-            <div class="member-modal__field">
-                <label>연락처</label>
-                <input id="modal-phone" type="text" disabled>
-            </div>
-            <div class="member-modal__field">
-                <label>소개</label>
-                <textarea id="modal-intro" rows="3" disabled></textarea>
-            </div>
-            <div class="member-modal__field">
-                <label>상태</label>
-                <input id="modal-activation" type="text" disabled>
-            </div>
-            <small>조회된 값은 읽기 전용입니다.</small>
-        </div>
-        <div class="member-modal__footer">
-            <button type="button" class="btn btn--ghost" onclick="closeUserModal()">닫기</button>
-        </div>
-    </section>
-</div>
-
-<script>
-    function stripHtml(html) {
-        const tmp = document.createElement("div");
-        tmp.innerHTML = html || "";
-        return tmp.textContent || tmp.innerText || "";
-    }
-
-    function openUserModal(userId) {
-        fetch('/admin/member/userDetail?id=' + encodeURIComponent(userId))
-            .then(function (resp) {
-                return resp.json();
-            })
-            .then(function (data) {
-                document.getElementById('modal-id').value = data.id || '';
-                document.getElementById('modal-name').value = data.name || '';
-                document.getElementById('modal-email').value = data.email || '';
-                document.getElementById('modal-phone').value = data.phone || '';
-                document.getElementById('modal-intro').value = stripHtml(data.intro || '');
-                document.getElementById('modal-activation').value = (data.activation === 1 ? '활성' : '휴면');
-                document.getElementById('memberModal').classList.add('active');
-            })
-            .catch(function () {
-                alert('회원 정보를 불러오지 못했습니다.');
-            });
-    }
-
-    function closeUserModal() {
-        document.getElementById('memberModal').classList.remove('active');
-    }
-
-    document.getElementById('memberModal').addEventListener('click', function (e) {
-        if (e.target === this) {
-            closeUserModal();
+    <script>
+        function stripHtml(html) {
+            const tmp = document.createElement("div");
+            tmp.innerHTML = html || "";
+            return tmp.textContent || tmp.innerText || "";
         }
-    });
 
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            closeUserModal();
+        function openUserModal(userId) {
+            fetch('/admin/member/userDetail?id=' + encodeURIComponent(userId))
+                .then(function (resp) {
+                    return resp.json();
+                })
+                .then(function (data) {
+                    document.getElementById('modal-id').value = data.id || '';
+                    document.getElementById('modal-name').value = data.name || '';
+                    document.getElementById('modal-email').value = data.email || '';
+                    document.getElementById('modal-phone').value = data.phone || '';
+                    document.getElementById('modal-intro').value = stripHtml(data.intro || '');
+                    document.getElementById('modal-activation').value = (data.activation === 1 ? '활성' : '휴면');
+                    document.getElementById('memberModal').classList.add('active');
+                })
+                .catch(function () {
+                    alert('회원 정보를 불러오지 못했습니다.');
+                });
         }
-    });
-</script>
+
+        function closeUserModal() {
+            document.getElementById('memberModal').classList.remove('active');
+        }
+
+        document.getElementById('memberModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeUserModal();
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeUserModal();
+            }
+        });
+    </script>
 </body>
+
 </html>

@@ -118,12 +118,12 @@ public class CryptoUtil {
     }
 
     /**
-     * 안전한 문자열 복호화 (실패 시 null 반환)
+     * 안전한 문자열 복호화 (실패 시 원본 반환)
      * - 복호화 실패해도 예외 발생 X
      * - 평문 데이터, 키 불일치 등 모든 경우에 안전하게 동작
      *
      * @param encryptedText 복호화할 암호문 (또는 평문)
-     * @return 복호화된 평문, 실패 시 null 반환
+     * @return 복호화된 평문, 실패 시 원본 그대로 반환
      */
     public String decryptSafe(String encryptedText) {
         if (encryptedText == null || encryptedText.isEmpty()) {
@@ -132,11 +132,11 @@ public class CryptoUtil {
         try {
             return createEncryptor().decrypt(encryptedText);
         } catch (Exception e) {
-            // 복호화 실패 시 null 반환 (평문이거나 키 불일치)
+            // 복호화 실패 시 원본 반환 (평문이거나 키 불일치)
             System.err.println("[CryptoUtil] 복호화 실패 - key length: " + key.length()
                     + ", 입력 데이터 길이: " + encryptedText.length()
                     + ", 에러: " + e.getMessage());
-            return null;
+            return encryptedText;
         }
     }
 
