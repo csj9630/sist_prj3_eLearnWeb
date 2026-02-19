@@ -26,13 +26,14 @@ $(function(){
     	<th:block th:replace="~{fragments/adminSidebar :: adminSidebar}"></th:block>
     </aside>
 
-    <main class="admin-content" aria-label="��ú��� ������">
+    <main class="admin-content">
       <!-- 상단 section -->
-      <section class="stat-grid" aria-label="��� ��ǥ">
+      <section class="stat-grid">
       	<!-- 총 강사 수 -->
         <article class="stat-card">
           <div class="stat-header">
             <h2 class="stat-label">총 강사 수</h2>
+            <a th:href="@{/admin/dashboard}"><span class="more-link">더보기</span></a>
           </div>
           <div class="stat-value" th:text="${instCnt}+'명'"></div>
         </article>
@@ -40,6 +41,7 @@ $(function(){
         <article class="stat-card">
           <div class="stat-header">
             <h2 class="stat-label">총 강의 수</h2>
+            <a th:href="@{/admin/lecture/searchAllLect}"><span class="more-link">더보기</span></a>
           </div>
           <div class="stat-value" th:text="${lectCnt}+'개'"></div>
         </article>
@@ -48,6 +50,7 @@ $(function(){
         <article class="stat-card">
           <div class="stat-header">
             <h2 class="stat-label">총 수강생 수</h2>
+            <a th:href="@{/admin/dashboard}"><span class="more-link">더보기</span></a>
           </div>
           <div class="stat-value" th:text="${userCnt}+'명'"></div>
         </article>
@@ -56,64 +59,11 @@ $(function(){
         <article class="stat-card">
           <div class="stat-header">
             <h2 class="stat-label">강의 총 수익</h2>
+            <a th:href="@{/admin/payment/searchPayPriceSum}"><span class="more-link">더보기</span></a>
           </div>
-          <div class="stat-value" th:text="${totalProfit}+'원'"></div>
+          <div class="stat-value" th:text="${#numbers.formatInteger(totalProfit, 3, 'COMMA')}+'원'"></div>
         </article>
       </section>
-	  
-	  <!-- 하단 section -->
-      <!-- <section class="dashboard-panel">
-      	강의 수익 영역
-        <div class="panel-header">
-          <div>
-            <h2>강의 수익</h2>
-          </div>
-          <div class="panel-controls">
-            <select class="panel-select" onchange="">
-              강사 select 해서 option에 생성 
-              <th:block th:each="lectProfit:${lectProfitList}">
-              <option th:value="${lectProfit.inst_name}" th:text="${lectProfit.inst_name}"></option>
-            </select>
-            강의 총 수익
-            <div class="pill">
-              <span class="pill-value" th:text="${totalProfit}+'원'"></span>
-            </div>
-            나의 수익
-            <div class="pill">
-              <span class="pill-value">0</span>
-            </div>
-            강사별 수익
-            <div class="pill">
-              <span class="pill-value">0</span>
-            </div>
-          </div>
-        </div>
-
-		초기 화면은 전체 강사를 날짜 순서대로 표시하고 추후에 option 선택되는거에 따라 바뀌게 설정
-        <div class="panel-body">
-          <div class="table-wrap">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th scope="col">날짜</th>
-                  <th scope="col">강의이름</th>
-                  <th scope="col">강사</th>
-                  <th scope="col">실제 수입</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr th:each="lectProfit:${lectProfitList}">
-                  <td th:text="${#dates.format(lectProfit.time, 'yyyy-MM-dd')}"></td>
-                  <td th:text="${lectProfit.lect_name}"></td>
-                  <td th:text="${lectProfit.inst_name}"></td>
-                  <td th:text="${lectProfit.inst_profit}"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        
-      </section> -->
 
       <section class="dashboard-panel" id="top-metrics">
         <div class="panel-header">
@@ -131,7 +81,7 @@ $(function(){
                   <p class="highlight-name" th:text="${payList[0].lect_name}"></p>
                 </div>
               </div>
-              <div class="highlight-value" th:text="${payList[0].estimated_profit}"></div>
+              <div class="highlight-value" th:text="${#numbers.formatInteger(payList[0].estimated_profit, 3, 'COMMA')+'원'}"></div>
               <p class="highlight-meta" th:text="'총 수강생 ' + ${payList[0].user_count} + '명'"> </p>
             </article>
 
@@ -154,7 +104,7 @@ $(function(){
                 <tr>
                   <th>순위</th>
                   <th>이름</th>
-                  <th>구분</th>
+                  <th>수익</th>
                   <th>수강생 수</th>
                 </tr>
               </thead>
@@ -162,17 +112,15 @@ $(function(){
                 <tr th:each="pay , i : ${payList}">
                   <td th:text="${i.count}"></td>
                   <td th:text="${pay.lect_name}"></td>
-                  <td th:text="${pay.estimated_profit}"></td>
+                  <td th:text="${#numbers.formatInteger(pay.estimated_profit, 3, 'COMMA')}+'원'"></td>
                   <td th:text="${pay.user_count}"></td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </div>
-      </section>
-    </main>
-    
-  </div>
+	    </section>
+	  </main>
+     </div>
+     
 </body>
-
 </html>

@@ -17,9 +17,14 @@ public class AdminLectureService {
 		return alm.selectAllCategory();
 	}
 	
-	//비공개 상태 변경
+	//공개 상태로 변경
+	public int ableLecture(String lectureId) throws PersistenceException{
+		return alm.updateOpen(lectureId);
+	}
+	
+	//비공개 상태로 변경
 	public int disableLecture(String lectureId) throws PersistenceException{
-		return alm.updateStatus(lectureId);
+		return alm.updateStop(lectureId);
 	}
 
 	//교육 과목 관리 데이터
@@ -27,9 +32,19 @@ public class AdminLectureService {
 		return alm.selectLectureByCategory(alsDTO);
 	}
 	
+	//교육 과목 관리 강의 개수
+	public int countLectureByCategory(AdminLectureSearchDTO alsDTO) throws PersistenceException {
+		return alm.selectLectureCount(alsDTO);
+	}
+	
 	//강의 관리 데이터
 	public List<AdminNotApprLectureDomain> searchNotApprLectList(AdminLectureSearchDTO alsDTO) throws PersistenceException {
 		return alm.selectNotApprLectList(alsDTO);
+	}
+	
+	//강의 관리 강의 개수
+	public int countNotApprLect(AdminLectureSearchDTO alsDTO) throws PersistenceException {
+		return alm.selectNotApprCount(alsDTO);
 	}
 	
 	//강의 관리 상세 데이터

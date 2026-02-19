@@ -84,7 +84,7 @@ $(function(){
                   </tr>
                   <tr>
                     <th scope="row">가격</th>
-                    <td th:text="${lecture.price}"></td>
+                    <td th:text="${#numbers.formatInteger(lecture.price, 3, 'COMMA')+'원'}"></td>
                     <th scope="row">수강생</th>
                     <td colspan="3" th:text="${lecture.user_count}"></td>
                   </tr>

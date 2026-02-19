@@ -26,10 +26,35 @@ where l.approval=1
 <if test="categoryName != null and categoryName != ''">
 and c.name = #{categoryName}
 </if>
+offset #{offset} rows fetch next #{size} rows only
 </select>
 
+<!-- 교육 과목 관리 강의 수 -->
+<select id="selectLectureCount" parameterType="lectSearchDTO" resultType="int">
+select count(*)
+from lecture l
+join review r
+on l.lect_id=r.lect_id
+join instructor i
+on i.inst_id=l.inst_id
+join category c
+on c.cat_id=l.cat_id
+where l.approval=1
+<if test="categoryName != null and categoryName != ''">
+and c.name = #{categoryName}
+</if>
+</select>
+
+<!-- 공개 버튼 클릭 시 중지 상태로 변경 -->
+<update id="updateOpen" parameterType="String">
+update lecture
+set availability=1
+where lect_id = #{lectureId}
+and availability=0
+</update>
+
 <!-- 중지 버튼 클릭 시 중지 상태로 변경 -->
-<update id="updateStatus" parameterType="String">
+<update id="updateStop" parameterType="String">
 update lecture
 set availability=0
 where lect_id = #{lectureId}
@@ -50,6 +75,22 @@ where l.approval=0
 and c.name = #{categoryName}
 </if>
 order by regdate desc
+offset #{offset} rows fetch next #{size} rows only
+</select>
+
+<!-- 강의 관리 페이지 등록일 최신순으로 정렬 -->
+<select id="selectNotApprCount" parameterType="lectSearchDTO" resultType="int">
+select count(*)
+from lecture l
+join instructor i
+on i.inst_id=l.inst_id
+join category c
+on c.cat_id = l.cat_id
+where l.approval=0
+<if test="categoryName != null and categoryName != ''">
+and c.name = #{categoryName}
+</if>
+order by l.regdate desc
 </select>
 
 <!-- 강의 관리 상세 페이지-상세 정보 -->

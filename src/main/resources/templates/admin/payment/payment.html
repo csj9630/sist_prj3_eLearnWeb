@@ -14,6 +14,42 @@
 $(function(){
 
 });
+
+function profitByInst(){
+	var instName=$(".panel-select").val();
+	
+	$.ajax({
+		url:"/admin/payment/searchInstProfit",
+		type:"GET",
+		data:{instName: instName},
+		dataType:"json",
+		error:function(xhr){
+			alert(xhr.status);
+		},
+		success:function(data){
+			var tbody=$("#paymentTableBody");
+			tbody.empty();
+			
+			if(!data || data.length === 0) {
+				tbody.append('<tr><td style="text-align: center;" colspan="4">데이터가 없습니다.</td></tr>');
+				return;
+			}
+			
+			data.forEach(function(lect){
+				var row=`
+                <tr>
+                  <td>${lect.time ? lect.time.substring(0,10) : ''}</td>
+                  <td>${lect.lect_name}</td>
+                  <td>${lect.inst_name}</td>
+                  <td>${lect.inst_profit}</td>
+                </tr>
+			`;
+			tbody.append(row)
+			});
+		}//success
+	});
+	
+}
 </script>
 </head>
 <body class="admin-dashboard">
@@ -34,19 +70,17 @@ $(function(){
         </header>
         
           <div class="panel-controls">
-            <select class="panel-select" onchange="">
+            <select class="panel-select" onchange="profitByInst()">
               <option value="">전체</option>
-              <th:block th:each="lectProfit:${lectProfitList}">
-                <option th:value="${lectProfit.inst_name}" th:text="${lectProfit.inst_name}"></option>
-              </th:block>
+              <option th:each="inst : ${instructor}" th:value="${inst}" th:text="${inst}"></option>
             </select>
             강의 총 수익
             <div class="pill">
-              <span class="pill-value" th:text="${totalProfit} + '원'"></span>
+              <span class="pill-value" th:text="${#numbers.formatInteger(totalProfit, 3, 'COMMA')}+'원'"></span>
             </div>
-            나의 수익
+            관리자 수익
             <div class="pill">
-              <span class="pill-value">0</span>
+              <span class="pill-value" th:text="${#numbers.formatInteger(adminProfit, 3, 'COMMA')}+'원'"></span>
             </div>
           </div>
         </div>
@@ -62,12 +96,12 @@ $(function(){
                   <th scope="col">실제 수입</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="paymentTableBody">
                 <tr th:each="lectProfit:${lectProfitList}">
                   <td th:text="${#dates.format(lectProfit.time, 'yyyy-MM-dd')}"></td>
                   <td th:text="${lectProfit.lect_name}"></td>
                   <td th:text="${lectProfit.inst_name}"></td>
-                  <td th:text="${lectProfit.inst_profit}"></td>
+                  <td th:text="${#numbers.formatInteger(lectProfit.inst_profit, 3, 'COMMA')}+'원'"></td>
                 </tr>
               </tbody>
             </table>

@@ -12,10 +12,22 @@ public class AdminPaymentService {
 	@Autowired(required=false)
 	private AdminPaymentMapper apm;
 	
-	public List<LectProfitDomain> getLectProfit() throws PersistenceException {
+	public List<String> getAllInst() throws PersistenceException {
+		return apm.selectAllInst();
+	}
+	
+	public int getTotalProfit() throws PersistenceException {
+		return apm.selectAllProfit();
+	}//getTotalProfit
+	
+	public int getAdminProfit() throws PersistenceException {
+		return apm.selectAdminProfit();
+	}
+	
+	public List<LectProfitDomain> getLectProfit(AdminPaymentSearchDTO apsDTO) throws PersistenceException {
 		List<LectProfitDomain> lectProfitList;
 		
-		lectProfitList=apm.selectLectProfit();
+		lectProfitList=apm.selectLectProfit(apsDTO);
 		return lectProfitList;
 	}//getLectProfit
 }

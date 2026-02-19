@@ -134,6 +134,46 @@
   border: 0;
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 13px;
+  color: #7b8088;
+}
+
+.page-list {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #7b8088;
+  background: transparent;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.page-btn:hover {
+  color: #3a3f46;
+  background: #eef1f5;
+}
+
+.page-btn.is-active {
+  background: #0b3b73;
+  color: #fff;
+}
+
 @media (max-width: 1200px) {
   .course-table thead th:nth-child(1),
   .course-table tbody td:nth-child(1) {

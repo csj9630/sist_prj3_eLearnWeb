@@ -6,6 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface AdminPaymentMapper {
-	
-	public List<LectProfitDomain> selectLectProfit();
+	//강사명
+	public List<String> selectAllInst();
+	//강의 총 수익
+	public int selectAllProfit();
+	//관리자 수익
+	public int selectAdminProfit();
+	public List<LectProfitDomain> selectLectProfit(AdminPaymentSearchDTO apsDTO);
 }

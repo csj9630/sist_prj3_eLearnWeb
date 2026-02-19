@@ -12,32 +12,41 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script type="text/javascript">
 $(function(){
-
+	$(document).on("click", ".page-btn", function(){
+		var page = $(this).data("page");
+		if (page) {
+			lectByCategory(page);
+		}
+	});
 });
 
 //카테고리 누를 때 변경하는 테이블 데이터
-function lectByCategory(){
+function lectByCategory(page){
 	var categoryName=$("#category").val();
+	var size=5;
 	
 	$.ajax({
 		url:"/admin/lecture/searchNotApprCategoryLect",
 		type:"GET",
-		data:{categoryName: categoryName},
+		data:{categoryName: categoryName, page: page, size: size},
 		dataType:"json",
 		error:function(xhr){
 			alert(xhr.status);
 		},
 		success:function(data){
+			console.log(data);
 			var tbody = $("#lectureTableBody");
+			var pagination = $("#pagination");
 			tbody.empty();
+			pagination.empty();
 			
 			//데이터가 없으면 메시지 출력
-			if (!data || data.length === 0) {
+			if (!data || !data.list || data.list.length === 0) {
 			    tbody.append('<tr><td style= "text-align : center;" colspan="5">데이터 없음</td></tr>');
 			    return;
 			}
 			
-			data.forEach(function(lect){
+			data.list.forEach(function(lect){
 				var dateStr = lect.regDate ? lect.regDate.substring(0, 10) : '';
 			    var statusHtml = (lect.approval == 1)
 			      ? '<span>승인</span>'
@@ -60,6 +69,28 @@ function lectByCategory(){
 			    `;
 			    tbody.append(row);
 			  });
+			
+			var currentPage = Number(data.page) || 1;
+			var totalPage = Number(data.totalPage) || 1;
+			
+			if(totalPage >= 1) {
+				//이전
+				if (currentPage > 1) {
+				    pagination.append(`<a href="searchNotApprLect?page=${currentPage - 1}&size=${size}" class="page-btn" data-page="${currentPage - 1}">&lsaquo; 이전</a>`);
+				}
+				
+				var pageList = '<span class="page-list">';
+				for (let p = 1; p <= totalPage; p++) {
+			    	pageList += `<a href="searchNotApprLect?page=${currentPage}&size=${size}" class="page-btn ${p === currentPage ? 'is-active' : ''}" data-page="${p}">${p}</a>`;
+			    }
+				  pageList += '</span>';
+				  pagination.append(pageList);
+
+			  	// 다음
+			  	if (currentPage < totalPage) {
+			    	pagination.append(`<a href="searchNotApprLect?page=${currentPage + 1}&size=${size}" class="page-btn">다음 &rsaquo;</a>`);
+			  	}//end if
+			}//end if
 		}//success
 	});
 }
@@ -120,6 +151,25 @@ function lectByCategory(){
             </tr>
           </tbody>
         </table>
+
+		<nav class="pagination" id="pagination">
+          <a class="page-btn" th:if="${page > 1}"
+             th:href="@{/admin/lecture/searchNotApprLect(page=${page-1}, size=${size})}">
+            &lsaquo; 이전
+          </a>
+          <span class="page-list">
+            <a class="page-btn"
+               th:each="p : ${#numbers.sequence(1, totalPage)}"
+               th:text="${p}"
+               th:href="@{/admin/lecture/searchNotApprLect(page=${p}, size=${size})}"
+               th:classappend="${p == page} ? 'is-active' : ''"></a>
+          </span>
+          <a class="page-btn" th:if="${page < totalPage}"
+             th:href="@{/admin/lecture/searchNotApprLect(page=${page+1}, size=${size})}">
+            다음 &rsaquo;
+          </a>
+        </nav>
+        
       </section>
     </main>
   </div>

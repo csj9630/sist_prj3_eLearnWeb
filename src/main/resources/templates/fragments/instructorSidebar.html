@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>강사용 사이드바</title>
+<script type="text/javascript">
+$(function(){
+});
+</script>
+</head>
+<body>
+<th:block th:fragment="instructorSidebar">
+  <link rel="stylesheet" th:href="@{/common/css/instructor-sidebar.css}" />
+    <nav class="inst-sidebar-nav">
+      <ul class="inst-sidebar-list">
+        <li><a class="inst-sidebar-link" th:href="@{/instructor/dashboard}">대시보드</a></li>
+        <li><a class="inst-sidebar-link" th:href="@{/instructor/dashboard}">강의 관리</a></li>
+        <li><a class="inst-sidebar-link" th:href="@{/instructor/dashboard}">1:1 문의 관리</a></li>
+        <li><a class="inst-sidebar-link" th:href="@{/admin/dashboard}">임시 관리자</a></li>
+      </ul>
+    </nav>
+</th:block>
+</body>
+</html>
