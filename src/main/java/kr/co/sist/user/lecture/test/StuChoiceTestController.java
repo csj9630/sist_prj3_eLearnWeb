@@ -18,4 +18,5 @@ public class StuChoiceTestController {
 			
 			return "user/lecture/test/userTestChoiceFrm";
 		}// instTestFrm
+		
 }

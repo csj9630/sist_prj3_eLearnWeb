@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 @Service
 public class StuTestService {
 	
@@ -12,8 +13,8 @@ public class StuTestService {
 	private StuTestMapper stMapper;
 	
 	//사용자에게 시험 문제 보여주기
-	public List<StuTestDomain> searchTest(String lectId) {
-		List<StuTestDomain> stDomainList = null;
+	public List<StuTestViewDomain> searchTest(String lectId) {
+		List<StuTestViewDomain> stDomainList = null;
 		try {
 			stDomainList = stMapper.selectUserTest(lectId);
 		} catch (PersistenceException pe) {
@@ -22,24 +23,45 @@ public class StuTestService {
 		return stDomainList;
 	}//searchTest
 	
-	//시험문제 - 삭제
-	public int removeTest(String testId) {
-		int result = 0;
-		
-		return result;
-	}
 	
-	//시험문제 - 수정
-	public int modifyTest(StuTestDTO stDTO) {
-		int result = 0;
+	// 사용자 시험 응시 유무 확인
+		public boolean searchCheckTest(StuCheckTestDTO sctDTO) {
+			boolean flag = false;
+			try {
+				if(stMapper.selectCheckTest(sctDTO) != 0) {
+					flag = true;
+				}
+			} catch (PersistenceException pe) {
+				pe.printStackTrace();
+			} // end catch
+			return flag;
+		}// searchCheckTest
 		
-		return result;
-	}
-	//시험문제 - 생성
-	public int writeTest(StuTestDTO stDTO) {
-		int result = 0;
+		// 시험 응시 기록 리셋
+		@Transactional
+		public boolean resetTestRecord(StuCheckTestDTO sctDTO) {
+			boolean flag = false;
+			try {
+				stMapper.deleteTestExamination(sctDTO); 
+				stMapper.deleteMyTest(sctDTO); 
+				
+				flag = true;
+				
+			} catch (PersistenceException pe) {
+				pe.printStackTrace();
+			} // end catch
+			return flag;
+		}// resetTestRecord
 		
-		return result;
-	}
+		//사용자 응시 기록 존재할 경우 과거 체크했던 정답 및 데이터 가져오기.
+		public List<StuTestExplanationDomain> searchExplanation(StuCheckTestDTO sctDTO) {
+		    List<StuTestExplanationDomain> list = null;
+		    try {
+		        list = stMapper.selectUserExplanation(sctDTO);
+		    } catch (PersistenceException pe) {
+		        pe.printStackTrace();
+		    }
+		    return list;
+		}
 	
-}
+}//StuTestService

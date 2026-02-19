@@ -10,14 +10,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class InstTestService {
 
-	private final TempController tempController;
 
 	@Autowired(required = false)
 	private InstTestMapper iMapper;
-
-	InstTestService(TempController tempController) {
-		this.tempController = tempController;
-	}
 
 	// 시험문제 페이지 조회 ( 모든 시험 문제 조회 )
 	public List<InstTestDomain> searchTest(InstTestViewDTO itvDTO) {

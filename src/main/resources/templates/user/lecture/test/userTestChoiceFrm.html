@@ -2,40 +2,215 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-<!-- bootstrap CDN 시작-->
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-	crossorigin="anonymous">
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-	integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-	crossorigin="anonymous"></script>
-<!-- bootstrap CDN 끝-->
+<title>온라인 문제 풀이</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 <style type="text/css">
+    body {
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+   .main-card {
+    background: white;
+    /* 기존 800px -> 화면 너비의 75%로 확대 */
+    width: 60vw; 
+    /* 기존 500px -> 화면 높이의 60%로 확대 */
+    height: 50vh; 
+    
+    min-width: 900px; /* 창을 줄여도 깨지지 않게 최소 너비 설정 */
+    min-height: 500px; /* 최소 높이 설정 */
+    
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 50px;
+    position: relative;
+    
+    /* [팁] 내부 요소를 정중앙에 정렬하기 위해 추가 */
+    display: flex;
+    flex-direction: column;
+}
+    .header-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 50px;
+    }
+   .button-group {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 버튼들이 위아래 정중앙에 오도록 */
+    flex: 1; /* 카드의 남은 공간을 버튼들이 꽉 채우도록 설정 */
+    
+    /* 기존 40px -> 100px 이상으로 간격 확대 */
+    gap: 100px; 
+    margin-top: 0; /* flex:1을 썼으므로 margin은 없어도 됩니다 */
+}
+    /* 버튼 공통 스타일 */
+  .test-btn {
+    /* 기존 250px / 180px -> 대폭 확대 */
+    width: 350px;
+    height: 250px;
+    
+    border-radius: 15px;
+    border: none;
+    
+    /* 기존 1.8rem -> 2.5rem으로 글자 크기 확대 */
+    font-size: 2.5rem; 
+    
+    font-weight: bold;
+    color: white;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+    /* 시험 시작 버튼 스타일 */
+    #startTest {
+        background-color: #20c997;
+    }
+    #startTest:hover {
+        background-color: #1abc9c;
+        transform: translateY(-5px);
+    }
+    /* 결과 & 해설 버튼 스타일 */
+    #checkAnswer {
+        background-color: #6610f2;
+    }
+    #checkAnswer:hover {
+        background-color: #520dc2;
+        transform: translateY(-5px);
+    }
+    .footer-close {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+    }
+    .btn-close-custom {
+        background-color: #6610f2;
+        color: white;
+        padding: 8px 25px;
+        border-radius: 5px;
+        border: none;
+        font-weight: 500;
+    }
+    /* 임시 입력필드 숨김 처리 또는 하단 배치 */
+    .temp-inputs {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        font-size: 11px;
+        color: #ccc;
+        background: rgba(255,255,255,0.8);
+        padding: 5px;
+        border-radius: 5px;
+    }
 </style>
-<!-- jquery CDN 시작-->
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<!-- jquery CDN 끝-->
+
 <script type="text/javascript">
 	$(function() {
-		//향후 이전 시험 결과 페이지랑 나눠야함.
+		// 기존 로직 유지
 		$("#startTest").click(function(){
-			$("#choiceFrm").submit();
+			checkTest();
 		});
+		
+		$("#checkAnswer").click(function(){
+			checkAnswer();
+		});
+
+        //닫기 버튼 기능
+        $("#btnClose").click(function(){
+            if(confirm("페이지를 닫으시겠습니까?")) {
+                window.close();
+            }
+        });
 	});//ready
+	
+	function checkTest() {
+		var testId = $("#testId").val();
+		var userId = $("#userId").val();
+		var lectId = $("#lectId").val();
+		var ajaxData = {"testId" : testId, "userId" : userId};
+		$.ajax({
+			url : "/user/lecture/test/checkTest",
+			data : ajaxData,
+			dataType : "JSON",
+			type : "GET",
+			error : function(xhr) {
+				alert("조회 실패");
+				console.log(xhr.status);
+			},
+			success : function(jsonObj) {
+				//시험을 본 적이 있다면
+				if(jsonObj.result) {
+					if(confirm("이전 시험 기록이 존재합니다.\n다시 시험을 시작하시겠습니까? (이전 기록은 삭제됩니다.)")) {
+						location.href = "/user/lecture/test/stuRemoveTestRecord?testId=" + testId + "&userId=" + userId + "&lectId=" + lectId;
+					}
+				} else {
+					if(confirm("시험을 시작하시겠습니까?")) {
+						location.href = "/user/lecture/test/stuTestFrm?lectId=" + lectId + "&userId=" + userId;
+					}//end if
+				}//end else		    
+			}//end success
+		});// end ajax
+	}//checkTest
+	
+	function checkAnswer() {
+		var testId = $("#testId").val();
+		var userId = $("#userId").val();
+		var lectId = $("#lectId").val();
+		var ajaxData = {"testId" : testId, "userId" : userId};
+		$.ajax({
+			url : "/user/lecture/test/checkTest",
+			data : ajaxData,
+			dataType : "JSON",
+			type : "GET",
+			error : function(xhr) {
+				alert("조회 실패");
+				console.log(xhr.status);
+			},
+			success : function(jsonObj) {
+				//시험을 본 적이 있다면
+				if(jsonObj.result) {
+					if(confirm("시험 내역이 확인되었습니다.\n이전 시험 결과 및 해설 페이지로 이동하시겠습니까?")) {
+						location.href = "/user/lecture/test/stuTestFrm?lectId=" + lectId + "&userId=" + userId + "&isReview=true";
+					}//end if
+				} else {
+					alert("시험 내역이 존재하지 않습니다. \n시험 시작 버튼을 눌러 새 시험을 시작해 주세요.")
+				}
+			}//end success
+		});// end ajax
+	}//checkAnswer
 </script>
 </head>
 <body>
-	<div id="container">
-	<form th:action="@{/user/lecture/test/stuTestFrm}" id = "choiceFrm" method="GET" >
-		<input type="button" name="startTest" id="startTest" value="시험 시작"/>
-		<input type="button" name="startTest" id="startTest" value="이전 시험 결과 & 해설"/><br>
-		임의 강의 아이디 입력 : <input type="text" value="L1" name="lectId">
-	</form>
-	</div>
+    <div class="main-card">
+        <div class="header-title">연습문제 페이지</div>
+
+        <div class="button-group">
+            <button type="button" class="test-btn" name="startTest" id="startTest">
+                시험 시작
+            </button>
+            <button type="button" class="test-btn" name="checkAnswer" id="checkAnswer">
+                이전 시험 결과 & 해설
+            </button>
+        </div>
+
+        <div class="footer-close">
+            <button type="button" id="btnClose" class="btn-close-custom">닫기</button>
+        </div>
+    </div>
+
+    <div class="temp-inputs">
+        L_ID: <input type="text" value="L1" name="lectId" id="lectId" size="2">
+        U_ID: <input type="text" name="userId" value="user1" id="userId" size="5">
+        T_ID: <input type="text" name="testId" value="T1" id="testId" size="2">
+    </div>
 </body>
 </html>

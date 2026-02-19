@@ -2,62 +2,424 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-<!-- bootstrap CDN 시작-->
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-	crossorigin="anonymous">
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-	integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-	crossorigin="anonymous"></script>
-<!-- bootstrap CDN 끝-->
-<style type="text/css">
-</style>
-<!-- jquery CDN 시작-->
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<!-- jquery CDN 끝-->
-<script type="text/javascript">
-	$(function() {
+<title>연습문제 풀이</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-	});//ready
+<style type="text/css">
+    body { background-color: #f5f6f7; padding: 20px; user-select: none; }
+    .quiz-wrapper { max-width: 1100px; margin: 0 auto; }
+    .question-card { background: white; border-radius: 10px; padding: 25px; margin-bottom: 25px; border: 1px solid #e9ecef; }
+    .question-content { font-size: 1.15rem; font-weight: 600; margin-bottom: 20px; }
+    .options-group { display: flex; flex-direction: column; gap: 10px; }
+    .option-item { display: flex; align-items: center; padding: 12px 18px; border: 1px solid #dee2e6; border-radius: 8px; cursor: pointer; }
+    .option-item.selected { border-color: #5c67f2; background-color: #f0f1ff; }
+    
+    /* 정오답 스타일 추가 */
+    .option-item.correct { border-color: #28a745 !important; background-color: #e8f5e9 !important; }
+    .option-item.wrong { border-color: #dc3545 !important; background-color: #ffebee !important; }
+
+    .option-item input[type="radio"] { margin-right: 15px; }
+    .option-item label { cursor: pointer; flex-grow: 1; margin-bottom: 0; pointer-events: none; }
+
+    .exp-section { margin-top: 20px; border-top: 1px dashed #ced4da; display: none; }
+    .exp-section.active { display: block; } 
+    .exp-toggle { cursor: pointer; padding: 12px 0; color: #666; display: flex; justify-content: space-between; font-weight: 500; }
+    .exp-content-box { background: #f8f9fa; padding: 18px; border-radius: 8px; border: 1px solid #e9ecef; }
+    
+    .quiz-sidebar { width: 220px; margin-left: 25px; position: sticky; top: 20px; height: fit-content; }
+    .status-box { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e9ecef; margin-bottom: 15px; }
+    .btn-submit { background-color: #5c67f2; border: none; padding: 15px; color: white; width: 100%; font-weight: bold; border-radius: 8px; }
+    /* 1. 마우스 올렸을 때 배경색 살짝 변경 (Hover 효과) */
+.option-item:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+/* 2. 라디오 버튼 자체의 색상 변경 (기본 파란색 -> 테마색) */
+.option-item input[type="radio"] {
+    accent-color: #5c67f2; /* 라디오 버튼 체크 색상을 테마와 맞춤 */
+}
+
+/* 3. 정답/오답일 때 글자색도 같이 변경 */
+.option-item.correct label {
+    color: #155724;
+    font-weight: bold;
+}
+.option-item.wrong label {
+    color: #721c24;
+    font-weight: bold;
+}
+
+/* 4. 해설 박스에 왼쪽 포인트 라인 추가 (강조 효과) */
+.exp-content-box {
+    background: #f8f9fa;
+    padding: 18px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    border-left: 5px solid #5c67f2; /* 해설 박스 왼쪽에 굵은 선 추가 */
+}
+
+/* 5. 사이드바 제출 버튼에 그림자 추가 (플로팅 느낌) */
+.btn-submit {
+    box-shadow: 0 4px 15px rgba(92, 103, 242, 0.3);
+    transition: all 0.2s;
+}
+.btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(92, 103, 242, 0.4);
+}
+</style>
+
+<script type="text/javascript" th:inline="javascript">
+$(function() {
+	var isReview = $("#isReviewFlag").val() === "true";
+	//시험 본 적이 있다면 바로 해설 페이지 띄워주기
+	if(isReview) {
+        var rawData = $("#reviewDataJson").val();
+        if(rawData) {
+            var reviewData = JSON.parse(rawData);
+            answerPage(reviewData); 
+        }
+    }
+	
+    // 라디오 버튼 자체를 직접 클릭했을 때의 버블링 차단 및 로직 처리
+    $(document).on("click", ".option-item input[type='radio']", function(e) {
+        // 이미 제출했다면 클릭 차단
+        if($("#btnSubmit").prop("disabled")) {
+            e.preventDefault();
+            return false;
+        }
+
+        const $radio = $(this);
+        const $parent = $radio.closest(".option-item");
+        
+        // 브라우저 기본 동작에 의해 이미 체크된 상태이므로, 
+        // selected 클래스 관리만 해주면 됩니다.
+        const name = $radio.attr("name");
+        $(`input[name='${name}']`).closest(".option-item").removeClass("selected");
+        $parent.addClass("selected");
+
+        // 이벤트가 .option-item으로 퍼지는 것을 막아 이중 실행 방지
+        e.stopPropagation();
+        updateCount();
+    });
+
+    // 박스(부모) 영역을 클릭했을 때의 로직
+    $(document).on("click", ".option-item", function(e) {
+        if($("#btnSubmit").prop("disabled")) return false;
+
+        const $radio = $(this).find("input[type='radio']");
+        const isAlreadyChecked = $radio.prop("checked");
+
+        if (isAlreadyChecked) {
+            // 이미 체크된 상태에서 또 누르면 -> 해제 (토글 기능)
+            $radio.prop("checked", false);
+            $(this).removeClass("selected");
+        } else {
+            // 체크 안 된 상태에서 누르면 -> 선택
+            $radio.prop("checked", true);
+            const name = $radio.attr("name");
+            $(`input[name='${name}']`).closest(".option-item").removeClass("selected");
+            $(this).addClass("selected");
+        }
+        updateCount();
+    });
+
+    function updateCount() {
+        // #solved-stat 전체를 바꾸는 게 아니라 내부의 숫자 span만 변경
+        $("#solved-count").text($("input[type='radio']:checked").length);
+    }
+
+    // 해설 토글
+    $(document).on("click", ".exp-toggle", function() {
+    	
+        const $box = $(this).next(".exp-content-box");
+        const $arrow = $(this).find(".arrow");
+        $box.slideToggle(250, function() {
+            $arrow.text($box.is(":visible") ? "▾" : "▴");
+        });
+    });
+	
+    //제출 버튼 클릭 시 AJAX로 답 비교.
+    $(document).on("click", "#btnSubmit", function() {
+    	//문제를 다 풀었는지 유효성 검사 후 제출 진행 
+    	var selected="";
+    	var flag=true;
+    	var unassigned = [];
+    	var $firstUnassigned = null;
+    		for( var i = 0; i < listSize.value; i++) {
+    			//check 안 된 부분이 존재하면 체크하라고 시킴.
+    			if(!$("input[name='ans-" + i + "']:checked").val()) {
+    				unassigned.push(i + 1);
+    				selected += (i+1) + "번 " ;
+    				flag=false;
+    				
+    				//처음 안 푼 문제 찾기. -> 해당 문제로 스크롤 이동 시켜줄 예정.
+        			if($firstUnassigned === null) {
+                    $firstUnassigned = $("input[name='ans-" + i + "']").closest(".question-card");
+    			}
+    			
+            }
+    		}
+    		//check 안 된 부분이 존재할 경우
+    		if(!flag) {
+    			alert(selected + " 문제를 풀지 않았습니다. 해당 문제를 풀어주세요.");
+    			// 해당 위치로 부드럽게 스크롤 이동
+    			if ($firstUnassigned) {
+					    $('html, body').animate({
+					        scrollTop: $firstUnassigned.offset().top - 100
+					    }, 500);
+					
+					    // 빨간 테두리 효과 수정
+					    $firstUnassigned.css("border-color", "#ff4d4d") // 먼저 빨간색으로 변경
+					        .animate({ opacity: 0.7 }, 200)             // 깜빡임 1
+					        .animate({ opacity: 1 }, 200)               // 깜빡임 2
+					        .delay(1500)                                // ★ 여기서 1.5초 동안 빨간 테두리 유지 ★
+					        .queue(function(next) {                     // 큐를 이용해 테두리 복구
+					            $(this).css("border-color", "#e9ecef");
+					            next();
+					        });
+					}
+    	        return;
+    	    }
+    	
+         if(!confirm("제출하시겠습니까?")) return; 
+        checkQuestion();
+    });//click
+    
+    $(document).on("click", "#btnExit", function() {
+        alert("종료버튼 클릭 : 향후 강의 페이지 등으로 이동 시키자");
+        // 여기에 종료 시 이동할 페이지 로직을 넣으세요.
+    });
+});//ready
+
+//AJAX 부분
+
+//제출 버튼 클릭 시 AJAX로 답 비교.
+function checkQuestion() {
+	var selected=[];
+	var num = "";
+	var testId = $("#getTestId").val();
+	var lectId = $("#lectId").val();
+	var userId = $("#userId").val();
+	var qid = [];
+	var test_q_num = [];
+	
+	var size = $("#listSize").val();
+	for( var i = 0; i < size; i++){
+		 selected.push($("input[name='ans-" + i + "']:checked").val()) ;
+		 num += $("input[name='ans-" + i + "'][type='hidden']").val() ;
+		 qid.push($("#qid"+i).val());
+		 test_q_num.push($("#test_q_num"+i).val());
+	}
+	var ajaxData={"choice" : selected, 
+					"lectId" : lectId,
+					"id" : testId,
+					"userId" : userId,
+					"qid" : qid,
+					"test_q_num" : test_q_num};
+	$.ajax({
+		url : "/user/lecture/test/submitTestProcess",
+		data : ajaxData,
+		dataType : "JSON",
+		type : "POST",
+		error : function(xhr) {
+			alert("제출 실패");
+			console.log(xhr.status);
+		},
+		success : function(jsonObj) {
+			alert("제출이 완료되었습니다. 시험 결과를 확인하세요!")
+			var correctCount = 0;
+   			 var wrongCount = 0;
+			//해설 활성화 하기
+			$(".exp-section").addClass("active");
+			/*  <div class="exp-text" th:id="'exp-'+${i.index}"></div> */
+			//정답 비교 for 문
+			 for( var i = 0; i < jsonObj.length; i++) {
+				 //정답일 경우 라디오 버튼 상위 option-item 클래스를 찾아서 correct 클래스 추가.
+				 if ($("input[name='ans-" + i + "']:checked").val() == jsonObj[i].ans) {
+					 $("input[name='ans-" + i + "']:checked").closest(".option-item").addClass("correct");
+					 
+					 $("#expDiv-" + i).find(".exp-content-box").hide();
+					 $("#expDiv-" + i).find(".arrow").text("▾");
+					 //정답 점수 ++
+					 correctCount++;
+				 } else {
+					 $("input[name='ans-" + i + "']:checked").closest(".option-item").addClass("wrong");
+					 $("#expDiv-" + i).find(".exp-content-box").show();
+					 $("#expDiv-" + i).find(".arrow").text("▴");
+					 //오답 점수 ++
+					 wrongCount++;
+				 }
+				 	$("#exp-" + i).text(jsonObj[i].exp);
+			 }
+				
+				// 사이드바 업데이트 정답 및 오답 변경
+			    $("#correct-count").text(correctCount);
+			    $("#wrong-count").text(wrongCount);
+			    $("#final-score").text(correctCount * (100 / jsonObj.length)); // 점수 계산
+
+			    // 애니메이션 효과와 함께 결과 노출
+			    $("#result-stats").slideDown(); 
+			    
+			    // 기존 '풀이' 영역은 숨기거나 연하게 처리 가능
+			    $("#stat-solved").css("opacity", 0.5);
+			
+			 	$("#btnSubmit").prop("disabled", true).val("제출됨").css("opacity", 0.5);
+		        // 제출 후에는 선택지 클릭 안되게 방지
+		        $(".option-item, .option-item input").css("pointer-events", "none");
+		        $(".option-item").css("cursor", "default");
+			
+			
+		        if (correctCount === jsonObj.length) {
+		            $("#final-score").parent().css("text-shadow", "0 0 10px rgba(92, 103, 242, 0.5)");
+		            alert("와우! 만점입니다! 축하드려요!");
+		        }
+		        
+		     // 제출 버튼을 종료 버튼으로 변경
+		        $("#btnSubmit").val("종료")
+		                      .attr("id", "btnExit")  // ID를 바꿔서 기존 제출 이벤트와 분리
+		                      .prop("disabled", false) // 버튼 다시 활성화
+		                      .css("opacity", 1);      // 불투명도 복구
+		        
+		}
+	});// end ajax
+}
+
+
+//해설 모드에서 페이지 로딩 메소드
+function answerPage(data) {
+    // UI 활성화 및 버튼 제어
+    $(".exp-section").addClass("active");
+    $("#btnSubmit").show()
+    .val("종료")
+    .attr("id", "btnExit")
+    .prop("disabled", false)
+    .css("opacity", 1);
+    $(".option-item, .option-item input").css("pointer-events", "none");
+    $("#result-stats").show();
+
+    var correctCount = 0;
+    var wrongCount = 0;
+
+    for (var i = 0; i < data.length; i++) {
+        // DB에서 온 choice를 문자열로 변환하여 라디오 버튼을 찾음
+        var userChoice = String(data[i].choice); 
+        var $userRadio = $("input[name='ans-" + i + "'][value='" + userChoice + "']");
+
+        // 라디오 버튼 체크 처리 및 선택 효과
+        $userRadio.prop("checked", true);
+        $userRadio.closest(".option-item").addClass("selected");
+
+        // 정답 비교 
+        if (data[i].choice == data[i].ans) {
+            $userRadio.closest(".option-item").addClass("correct");
+            
+            // 맞은 문제는 해설 접기
+            $("#expDiv-" + i).find(".exp-content-box").hide();
+            $("#expDiv-" + i).find(".arrow").text("▾");
+            correctCount++;
+        } else {
+            $userRadio.closest(".option-item").addClass("wrong");
+            
+            // 틀린 문제는 해설 펼치기
+            $("#expDiv-" + i).find(".exp-content-box").show();
+            $("#expDiv-" + i).find(".arrow").text("▴");
+            wrongCount++;
+        }
+        
+        // 해설 텍스트 주입
+        $("#exp-" + i).text(data[i].exp);
+    }
+
+    // 사이드바 업데이트 
+    $("#correct-count").text(correctCount);
+    $("#wrong-count").text(wrongCount);
+    $("#final-score").text(correctCount * (100 / data.length)); 
+    
+    // 풀이 숫자 업데이트
+    $("#solved-count").text(data.length);
+}
+
 </script>
 </head>
 <body>
-<div th:if="${!stdList.empty}" th:text="${stdList[0].lectName}"></div>
-    <div th:if="${stdList.empty}">등록된 문제가 없습니다.</div>
-<br>
-	<div id="container">
-	
-	<form th:action="@{/instructor/lecture/test/createTest}" method="POST" id="rightForm">
-			<div th:if = "${!stdList.empty}" id="test" th:each = "stuTestDomain, i : ${stdList}" th:object = "${stuTestDomain}">
-				<input type="hidden" id="qid" name="qid" value=""> 
-				<input type="hidden" id="id" name="id" value=""> 
-				<label th:text="*{lectName}"></label> 연습문제<br> 
-				
-				<div id="content">
-					<label th:text="${i.count}"></label>. <label th:text="*{content}"></label>
-				</div>
-				
-			<div id="opt" >
-					<input type="radio" th:name="'ans-' + ${i.index}" id="opt1" value="1"><label for="opt1" th:text="*{opt1}">보기 1</label><br> 
-					<input type="radio" th:name="'ans-' + ${i.index}" id="opt2" value="2"><label for="opt2" th:text="*{opt2}">보기 2</label><br> 
-					<input type="radio" th:name="'ans-' + ${i.index}" id="opt3" value="3"><label for="opt3" th:text="*{opt3}">보기 3</label><br> 
-					<input type="radio" th:name="'ans-' + ${i.index}" id="opt4" value="4"><label for="opt4" th:text="*{opt4}">보기 4</label><br> 
-			</div>
-					<label>오답 해설 (Explanation) *사용자가 틀렸을 때 보여줄 설명입니다.</label><br>
-				<textarea rows="5" cols="50" th:text="*{exp}" name="exp" id="exp" readonly="readonly"></textarea>
-				<br>
-				<br>
-			</div>
-				<div id="buttonArea">
-					<input type="button" id="btnSubmit" value="제출" class="btn btn-info btnUpdate"> 
+<div class="quiz-wrapper">
+<!-- hidden 값들 -->
+<input type="hidden" id="listSize" th:value="${stdList.size()}">
+<input type="hidden" id="getTestId" th:value="${stdList[0].id}">
+<input type="hidden" id="lectId" th:value="${stdList[0].lectId}">
+<!-- ID는 나중에 session에서 받아오기로 -->
+<input type="hidden" id="userId" th:value="${param.userId}">
+<!-- 해설 페이지 로딩 유무 확인 -->
+<input type="hidden" id="isReviewFlag" th:value="${isReview}">
+<!-- 해설 모드로 진입했을 경우 추가로 필요한 데이터들. -->
+<input type="hidden" id="reviewDataJson" th:if="${isReview}" th:value="${reviewDataJson}">
+
+    <div th:if="${!stdList.empty}" class="quiz-header mb-4">
+        <h5><strong>[[${stdList[0].lectName}]] 연습문제</strong></h5>
+    </div>
+
+    <div id="container" class="d-flex">
+        <form id="rightForm" class="flex-grow-1">
+            <div th:if="${!stdList.empty}" class="question-card" th:each="stuTestViewDomain, i : ${stdList}" th:object="${stuTestViewDomain}">
+                <input type="hidden" th:id="'qid'+${i.index}" name="qid" th:value="*{qid}"> 
+                <!-- <input type="hidden" th:name="'ans-' + ${i.index}" th:value="*{num}"> --> 
+                <input type="hidden" th:name="'qnum-' + ${i.index}" th:value="*{num}">
+                
+                <div class="question-content">
+                  <span th:text="${i.count}"></span>. <span th:text="*{content}"></span>
+                  <input type="hidden" th:id = "'test_q_num'+${i.index}"  th:value = "${i.count}">
+                </div>
+                
+                <div class="options-group">
+				    <div class="option-item">
+				        <input type="radio" th:name="'ans-' + ${i.index}" th:id="'opt1-'+${i.index}" value="1">
+				        <label th:for="'opt1-'+${i.index}" th:text="*{opt1}"></label>
+				    </div>
+				    
+				    <div class="option-item">
+				        <input type="radio" th:name="'ans-' + ${i.index}" th:id="'opt2-'+${i.index}" value="2">
+				        <label th:for="'opt2-'+${i.index}" th:text="*{opt2}"></label>
+				    </div>
+				    
+				    <div class="option-item">
+				        <input type="radio" th:name="'ans-' + ${i.index}" th:id="'opt3-'+${i.index}" value="3">
+				        <label th:for="'opt3-'+${i.index}" th:text="*{opt3}"></label>
+				    </div>
+				    
+				    <div class="option-item">
+				        <input type="radio" th:name="'ans-' + ${i.index}" th:id="'opt4-'+${i.index}" value="4">
+				        <label th:for="'opt4-'+${i.index}" th:text="*{opt4}"></label>
+				    </div>
 				</div>
 
-		</form>
-	</div>
+                <div class="exp-section" th:id="'expDiv-'+${i.index}">
+                    <div class="exp-toggle"><strong>해설보기</strong> <span class="arrow">▾</span></div>
+                    <div class="exp-content-box">
+                        <strong class="exp-label">해설</strong>
+                        <div class="exp-text" th:id="'exp-'+${i.index}"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+      <aside class="quiz-sidebar">
+    <div class="status-box">
+        <p id="stat-total"><strong>전체 : <span th:text="${stdList.size()}">0</span> 문제</strong></p>
+        <p id="stat-solved"><strong>풀이 : <span id="solved-count">0</span> 문제</strong></p>
+        
+        <hr class="my-2"> <div id="result-stats" style="display: none;">
+            <p><strong style="color: #28a745;">정답 : <span id="correct-count">0</span></strong></p>
+            <p><strong style="color: #dc3545;">오답 : <span id="wrong-count">0</span></strong></p>
+            <p><strong style="color: #5c67f2;">점수 : <span id="final-score">0</span>점</strong></p>
+        </div>
+    </div>
+    <input type="button" id="btnSubmit" value="제출" class="btn-submit"> 
+</aside>
+    </div>
+</div>
 </body>
 </html>
