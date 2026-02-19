@@ -37,8 +37,8 @@ public class ChapterController {
 	@Autowired
 	private ChapterService cs;
 	
-	@Value("${user.upload-dir}") // application.properties에 설정된 경로 (예: C:/uploads/)
-    private String uploadDir;
+	@Value("${user.upload-doc-dir}") // application.properties에 설정된 경로 (예: C:/uploads/)
+    private String uploadDocDir;
 
 	@GetMapping("/viewList")
 	public String viewChapterList(Model model) {
@@ -146,7 +146,7 @@ public class ChapterController {
 	    Map<String, Boolean> response = new HashMap<>();
 	    try {
 	        FileDomain fileDomain = cs.getFileInfo(chptrId);
-	        Path filePath = Paths.get(uploadDir).resolve(fileDomain.getDoc()).normalize();
+	        Path filePath = Paths.get(uploadDocDir).resolve(fileDomain.getDoc()).normalize();
 	        File file = filePath.toFile();
 	        
 	        // 파일이 존재하고 읽기 가능한지 확인
@@ -170,7 +170,7 @@ public class ChapterController {
             String fileName = fileDomain.getDoc();
 
             // 2. 물리적 경로 설정
-            Path filePath = Paths.get(uploadDir).resolve(fileName).normalize();
+            Path filePath = Paths.get(uploadDocDir).resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (!resource.exists()) {
