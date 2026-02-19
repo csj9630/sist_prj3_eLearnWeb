@@ -10,6 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    	<th:block th:replace="~{fragments/cdn :: cdn}"></th:block><!-- cdn 전부 -->
     <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
     <link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
     <!-- 다이얼로그 용 라이브러리 -->
@@ -46,23 +47,47 @@
         font-size: 0.85em;
         font-weight: bold;
       }
+       /* 승인대기 */
       .bg-wait {
         background-color: #ffeeba;
         color: #856404;
-      } /* 승인대기 */
+      }
+      /* 승인완료 */
       .bg-pass {
         background-color: #d4edda;
         color: #155724;
-      } /* 승인완료 */
+      } 
+      /* 반려 */
       .bg-reject {
         background-color: #f8d7da;
         color: #721c24;
-      } /* 반려 */
+      } 
+      
+      /* 공개중 */
+      .bg-open {
+        background-color: #b7f5f4;
+        color: black;
+      } 
+      
+            /* 비공개중 */
+      .bg-close {
+        background-color: #616565;
+        color: white;
+      } 
+      
+      /* 수입 */
       .text-cash {
         color: #28a745;
         font-weight: bold;
       }
+      /* 테이블 중앙 정렬 */
+		.course-table th, 
+		.course-table td {
+		    text-align: center !important;
+		    vertical-align: middle !important; 
+		}
     </style>
+
     <script>
       function showRejectReason(reason) {
         if (!reason || reason.trim() === "") {
@@ -116,6 +141,7 @@
         <header class="main-header">
           <h1>나의 강의 관리</h1>
           <p>등록한 강의의 승인 상태와 판매 현황을 확인할 수 있습니다.</p>
+          <span th:text="|접속 아이디 : ${session.instId}|"></span>
         </header>
 
         <section class="search-filter-wrap">
@@ -160,15 +186,16 @@
         </section>
 
         <div class="dashboard-panel">
-          <table class="course-table">
+          <table class="course-table text-center">
             <thead>
-              <tr>
-                <th>이미지</th>
+              <tr >
+                <th >이미지</th>
                 <th>강의명</th>
                 <th>평점</th>
                 <th>수강생</th>
                 <th>총 수입</th>
-                <th>상태/공개</th>
+                <th>상태</th>
+                <th>공개</th>
                 <th>관리</th>
                 <th>상세 보기</th>
               </tr>
@@ -226,12 +253,14 @@
                     class="status-badge bg-wait"
                     >대기</span
                   >
-                  <br />
-                  <small th:if="*{availability == 1}" style="color: blue"
-                    >[공개중]</small
+                </td>
+                <td>
+                  <span th:if="*{availability == 1}" class="status-badge bg-open"
+                    >[공개중]</span
                   >
-                  <small th:unless="*{availability == 1}" style="color: red"
-                    >[비공개]</small
+              
+                  <span th:unless="*{availability == 1}" class="status-badge bg-close"
+                    >[비공개]</span
                   >
                 </td>
                 <td class="course-actions">
@@ -241,12 +270,13 @@
                     style="font-size: 12px; padding: 5px 10px"
                     >강의 수정</a
                   >
+                      <br/>
                   <button
                     
                     class="btn btn--ghost"
                     th:onclick="changeAvailability([[*{lectId}]], [[*{availability}]])"
 				    style="font-size: 12px; padding: 5px 10px"
-				    th:text="*{availability == 1} ? '비공개로 전환' : '공개로 전환'"
+				    th:text="*{availability == 1} ? '비공개하기' : '공개하기'"
                   >
                     공개 설정
                   </button>

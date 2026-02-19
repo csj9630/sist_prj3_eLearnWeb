@@ -15,10 +15,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private String uploadPath; // "C:/upload/lecture_thumbs/"
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        // /images/** 요청이 들어오면 로컬 C:/upload/ 폴더에서 찾음
-//        registry.addResourceHandler("/images/**")
-//                .addResourceLocations("file:///C:/upload/");
-//        
+
         // "/common/images/lecture_thumbs/**" 로 들어오는 요청은
         // "file:///C:/upload/lecture_thumbs/"에서 찾기
     	// properties에 정의된 가상 경로와 물리 경로를 그대로 연결

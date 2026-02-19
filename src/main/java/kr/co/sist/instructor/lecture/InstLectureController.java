@@ -49,8 +49,8 @@ public class InstLectureController {
 	@GetMapping("/list")
 	public String InstlectureList(InstLectureSearchDTO sDTO, HttpSession session, Model model) {
 
-		// String instId = (String)session.getAttribute("instId");
-		String instId = "inst5";
+		String instId = (String)session.getAttribute("instId");
+		//String instId = "inst5";
 		sDTO.setInstId(instId);
 
 		List<InstLectureDomain> list = ls.searchInstLectureList(sDTO);
@@ -67,19 +67,6 @@ public class InstLectureController {
 		return "instructor/lecture/instLectureList";
 	}// method
 
-	/*	*//**
-			 * 강의 상세 페이지 이동
-			 * 
-			 * @param lectId 강의 아이디
-			 * @param model
-			 * @return
-			 *//*
-				 * @GetMapping("/detail") public String lectureDetail(@RequestParam String
-				 * lectId, Model model) { LectureAllDetailDomain allDetail =
-				 * ls.getLectureAllDetail(lectId); model.addAttribute("allDetail", allDetail);
-				 * model.addAttribute("imgPath", imgPath); return "user/lecture/lectureDetail";
-				 * }// method
-				 */
 
 	// 등록/수정 폼 이동 (lectId 유무로 판단)
 	@GetMapping("/manage")
@@ -87,11 +74,12 @@ public class InstLectureController {
 		if (lectId != null && !lectId.isEmpty()) {
 			// 수정 모드: 기존 데이터 조회 (서비스에 상세조회 메서드 필요)
 			// InstLectureDTO detail = ls.getLectureDetail(lectId);
-			// model.addAttribute("detail", detail);
+			
 			model.addAttribute("isUpdate", true);
 		} else {
 			// 등록 모드
 			model.addAttribute("isUpdate", false);
+			model.addAttribute("isDetail", false);
 		}
 
 		// 카테고리 목록 조회
@@ -111,10 +99,8 @@ public class InstLectureController {
 		ldto.setInstId(instId);
 		ldto.setRegip(request.getRemoteAddr());
 
-		// 기본값 설정 (null 에러 방지용)
-		ldto.setThumbnail("default.png");
 
-		// 2. 썸네일 파일 업로드 처리
+		// 2. 썸네일 파일 업로드 처리(null이면 기본 이름으로 설정)
 	    String newThumbnail = ls.uploadThumbnail(thumbFile);
 		ldto.setThumbnail(newThumbnail);
 	
@@ -140,6 +126,7 @@ public class InstLectureController {
 		return result ? "success" : "fail";
 	}// method
 	
+	//강의 상세 보기
 	@GetMapping("/detail")
 	public String lectureDetail(@RequestParam("lectId") String lectId, Model model) {
 		InstLectureDTO ldto = ls.getLectureDetail(lectId);

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <title>관리자 사이드바</title>
+    <title>강사 사이드바</title>
     <script type="text/javascript">
       $(function () {
         /* 사이드바에서 클릭하면 클릭한 li 태그 is-acitve로 활성화 
@@ -11,11 +11,16 @@
 	}) */
       }); //ready
     </script>
+        
   </head>
   <body>
     <th:block th:fragment="instructorSidebar">
       <link rel="stylesheet" th:href="@{/common/css/admin-sidebar.css}" />
       <nav class="admin-sidebar-nav">
+      <a th:href="@{/instructor/lecture/manage}" class="btn  btn-lg btn-success"
+              >강의 등록</a
+            >
+            <h5>공사중</h5>
         <ul class="admin-sidebar-list">
           <li>
             <a class="admin-sidebar-link" th:href="@{/admin/dashboard}"

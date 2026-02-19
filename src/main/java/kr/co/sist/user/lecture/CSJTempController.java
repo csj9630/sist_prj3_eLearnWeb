@@ -14,7 +14,9 @@ public class CSJTempController {
 	@GetMapping("/csj")
 	public String viewTempIndex(HttpSession session) {
 		String tempUserId = "user1";
+		String tempInstId = "inst5";
 		session.setAttribute("userId",tempUserId );
+		session.setAttribute("instId",tempInstId );
 		return "user/lecture/indexTemp";
 	}// method
 }

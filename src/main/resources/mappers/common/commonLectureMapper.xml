@@ -4,13 +4,13 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.sist.common.lecture.CommonLectureMapper">
 
-	<!--검색 핃드용 카테고리 조회-->
+	<!--검색 필드용 카테고리 조회-->
 	<select id="selectAllCategories" resultType="categoryDomain">
 	    SELECT cat_id as catId, name 
 	    FROM   category
 	    ORDER BY name ASC
 	</select>
-	<!--검색 핃드용 스킬 조회-->
+	<!--검색 핃드용 스킬 조회, 아이디 없이 이름만 중복 제외하고 조회한다.-->
 	<select id="selectAllSkills" resultType="skillDomain">
 	    SELECT  distinct name <!--, skill_id as skillId-->
 	    FROM   RELATIVE_SKILL
