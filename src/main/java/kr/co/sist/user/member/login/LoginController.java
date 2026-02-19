@@ -38,6 +38,8 @@ public class LoginController {
 			session.setAttribute("userId", ud.getId());
 			session.setAttribute("userName", ud.getName());
 			session.setAttribute("userEmail", ud.getEmail());
+			// 프로필 이미지 경로 세션 저장 (null이면 헤더에서 기본 아이콘 표시)
+			session.setAttribute("userImg", ud.getImg());
 
 			System.out.println("세션 설정 완료: " + session.getId());
 			System.out.println("세션 설정 완료: " + session.getAttribute("userName"));

@@ -2,6 +2,7 @@ package kr.co.sist.user.member;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class UserService {
      * 학생 회원가입 처리
      *
      * @param sDTO 회원가입 정보가 담긴 DTO
-     * @return int 회원가입 결과 (1: 성공, 0: 실패)
+     * @return boolean 회원가입 결과 (true: 성공, false: 실패)
      */
     public boolean addUser(UserDTO sDTO) {
         boolean flag = false;
@@ -43,6 +44,9 @@ public class UserService {
         try {
             um.insertUser(sDTO);
             flag = true;
+        } catch (DuplicateKeyException dke) {
+            // ORA-00001: 아이디/이메일 등 중복 제약조건 위반 → 500 대신 false 반환
+            log.warn("유저 회원가입 실패 - 중복 데이터: {}", dke.getMessage());
         } catch (PersistenceException pe) {
             log.error("유저 회원가입 실패", pe);
         }

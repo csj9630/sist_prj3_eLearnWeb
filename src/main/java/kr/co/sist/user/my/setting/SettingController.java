@@ -89,6 +89,9 @@ public class SettingController {
                 // 4. DB에는 웹 접근 경로 저장 (/images/profile/{userId}/파일명)
                 String webPath = "/images/profile/" + userId + "/" + saveFileName;
                 ss.modifyImg(userId, webPath);
+
+                // 5. 세션에도 즉시 반영 (재로그인 없이 헤더/대시보드에서 바로 표시)
+                session.setAttribute("userImg", webPath);
             } catch (IOException e) {
                 e.printStackTrace();
                 return "fail_img";

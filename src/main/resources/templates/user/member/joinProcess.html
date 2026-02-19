@@ -3,56 +3,201 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Insert title here</title>
-	<th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>회원가입 완료 - IntLearn</title>
+	<th:block th:replace="~{fragments/cdn :: cdn}" />
 	<style type="text/css">
-		#wrap {
-			margin: 0px auto;
-			width: 1000px;
-			height: 1200px;
+		/* ===== 전체 레이아웃 ===== */
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
 		}
 
-		#header {
-			height: 150px;
+		body {
+			min-height: 100vh;
+			background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 50%, #eff6ff 100%);
+			font-family: 'Segoe UI', 'Pretendard', Arial, sans-serif;
+			display: flex;
+			flex-direction: column;
 		}
 
-		#container {
-			height: 950px;
+		/* ===== 상단 헤더 (로고만) ===== */
+		.page-header {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 60px;
+			display: flex;
+			align-items: center;
+			padding: 0 40px;
+			background: rgba(255, 255, 255, 0.85);
+			backdrop-filter: blur(8px);
+			border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+			z-index: 100;
 		}
 
-		#footer {
-			height: 100px;
+		.page-header .logo-img {
+			height: 38px;
+			width: auto;
+			display: block;
+		}
+
+		/* ===== 메인 콘텐츠 ===== */
+		.main-content {
+			flex: 1;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding-top: 80px;
+			padding-bottom: 40px;
+		}
+
+		/* ===== 결과 박스 ===== */
+		.result-box {
+			width: 480px;
+			background: #fff;
+			border-radius: 20px;
+			box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+			padding: 56px 48px 48px;
+			text-align: center;
+			animation: fadeUp 0.4s ease;
+		}
+
+		@keyframes fadeUp {
+			from {
+				opacity: 0;
+				transform: translateY(20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		/* ===== 성공 상태 ===== */
+		.result-box.success .icon {
+			font-size: 64px;
+			margin-bottom: 20px;
+		}
+
+		.result-box.success h2 {
+			font-size: 24px;
+			font-weight: 800;
+			color: #1a1a2e;
+			margin-bottom: 10px;
+		}
+
+		.result-box.success .desc {
+			font-size: 15px;
+			color: #888;
+			line-height: 1.7;
+			margin-bottom: 36px;
+		}
+
+		/* ===== 실패 상태 ===== */
+		.result-box.fail .icon {
+			font-size: 64px;
+			margin-bottom: 20px;
+		}
+
+		.result-box.fail h2 {
+			font-size: 22px;
+			font-weight: 800;
+			color: #1a1a2e;
+			margin-bottom: 10px;
+		}
+
+		.result-box.fail .desc {
+			font-size: 15px;
+			color: #888;
+			line-height: 1.7;
+			margin-bottom: 36px;
+		}
+
+		/* ===== 버튼 ===== */
+		.btn-primary {
+			display: inline-block;
+			width: 100%;
+			padding: 15px;
+			background: linear-gradient(135deg, #1dc078 0%, #00a86b 100%);
+			color: #fff;
+			font-size: 16px;
+			font-weight: 700;
+			border: none;
+			border-radius: 12px;
+			text-decoration: none;
+			cursor: pointer;
+			transition: all 0.2s;
+			margin-bottom: 12px;
+		}
+
+		.btn-primary:hover {
+			transform: translateY(-1px);
+			box-shadow: 0 6px 20px rgba(29, 192, 120, 0.35);
+		}
+
+		.btn-secondary {
+			display: inline-block;
+			width: 100%;
+			padding: 15px;
+			background: #f5f5f5;
+			color: #555;
+			font-size: 15px;
+			font-weight: 600;
+			border: none;
+			border-radius: 12px;
+			text-decoration: none;
+			cursor: pointer;
+			transition: background 0.2s;
+		}
+
+		.btn-secondary:hover {
+			background: #eaeaea;
 		}
 	</style>
-
-	<script type="text/javascript">
-		$(function () {
-			$("#btn").click(function () {
-				$("#frm").submit();
-			});
-		});
-	</script>
 </head>
 
 <body>
-	<div id="wrap">
-		<div id="header">헤더
-			<th:block th:replace="~{fragments/header :: header}"></th:block>
+
+	<!-- 상단 헤더 -->
+	<header class="page-header">
+		<a href="/">
+			<img src="/common/images/main_logo.png" alt="IntLearn" class="logo-img">
+		</a>
+	</header>
+
+	<!-- 메인 콘텐츠 -->
+	<div class="main-content">
+
+		<!-- 가입 성공 -->
+		<div class="result-box success" th:if="${memberResult}">
+			<div class="icon">🎉</div>
+			<h2>회원가입이 완료되었습니다!</h2>
+			<p class="desc">
+				IntLearn과 함께 성장을 시작해보세요.<br>
+				로그인 후 다양한 강의를 만나보실 수 있습니다.
+			</p>
+			<a href="/common/member/loginFrm" class="btn-primary">로그인하러 가기</a>
+			<a href="/" class="btn-secondary">메인으로 돌아가기</a>
 		</div>
-		<div id="container">
-			<h2>회원가입 결과</h2>
-			<th:block th:if="${memberResult}">
-				<span th:text="${param.name}"></span>님 회원가입을 축하드립니다
-			</th:block>
-			<th:block th:unless="${memberResult}">
-				죄송합니다 잠시후 다시시도해주세요
-			</th:block>
-			<a th:href="@{/}">메인화면</a>
+
+		<!-- 가입 실패 -->
+		<div class="result-box fail" th:unless="${memberResult}">
+			<div class="icon">😥</div>
+			<h2>회원가입에 실패했습니다</h2>
+			<p class="desc">
+				잠시 후 다시 시도해주세요.<br>
+				문제가 계속되면 고객센터로 문의해주세요.
+			</p>
+			<a href="/user/member/joinFrm" class="btn-primary">다시 시도하기</a>
+			<a href="/" class="btn-secondary">메인으로 돌아가기</a>
 		</div>
-		<div id="footer">푸터
-			<th:block th:replace="~{fragments/footer :: footer}"></th:block>
-		</div>
+
 	</div>
+
 </body>
 
 </html>
