@@ -15,7 +15,7 @@ import kr.co.sist.user.member.UserDTO;
 import kr.co.sist.user.member.UserDomain;
 
 // user 모듈의 로그인 컨트롤러 - 빈 이름을 명시적으로 지정하여 충돌 방지
-@RequestMapping("/user/member/login")
+@RequestMapping("/user/login")
 @Controller("userLoginController")
 public class LoginController {
 
@@ -24,8 +24,7 @@ public class LoginController {
 
 	@GetMapping("/loginFrm")
 	public String stuLogin() {
-
-		return "user/member/login/loginFrm";
+		return "common/member/loginFrm";
 	}
 
 	@PostMapping("/loginProcess")
@@ -49,7 +48,7 @@ public class LoginController {
 		} else { // 로그인 실패
 			System.out.println("로그인 실패: ud is null");
 			model.addAttribute("msg", "아이디 또는 비밀번호를 확인해주세요.");
-			return "user/member/login/loginFrm";
+			return "common/member/loginFrm";
 		}
 	}
 
