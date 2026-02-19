@@ -387,4 +387,14 @@ public class UserReviewService {
 		return flag;
 	}
 	
+	public UserReviewDomain searchMyReview(UserReviewDTO rDTO) {
+	    UserReviewDomain myReview = null;
+	    try {
+	        myReview = rm.selectMyReview(rDTO);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return myReview;
+	}
+	
 } // class
