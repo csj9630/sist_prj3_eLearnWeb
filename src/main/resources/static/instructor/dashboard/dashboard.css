@@ -17,26 +17,26 @@
   box-sizing: border-box;
 }
 
-body.admin-dashboard {
+body.instructor-dashboard {
   margin: 0;
   font-family: "Noto Sans KR", system-ui, sans-serif;
   color: var(--ink);
   background: radial-gradient(circle at top left, #fff7ef 0%, #f6f4f1 45%, #eef2f8 100%);
 }
 
-.admin-layout {
+.instructor-layout {
   min-height: 100vh;
   display: flex;
   padding-top: var(--header-height);
 }
 
-.admin-sidebar {
+.instructor-sidebar {
   width: var(--sidebar-width);
   flex: 0 0 var(--sidebar-width);
   background: transparent;
 }
 
-.admin-content {
+.instructor-content {
   flex: 1;
   padding: 28px 36px 56px;
   max-width: 1500px;
@@ -75,27 +75,6 @@ body.admin-dashboard {
 .card-link {
   color: var(--muted);
   font-size: 12px;
-}
-
-.more-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: #8c8f95;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.more-link::after {
-  content: "›";
-  font-size: 16px;
-  line-height: 1;
-  color: #b1b5bb;
-}
-
-.more-link:hover {
-  color: #6f7480;
 }
 
 .stat-value {
@@ -307,15 +286,15 @@ body.admin-dashboard {
 }
 
 @media (max-width: 960px) {
-  .admin-layout {
+  .instructor-layout {
     padding-top: 0;
   }
 
-  .admin-sidebar {
+  .instructor-sidebar {
     display: none;
   }
 
-  .admin-content {
+  .instructor-content {
     padding: 24px;
   }
 

@@ -143,6 +143,140 @@
   border: 0;
 }
 
+.confirm-card {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 6px 8px 0;
+  gap: 6px;
+}
+
+.confirm-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #eef1ff;
+  display: grid;
+  place-items: center;
+}
+
+.confirm-icon__dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #5f6ad7;
+  display: inline-block;
+}
+
+.confirm-title {
+  margin: 6px 0 2px;
+  font-size: 18px;
+}
+
+.confirm-message {
+  margin: 0;
+  font-size: 12px;
+  color: #8b9097;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"],
+.ui-dialog[aria-describedby="stopDialogUi"] {
+  border-radius: 14px;
+  border: 2px solid #34c4b2;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(17, 24, 39, 0.12);
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-titlebar,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-titlebar {
+  display: none;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-content,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-content {
+  padding: 18px 20px 8px;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-buttonpane,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-buttonpane {
+  border-top: none;
+  padding: 10px 16px 16px;
+  margin: 0;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-buttonset,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-buttonset {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-buttonset button,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-buttonset button {
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-buttonset button:first-child,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-buttonset button:first-child {
+  background: #eef0f5;
+  color: #444;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-buttonset button:last-child {
+  background: #5f6ad7;
+  color: #fff;
+}
+
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-buttonset button:last-child {
+  background: #9aa0a6;
+  color: #fff;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 13px;
+  color: #7b8088;
+}
+
+.page-list {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #7b8088;
+  background: transparent;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.page-btn:hover {
+  color: #3a3f46;
+  background: #eef1f5;
+}
+
+.page-btn.is-active {
+  background: #0b3b73;
+  color: #fff;
+}
+
 @media (max-width: 1200px) {
   .course-table thead th:nth-child(1),
   .course-table tbody td:nth-child(1) {

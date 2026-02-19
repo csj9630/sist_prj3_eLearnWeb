@@ -8,12 +8,18 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AdminLectureMapper {
 
 	public List<String> selectAllCategory();
-	public int updateStatus(String lectureId);
+	//강의 공개
+	public int updateOpen(String lectureId);
+	//강의 비공개
+	public int updateStop(String lectureId);
 	//강의 승인 
 	public int updateApproval(String lectureId);
 	public int updateAvailability(String lectureId, int availability);
-
-	//	<select id="selectLectureByCategory" resultType="lectListDomain" parameterType="lectSearchDTO">
+	//교육 과목 관리 강의 개수
+	public int selectLectureCount(AdminLectureSearchDTO alsDTO);
+	//강의 관리 강의 개수
+	public int selectNotApprCount(AdminLectureSearchDTO alsDTO);
+	
 	public List<AdminLectureDomain> selectLectureByCategory(AdminLectureSearchDTO alsDTO);
 	public List<AdminNotApprLectureDomain> selectNotApprLectList(AdminLectureSearchDTO alsDTO);
 	public List<AdminLectureDetailDomain> selectLectureDetail(String lectureId);

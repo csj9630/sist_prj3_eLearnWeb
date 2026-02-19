@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>강사용 대시보드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/instructor/dashboard/dashboard.css}" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script type="text/javascript">
+  $(function(){
+
+  });
+  </script>
+</head>
+<body class="instructor-dashboard">
+  <div id="header">
+    <th:block th:replace="~{fragments/instructorHeader :: instructorHeader}"></th:block>
+  </div>
+
+  <div class="instructor-layout">
+    <aside class="instructor-sidebar">
+      <th:block th:replace="~{fragments/instructorSidebar :: instructorSidebar}"></th:block>
+    </aside>
+
+    <main class="instructor-content">
+      <section class="stat-grid">
+        <article class="stat-card">
+          <div class="stat-header">
+            <h2 class="stat-label">총 강의 수</h2>
+          </div>
+          <div class="stat-value" th:text="${lectCnt} + '개'"></div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-header">
+            <h2 class="stat-label">평점</h2>
+          </div>
+          <div class="stat-value" th:text="${ScoreReview} + '점'"></div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-header">
+            <h2 class="stat-label">총 수강생 수</h2>
+          </div>
+          <div class="stat-value" th:text="${userCnt} + '명'"></div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-header">
+            <h2 class="stat-label">강의 총 수익</h2>
+          </div>
+          <div class="stat-value" th:text="${#numbers.formatInteger(instProfit, 3, 'COMMA')} + '원'"></div>
+        </article>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
