@@ -173,10 +173,19 @@ public class AdminLectureController {
 		return "admin/lecture/searchDetailNotApprLect";
 	}
 	
+	/**
+	 * 강의 상태 승인
+	 * @param lectureId
+	 */
 	@PostMapping("/approve")
 	@ResponseBody
 	public void approve(String lectureId) {
 		als.approvalLecture(lectureId);
 	}
 	
+	@PostMapping("/reject")
+	@ResponseBody
+	public void reject(@RequestParam String lectureId, @RequestParam String reason) {
+		als.rejectReason(lectureId, reason);
+	}
 }

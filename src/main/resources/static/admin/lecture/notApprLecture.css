@@ -224,3 +224,66 @@
 .curriculum-table td:nth-child(4) { width: 20%; }
 .curriculum-table th:nth-child(5),
 .curriculum-table td:nth-child(5) { width: 20%; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 9999;
+}
+
+.modal.is-open {
+  display: block;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(2px);
+}
+
+.modal__panel {
+  position: relative;
+  width: min(460px, 92vw);
+  margin: 12vh auto 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  padding: 20px 22px;
+  animation: modalIn 0.18s ease-out;
+}
+
+.modal__panel h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal__panel label {
+  display: block;
+  font-size: 14px;
+  margin: 8px 0 6px;
+}
+
+.modal__panel textarea {
+  width: 100%;
+  border: 1px solid #d6dde3;
+  border-radius: 8px;
+  padding: 10px;
+  resize: vertical;
+  font-size: 14px;
+}
+
+.modal__actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+@keyframes modalIn {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
