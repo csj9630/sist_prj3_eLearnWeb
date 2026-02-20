@@ -118,4 +118,14 @@ public class CommonMemberController {
         return commonMemberService.updatePassword(type, id, password);
     }
 
+    /**
+     * 공통 로그아웃 - 세션 전체 무효화 후 메인으로 리다이렉트
+     * mainHeader.html의 /common/member/logout 링크에서 호출됨
+     */
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // 세션 전체 삭제 (userId, userName 등 모두 제거)
+        return "redirect:/main"; // 메인 페이지로 이동
+    }
+
 }

@@ -12,6 +12,9 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
@@ -69,6 +72,67 @@
 
         .animate-fade-in {
             animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* ===== 토스트 알림 ===== */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: white;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            animation: slideInRight 0.3s ease-out forwards;
+            min-width: 220px;
+        }
+
+        .toast.success {
+            background-color: #10b981;
+        }
+
+        .toast.warn {
+            background-color: #f59e0b;
+        }
+
+        .toast.error {
+            background-color: #ef4444;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(20px);
+            }
         }
     </style>
 </head>
@@ -166,31 +230,38 @@
         <!-- Main Content: max-w-screen-xl 적용으로 넓은 레이아웃 -->
         <div class="max-w-screen-xl mx-auto px-4 py-12">
 
-            <!-- Filter Section -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-1">전체 강의</h2>
-                    <p class="text-gray-500 text-sm">성장을 위한 최고의 강의들을 만나보세요.</p>
-                </div>
-
-                <!-- Category Chips -->
-                <div id="category-container" class="flex flex-wrap gap-2">
+            <!-- Category Filter (한줄 아이콘 레이아웃) + 정렬 드롭다운 -->
+            <div class="relative py-4 mb-6 border-b border-gray-200">
+                <!-- 카테고리 버튼 영역 -->
+                <div id="category-container" class="flex items-center justify-center gap-1 overflow-x-auto">
                     <!-- Javascript will populate this -->
                 </div>
-            </div>
 
-            <!-- Sort & Count -->
-            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
-                <div class="flex items-center gap-2">
-                    <span class="font-bold text-gray-800 text-sm">총 <span id="course-count"
-                            class="text-emerald-600">0</span>개</span>
-                </div>
-                <div class="flex gap-4 text-sm text-gray-500">
-                    <button class="font-bold text-gray-900">추천순</button>
-                    <button class="hover:text-gray-900 transition-colors">최신순</button>
-                    <button class="hover:text-gray-900 transition-colors">평점순</button>
+                <!-- 정렬 드롭다운 (우상단) -->
+                <div class="absolute top-3 right-0" style="z-index:10;">
+                    <div id="sort-dropdown" class="relative">
+                        <button id="sort-toggle-btn"
+                            class="flex items-center gap-1 text-sm text-gray-600 font-medium hover:text-gray-900 transition-colors cursor-pointer px-2 py-1">
+                            <span id="sort-label">추천순</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </button>
+                        <div id="sort-menu"
+                            class="hidden absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[100px]">
+                            <button
+                                class="sort-option w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-900 font-bold"
+                                data-sort="recommend">추천순</button>
+                            <button
+                                class="sort-option w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-600"
+                                data-sort="latest">최신순</button>
+                            <button
+                                class="sort-option w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-600"
+                                data-sort="rating">평점순</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <!-- course-count는 숨기되 JS 오류 방지용으로 유지 -->
+            <span id="course-count" class="hidden">0</span>
 
             <!-- Course Grid -->
             <!-- Note: 'overflow-visible' allows the hover card to pop out -->
@@ -226,7 +297,8 @@
 
     </main>
 
-    <!-- Scroll to Top 버튼 -->
+    <!-- 토스트 알림 컨테이너 -->
+    <div id="toast-container"></div>
     <button id="scroll-top-btn"
         class="fixed bottom-8 right-8 z-50 hidden w-12 h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
         <i data-lucide="chevron-up" class="w-5 h-5"></i>
@@ -239,7 +311,7 @@
                 <div>
                     <a href="#" class="flex items-center gap-2 mb-6">
                         <i data-lucide="book-open" class="text-emerald-600 w-6 h-6"></i>
-                        <span class="text-xl font-bold text-gray-900">InLearn</span>
+                        <span class="text-xl font-bold text-gray-900">IntLearn</span>
                     </a>
                     <p class="leading-relaxed mb-4">
                         우리는 모두의 성장을 믿습니다.<br>
@@ -280,7 +352,7 @@
                 </div>
             </div>
             <div class="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p>© 2026 InLearn Inc. All Rights Reserved.</p>
+                <p>© 2026 IntLearn Inc. All Rights Reserved.</p>
                 <div class="flex gap-6">
                     <a href="#" class="hover:text-gray-900 transition-colors">이용약관</a>
                     <a href="#" class="font-bold text-gray-900 hover:text-emerald-600 transition-colors">개인정보처리방침</a>
@@ -294,19 +366,19 @@
         // --- Data (서버에서 주입) ---
         const CATEGORIES = [{ id: 'all', name: '전체' }];
         /*[# th:each="cat : ${categories}"]*/
-        CATEGORIES.push({ id: '[[${cat.catId}]]', name: '[[${cat.catName}]]' });
+        CATEGORIES.push({ id: [[${ cat.catId }]], name: [[${ cat.catName }]] });
         /*[/]*/
 
         const COURSES = [];
         /*[# th:each="c : ${courses}"]*/
         COURSES.push({
-            id: '[[${c.lectId}]]',
-            title: '[[${c.title}]]',
-            instructor: '[[${c.instructor}]]',
+            id: [[${ c.lectId }]],
+            title: [[${ c.title }]],
+            instructor: [[${ c.instructor }]],
             price: [[${ c.price }]],
-            shortint: '[[${c.shortint}]]',
-            category: '[[${c.category}]]',
-            thumbnail: '[[${c.thumbnail}]]',
+            shortint: [[${ c.shortint }]],
+            category: [[${ c.category }]],
+            thumbnail: [[${ c.thumbnail }]],
             usercount: [[${ c.usercount }]],
             rating: [[${ c.rating }]],
             reviewCount: [[${ c.reviewCount }]]
@@ -349,18 +421,37 @@
         };
 
         // --- Render Functions ---
+        /* 카테고리별 Lucide 아이콘 매핑 */
+        const CATEGORY_ICONS = {
+            '전체': 'layout-grid',
+            '데이터베이스': 'database',
+            '교양': 'book-open',
+            '웹 프로그래밍': 'globe',
+            '인공지능': 'bot',
+            '모바일 앱': 'smartphone',
+            '게임 개발': 'gamepad-2',
+            '보안': 'shield-check',
+            '데이터 분석': 'pie-chart',
+            '클라우드': 'cloud',
+            '디자인': 'figma'
+        };
+
         const renderCategories = () => {
             categoryContainer.innerHTML = '';
             CATEGORIES.forEach(cat => {
                 const btn = document.createElement('button');
                 const isActive = state.activeCategory === cat.id;
 
-                const baseClasses = "flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border select-none";
-                const activeClasses = "bg-gray-900 text-white border-gray-900 shadow-lg shadow-gray-200";
-                const inactiveClasses = "bg-white text-gray-500 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900";
+                /* 한줄 배치용 컴팩트 스타일 */
+                const baseClasses = "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 select-none whitespace-nowrap min-w-[72px]";
+                const activeClasses = "text-emerald-600 font-bold border-b-2 border-emerald-600";
+                const inactiveClasses = "text-gray-500 hover:text-gray-900";
 
                 btn.className = `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
-                btn.innerHTML = cat.name;
+
+                /* 아이콘 + 텍스트 구조 */
+                const iconName = CATEGORY_ICONS[cat.name] || 'layers';
+                btn.innerHTML = `<i data-lucide="${iconName}" class="w-5 h-5 mb-0.5"></i><span>${cat.name}</span>`;
 
                 btn.addEventListener('click', () => {
                     state.activeCategory = cat.id;
@@ -422,12 +513,16 @@
                     const priceText = course.price === 0 ? '무료' : `₩${formatPrice(course.price)}`;
                     const priceColor = course.price === 0 ? 'text-emerald-600' : 'text-gray-900';
                     const categoryName = CATEGORIES.find(c => c.id === course.category)?.name || '';
-                    //instPaymentMapper에서 확인후 이미지추가하기
+                    // 썸네일 이미지가 있으면 img 태그, 없으면 기본 아이콘 표시
+                    const thumbHTML = course.thumbnail && course.thumbnail !== '/common/images/lecture_thumb_njwVersion/'
+                        ? `<img src="${course.thumbnail}" alt="${course.title}" class="w-full h-full object-cover" onerror="this.parentNode.innerHTML='<i data-lucide=\'book-open\' class=\'text-gray-900 opacity-20 w-20 h-20\'></i>'; lucide.createIcons();">`
+                        : `<i data-lucide="book-open" class="text-gray-900 opacity-20 w-20 h-20"></i>`;
+
                     const cardHTML = `
                         <div class="relative group hover:z-50 h-full">
                             <div class="h-full bg-white rounded-xl overflow-hidden border border-gray-100 flex flex-col">
                                 <div class="h-[160px] w-full bg-gray-100 flex items-center justify-center relative overflow-hidden">
-                                    <i data-lucide="book-open" class="text-gray-900 opacity-20 w-20 h-20"></i>
+                                    ${thumbHTML}
                                 </div>
                                 <div class="p-4 flex flex-col flex-1">
                                     <h3 class="text-gray-900 font-bold text-base mb-1 line-clamp-2 min-h-[3rem] leading-snug">${course.title}</h3>
@@ -459,7 +554,7 @@
 
                                     <div class="pt-3 border-t border-gray-100 flex items-center justify-between mt-1">
                                         <span class="font-bold text-xl ${priceColor}">${priceText}</span>
-                                        <button class="add-to-cart-btn p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors shadow-sm" data-id="${course.id}">
+                                        <button class="add-to-cart-btn p-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors shadow-sm" data-id="${course.id}" data-title="${course.title}">
                                             <i data-lucide="shopping-cart" class="w-5 h-5"></i>
                                         </button>
                                     </div>
@@ -473,7 +568,9 @@
                 document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        addToCart();
+                        // data-id 속성에서 강의 ID 가져와서 AJAX 장바구니 담기 호출
+                        const lectId = btn.getAttribute('data-id');
+                        addToCart(lectId);
                     });
                 });
 
@@ -552,17 +649,64 @@
             observer.observe(scrollSentinel);
         };
 
-        const addToCart = () => {
-            state.cartCount++;
-            cartBadge.textContent = state.cartCount;
-            if (state.cartCount > 0) {
-                cartBadge.classList.remove('hidden');
-                cartBadge.classList.add('flex');
+        /**
+         * 토스트 알림 표시 함수
+         * @param {string} message - 표시할 메시지
+         * @param {string} type - 'success' | 'warn' | 'error'
+         */
+        const showToast = (message, type = 'success') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
 
-                // Animate Badge
-                cartBadge.classList.add('scale-125');
-                setTimeout(() => cartBadge.classList.remove('scale-125'), 200);
-            }
+            // 타입별 아이콘
+            const icons = { success: '✓', warn: '!', error: '✕' };
+            toast.innerHTML = `<span style="font-size:16px;font-weight:bold;">${icons[type] || '!'}</span><span>${message}</span>`;
+            container.appendChild(toast);
+
+            // 2.5초 후 제거
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-in forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        };
+
+        /**
+         * AJAX 장바구니 담기
+         * @param {string} lectId - 강의 ID
+         */
+        const addToCart = (lectId) => {
+            $.ajax({
+                url: '/user/payment/ajaxAddToCart',
+                type: 'POST',
+                data: { lectId: lectId },
+                success: function (res) {
+                    if (res === 'success') {
+                        // 배지 카운트 증가 및 애니메이션
+                        state.cartCount++;
+                        cartBadge.textContent = state.cartCount;
+                        cartBadge.classList.remove('hidden');
+                        cartBadge.classList.add('flex');
+                        cartBadge.classList.add('scale-125');
+                        setTimeout(() => cartBadge.classList.remove('scale-125'), 200);
+
+                        showToast('장바구니에 담겼습니다! 🛒', 'success');
+
+                    } else if (res === 'duplicate') {
+                        // 이미 장바구니에 담긴 강의
+                        showToast('이미 장바구니에 담긴 강의입니다.', 'warn');
+
+                    } else if (res === 'login_required') {
+                        // 로그인 필요
+                        if (confirm('로그인이 필요한 서비스입니다.\n로그인 페이지로 이동할까요?')) {
+                            location.href = '/common/member/loginFrm';
+                        }
+                    }
+                },
+                error: function () {
+                    showToast('오류가 발생했습니다. 다시 시도해주세요.', 'error');
+                }
+            });
         };
 
         // --- Event Initializers ---
@@ -588,6 +732,35 @@
             renderCategories();
             renderCourses();
             setupIntersectionObserver();
+
+            /* 정렬 드롭다운 이벤트 */
+            const sortToggle = document.getElementById('sort-toggle-btn');
+            const sortMenu = document.getElementById('sort-menu');
+            const sortLabel = document.getElementById('sort-label');
+
+            sortToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sortMenu.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('.sort-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    sortLabel.textContent = opt.textContent;
+                    /* 선택된 항목 스타일 변경 */
+                    document.querySelectorAll('.sort-option').forEach(o => {
+                        o.classList.remove('text-gray-900', 'font-bold');
+                        o.classList.add('text-gray-600');
+                    });
+                    opt.classList.add('text-gray-900', 'font-bold');
+                    opt.classList.remove('text-gray-600');
+                    sortMenu.classList.add('hidden');
+                });
+            });
+
+            /* 외부 클릭 시 드롭다운 닫기 */
+            document.addEventListener('click', () => {
+                sortMenu.classList.add('hidden');
+            });
 
             const swiper = new Swiper(".mySwiper", {
                 loop: true,

@@ -14,6 +14,5 @@ public class UserDTO {
     private String id, password, email, intro, name, img, phone, regip;
     private Date birth, regdate;
     private char activation;
-    
 
 }
