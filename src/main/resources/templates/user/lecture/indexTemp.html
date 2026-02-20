@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>작업용 링크</title>
+<th:block th:replace = "~{fragments/cdn :: cdn}"/>
+<style type = "text/css">
+#wrap{margin: 0px auto; width: 1000px; height: 1200px}
+#header{height: 150px}
+#container{height: 950px}
+#footer{height: 100px}
+</style>
+<script type="text/javascript">
+$(function() {
+
+}); // ready
+</script>
+</head>
+<body>
+<div id = "wrap">
+<div id = "header">
+<th:block th:replace = "~{fragments/header :: header}"/>
+</div>
+<div id = "container">
+<h1>작업용 링크 - 최승준</h1>
+<p> 컨트롤러 경로 : kr.co.sist.user.lecture.CSJTempController</p>
+<h5> 학생 - 🗂️ 임시 session의 userId : 🧑‍🎓<span th:text="${session.userId}"></span> </h5>
+<ul>
+	<li>
+		<a th:href="@{/user/lecture/lectureList}">강의 목록</a>
+
+		http://localhost:8080/user/lecture/lectureList
+	</li>
+	<li>
+		<a th:href="@{/lecture/chapter/viewProgressList?lectId=L1}">챕터 목록</a>
+		http://localhost:8080/lecture/chapter/viewProgressList?lectId=L1
+	</li>
+	<li>
+		<a th:href="@{/lecture/chapter/video?lectId=L1&chpterId=CH1}">동영상 강의 시청</a>
+		http://localhost:8080/lecture/chapter/video?lectId=L1&chpterId=CH1
+	</li>
+</ul>
+<hr>
+<h5> 강사 - 🗂️ 임시 session의 instId : ‍👨‍🏫<span th:text="${session.instId}"></span> </h5>
+<ul>
+	<li>
+		<a th:href="@{/instructor/lecture/list}">강의 목록</a>
+		http://localhost:8080/instructor/lecture/list
+	</li>
+	<li>
+		<a th:href="@{/instructor/lecture/manage}">강의 등록</a>
+		http://localhost:8080/instructor/lecture/manage
+	</li>
+
+</ul>
+
+</div>
+<div id = "footer">
+<th:block th:replace = "~{fragments/footer :: footer}"/>
+</div>
+</div>
+</body>
+</html>

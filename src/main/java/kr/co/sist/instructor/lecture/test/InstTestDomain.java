@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 public class InstTestDomain {
 	//시험ID, 강의ID, 문제ID, 질문, 선택지1~4,정답, 해설
-	private String id, lectId, Qid, content,OPT1, OPT2, OPT3, OPT4, ANS, EXP;
+	private String id, lectId, qid, content,opt1, opt2, opt3, opt4, ans, exp;
 	private int num;
 	
 }

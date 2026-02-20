@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+<<<<<<< HEAD
 <meta charset="UTF-8">
 <title>내 강의실</title>
 <style>
@@ -11,18 +12,40 @@
     .btn-study { background-color: #9b59b6; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;}
     .btn-home { background-color: #555; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
 </style>
+=======
+    <meta charset="UTF-8">
+    <title>인프런 - 내 학습</title>
+    <link rel="stylesheet" href="/css/user-mypage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .search-box { position: relative; width: 320px; }
+        .search-box input { width: 100%; padding: 10px 10px 10px 36px; border: 1px solid #dee2e6; border-radius: 4px; }
+        .search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #888; }
+        .filter-row { display: flex; justify-content: space-between; margin-bottom: 24px; }
+    </style>
+>>>>>>> refs/heads/dev0220-2
 </head>
 <body>
+<<<<<<< HEAD
     <h2>🏫 내 강의실 (수강 중인 강의)</h2>
     
     <div style="text-align: right; width: 80%; margin: 0 auto 20px;">
         <a href="/" class="btn-home">🏠 메인으로</a>
     </div>
+=======
+    <div th:replace="~{fragments/MyHeader :: header}"></div>
+>>>>>>> refs/heads/dev0220-2
 
+<<<<<<< HEAD
     <div th:if="${#lists.isEmpty(myLectureList)}">
         <p>수강 중인 강의가 없습니다.</p>
     </div>
+=======
+    <div class="mypage-container">
+        <div th:replace="~{fragments/MySidebar :: sidebar('lecture')}"></div>
+>>>>>>> refs/heads/dev0220-2
 
+<<<<<<< HEAD
     <div class="lect-container" th:if="${not #lists.isEmpty(myLectureList)}">
         <div class="lect-card" th:each="lect : ${myLectureList}">
             <img th:src="@{/images/{img}(img=${lect.thumbnail})}" width="100%">
@@ -30,6 +53,65 @@
             <div th:text="'강사: ' + ${lect.instName}"></div>
             <div th:text="'진도율: ' + ${lect.progRate} + '%'"></div>
             <a th:href="@{/user/my/dashboard/detail(myLectId=${lect.myLectId})}" class="btn-study">학습하기</a>
+=======
+        <div class="mypage-content">
+            <h2 class="page-title">내 학습</h2>
+            
+            <div class="tab-menu">
+                <div class="tab-btn active">강의</div>
+            </div>
+
+
+			<div class="filter-row">
+			    <form action="/user/my/lecture" method="get" class="search-form">
+				    <div class="input-wrapper">
+				        <input type="text" name="title" placeholder="강의명, 강사명 검색" th:value="${param.title}">
+				        <i class="fas fa-search"></i>
+				    </div>
+				    <button type="submit" class="search-btn">검색</button>
+				</form>
+			</div>
+				
+					
+            <div class="lecture-grid">
+                
+                <div th:if="${#lists.isEmpty(myLectureList)}" style="grid-column: 1/-1; text-align:center; padding:50px; color:#888;">
+                    <i class="fas fa-exclamation-circle" style="font-size:40px; margin-bottom:10px;"></i>
+                    <p>수강 신청한 강의가 없습니다.</p>
+                </div>
+
+                <th:block th:each="lect : ${myLectureList}">
+                    
+                    <a th:href="@{/lecture/chapter/viewProgressList(lectId=${lect.lectId})}" 
+                       class="course-card" 
+                       style="display: flex; flex-direction: column; text-decoration: none; color: inherit; cursor: pointer;">
+                        
+                        <div class="card-thumb">
+                            <img th:src="${lect.thumbnail != null ? lect.thumbnail : 'https://via.placeholder.com/260x145?text=No+Image'}" 
+                                 alt="강의 썸네일">
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="card-title" th:text="${lect.lectName}">강의 제목</div>
+                            
+                            <div class="card-instructor" th:text="${lect.instName}">강사 이름</div>
+                            
+                            <div class="progress-bg">
+                                <div class="progress-bar" th:style="'width:' + ${lect.progRate} + '%'"></div>
+                            </div>
+                            
+                            <div class="card-meta">
+                                <span th:text="|${lect.myChapter}/${lect.totalChapter}강 (${lect.progRate}%)|">0/0강 (0%)</span>
+                                
+                                <span th:if="${lect.progRate == 100}" style="color: #00c471; font-weight:bold;">완강</span>
+                                <span th:unless="${lect.progRate == 100}">수강중</span>
+                            </div>
+                        </div>
+                    </a>
+                    </th:block>
+
+            </div>
+>>>>>>> refs/heads/dev0220-2
         </div>
     </div>
 </body>

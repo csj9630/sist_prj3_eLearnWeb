@@ -1,0 +1,48 @@
+package kr.co.sist.instructor.member;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.exceptions.PersistenceException;
+
+/**
+ * 강사 - 회원가입(Member) Mapper Interface
+ */
+@Mapper
+public interface InstructorMemberMapper {
+
+    /**
+     * 강사 등록
+     * 
+     * @param instructorDTO 강사 DTO 객체
+     * @return 등록 성공 여부
+     * @throws PersistenceException
+     */
+    public int insertInstructor(InstructorDTO instructorDTO) throws PersistenceException;
+
+    /**
+     * 아이디 중복 확인
+     * 
+     * @param id 아이디
+     * @return 아이디 (없으면 null)
+     * @throws PersistenceException
+     */
+    public String selectId(String id) throws PersistenceException;
+
+    /**
+     * 이름 중복 확인
+     * 
+     * @param name 이름
+     * @return 이름 (없으면 null)
+     * @throws PersistenceException
+     */
+    public String selectName(String name) throws PersistenceException;
+
+    /**
+     * 전화번호 중복 확인
+     * 
+     * @param phone 전화번호
+     * @return 전화번호 (없으면 null)
+     * @throws PersistenceException
+     */
+    public String selectPhone(String phone) throws PersistenceException;
+
+}

@@ -23,17 +23,31 @@ public class UserController {
     @GetMapping("/joinFrm")
     public String joinUser() {
 
-        return "/user/member/joinFrm";
+        return "user/member/joinFrm";
     }
 
     // 회원가입 처리
     @PostMapping("/joinProcess")
     public String joinUserProcess(UserDTO sDTO, Model model, HttpServletRequest request) {
 
+        // 유효성 검사 (전화번호 11자리, 생년월일 2019년 이전)
+        if (sDTO.getPhone() != null && sDTO.getPhone().length() != 11) {
+            model.addAttribute("memberResult", false);
+            return "user/member/joinProcess";
+        }
+
+        if (sDTO.getBirth() != null) {
+            java.sql.Date limitDate = java.sql.Date.valueOf("2019-12-31");
+            if (sDTO.getBirth().after(limitDate)) {
+                model.addAttribute("memberResult", false);
+                return "user/member/joinProcess";
+            }
+        }
+
         sDTO.setRegip(request.getRemoteAddr());
         boolean flag = us.addUser(sDTO);
         model.addAttribute("memberResult", flag);
-        return "/user/member/joinProcess";
+        return "user/member/joinProcess";
     }
 
     // 중복 확인
@@ -47,10 +61,23 @@ public class UserController {
     }
 
     // 닉네임 중복 확인
-    @GetMapping("/overlapNick")
+    @GetMapping("/overlapName")
     @ResponseBody
-    public String chkNick(String name) {
-        return "";
+    public String chkName(String name) {
+        if (us.chkUserName(name)) {
+            return "available";
+        }
+        return "used";
+    }
+
+    // 전화번호 중복 확인
+    @GetMapping("/overlapPhone")
+    @ResponseBody
+    public String chkPhone(String phone) {
+        if (us.chkUserPhone(phone)) {
+            return "available";
+        }
+        return "used";
     }
 
     // // 학생 내 정보 조회

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.admin.member.AdminMemberMapper">
+
+    <select id="selectUserList" resultType="UserDomain">
+        SELECT USER_ID as id, NAME, EMAIL, PHONE, INTRO, "PROFILE" as img, REGDATE, REGIP, ACTIVATION
+        FROM USERS
+        ORDER BY REGDATE DESC
+    </select>
+
+    <select id="selectUserListByPage" resultType="UserDomain">
+        SELECT
+            u.id, u.name, u.phone, u.email, u.intro, u.img, u.regdate, u.regip, u.activation
+        FROM (
+            SELECT
+                USER_ID as id,
+                NAME as name,
+                EMAIL as email,
+                PHONE as phone,
+                INTRO as intro,
+                "PROFILE" as img,
+                REGDATE as regdate,
+                REGIP as regip,
+                ACTIVATION as activation,
+                ROW_NUMBER() OVER (ORDER BY REGDATE DESC) as rnum
+            FROM USERS
+        ) u
+        WHERE u.rnum BETWEEN #{startRow} AND #{endRow}
+        ORDER BY u.rnum
+    </select>
+
+    <select id="selectUserCount" resultType="int">
+        SELECT COUNT(*)
+        FROM USERS
+    </select>
+
+    <select id="selectUser" parameterType="String" resultType="UserDomain">
+        SELECT USER_ID as id, NAME, EMAIL, PHONE, INTRO, "PROFILE" as img, REGDATE, REGIP, ACTIVATION
+        FROM USERS
+        WHERE USER_ID = #{id}
+    </select>
+    
+    <select id="selectInstructorList" resultType="InstructorDomain">
+        SELECT INST_ID as instId, NAME, EMAIL, PHONE, "PROFILE" as profile, REGDATE, REGIP as regip, APPROVAL, ACTIVATION
+        FROM INSTRUCTOR
+        ORDER BY REGDATE DESC
+    </select>
+
+    <select id="selectInstructorListByPage" resultType="InstructorDomain">
+        SELECT
+            i.instId, i.name, i.email, i.phone, i.profile, i.regdate, i.regip, i.approval, i.activation
+        FROM (
+            SELECT
+                INST_ID as instId,
+                NAME as name,
+                EMAIL as email,
+                PHONE as phone,
+                "PROFILE" as profile,
+                REGDATE as regdate,
+                REGIP as regip,
+                APPROVAL as approval,
+                ACTIVATION as activation,
+                ROW_NUMBER() OVER (ORDER BY REGDATE DESC) as rnum
+            FROM INSTRUCTOR
+        ) i
+        WHERE i.rnum BETWEEN #{startRow} AND #{endRow}
+        ORDER BY i.rnum
+    </select>
+
+    <select id="selectInstructorCount" resultType="int">
+        SELECT COUNT(*)
+        FROM INSTRUCTOR
+    </select>
+
+    <select id="selectInstructor" parameterType="String" resultType="InstructorDomain">
+        SELECT INST_ID as instId, NAME, EMAIL, PHONE, "PROFILE" as profile, REGDATE, REGIP as regip, APPROVAL, ACTIVATION
+        FROM INSTRUCTOR
+        WHERE INST_ID = #{instId}
+    </select>
+
+    <update id="updateInstructorStatus" parameterType="String">
+        UPDATE INSTRUCTOR
+        SET APPROVAL = 1
+        WHERE INST_ID = #{instId}
+    </update>
+
+</mapper>

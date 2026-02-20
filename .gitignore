@@ -4,6 +4,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+
+# 개인용 properties 파일 
+src/main/resources/application-local.properties
+
+
+
 ### STS ###
 .apt_generated
 .classpath

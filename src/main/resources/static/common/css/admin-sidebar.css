@@ -8,15 +8,19 @@
 
 .admin-sidebar {
   width: 240px;
-  padding: 14px 12px;
+  padding: 28px 14px;
+  position: sticky;
+  top: var(--header-height, 84px);
+  height: calc(100vh - var(--header-height, 84px));
+  overflow-y: auto;
 }
 
 .admin-sidebar-nav {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  border-radius: 0;
-  padding: 0;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid #dbe1ea;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06);
+  border-radius: 16px;
+  padding: 10px;
 }
 
 .admin-sidebar-title {
@@ -32,24 +36,27 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
 .admin-sidebar-link {
   display: block;
-  padding: 4px 2px;
+  padding: 9px 10px;
   color: var(--sidebar-ink);
   text-decoration: none;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
-  transition: color 0.2s ease;
+  border-radius: 10px;
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .admin-sidebar-link:hover {
+  background: #edf5ff;
   color: var(--sidebar-accent);
 }
 
 .admin-sidebar-link.is-active {
+  background: #e5f7f0;
   color: var(--sidebar-accent);
 }
 

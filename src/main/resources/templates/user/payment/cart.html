@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>장바구니</title>
+<<<<<<< HEAD
 <style>
     body { font-family: 'Noto Sans KR', sans-serif; padding: 30px; text-align: center; }
     table { width: 80%; margin: 20px auto; border-collapse: collapse; }
@@ -14,14 +15,193 @@
     .btn-home { background-color: #555; } /* 뒤로가기 버튼 스타일 */
 </style>
 <script src="https://js.tosspayments.com/v1/payment"></script>
+=======
+<link rel="stylesheet" href="/css/user-mypage.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://js.tosspayments.com/v1/payment"></script>
+
+<style>
+    .btn-delete-selected {
+        padding: 6px 14px; background-color: #fff; border: 1px solid #dee2e6;
+        border-radius: 4px; color: #495057; font-size: 13px; cursor: pointer; transition: all 0.2s;
+    }
+    .btn-delete-selected:hover { background-color: #f8f9fa; border-color: #c1c8cd; color: #333; }
+</style>
+
+<script>
+    //  토스 결제 키 설정
+    var clientKey = 'test_ck_Z1aOwX7K8mz4qRa9nBwA3yQxzvNP';
+    var tossPayments = TossPayments(clientKey);
+
+    // 가격 계산 및 개수 업데이트
+    function calcTotal() {
+        let total = 0;
+        const checkboxes = document.querySelectorAll('input[name="chkLect"]:checked');
+        const allCheckboxes = document.querySelectorAll('input[name="chkLect"]');
+        
+        checkboxes.forEach(function(chk) {
+            total += parseInt(chk.getAttribute('data-price'));
+        });
+        document.getElementById('totalPrice').innerText = total.toLocaleString();
+
+        // 선택 개수 / 전체 개수 업데이트
+        if(document.getElementById('selectedCountText')) {
+            document.getElementById('selectedCountText').innerText = checkboxes.length + ' / ' + allCheckboxes.length;
+        }
+    }
+
+    // 결제 요청 (토스 SDK 사용)
+    function requestPayment() {
+        let totalAmount = parseInt(document.getElementById('totalPrice').innerText.replace(/,/g, ''));
+        if (totalAmount === 0) { alert("결제할 강의를 선택해주세요."); return; }
+
+        let selectedIds = [];
+        document.querySelectorAll('input[name="chkLect"]:checked').forEach(function(chk) {
+            selectedIds.push(chk.value);
+        });
+        let lectIdsStr = selectedIds.join(",");
+
+        tossPayments.requestPayment('카드', {
+            amount: totalAmount,
+            orderId: 'ORDER_' + new Date().getTime(),
+            orderName: '강의 결제',
+            customerName: '수강생',
+            successUrl: window.location.origin + '/user/payment/toss/success?lectIds=' + lectIdsStr,
+            failUrl: window.location.origin + '/user/payment/fail_page',
+        });
+    }
+    
+    // 개별 삭제 (X 버튼)
+    function removeCartItem(lectId) {
+        if(!confirm("이 강의를 장바구니에서 삭제하시겠습니까?")) return;
+        requestRemoveCart([lectId]); // 배열로 담아서 보냄
+    }
+
+    // 선택 삭제 (버튼)
+    function removeSelectedCartItems() {
+        const checkboxes = document.querySelectorAll('input[name="chkLect"]:checked');
+        if(checkboxes.length === 0) { alert("삭제할 강의를 선택해주세요."); return; }
+        if(!confirm("선택한 " + checkboxes.length + "개의 강의를 삭제하시겠습니까?")) return;
+
+        const lectIds = [];
+        checkboxes.forEach(cb => lectIds.push(cb.value));
+        requestRemoveCart(lectIds);
+    }
+
+    // 삭제 AJAX (traditional: true 필수)
+    function requestRemoveCart(lectIds) {
+        $.ajax({
+            url: "/user/payment/delLectFromCart",
+            type: "GET",       
+            data: { lectIds: lectIds },
+            success: function(response) {
+                if(response === "success") {
+                    alert("삭제되었습니다.");
+                    location.reload();
+                } else {
+                    alert("삭제 실패");
+                }
+            },
+            error: function(xhr, status, error) { 
+                console.error("Error:", error);
+                console.error("Status:", status);
+                alert("서버 통신 오류"); 
+            }
+        });
+    }
+    
+    // 이벤트 바인딩
+    $(document).ready(function() {
+        calcTotal();
+        $("#checkAll").change(function(){
+            $("input[name='chkLect']").prop('checked', $(this).prop("checked"));
+            calcTotal();
+        });
+        $("input[name='chkLect']").change(function(){
+            calcTotal();
+            var total = $("input[name='chkLect']").length;
+            var checked = $("input[name='chkLect']:checked").length;
+            $("#checkAll").prop('checked', total === checked);
+        });
+    });
+</script>
+>>>>>>> refs/heads/dev0220-2
 </head>
 <body>
+    <div th:replace="~{fragments/MyHeader :: header}"></div>
 
+<<<<<<< HEAD
     <h2>🛒 나의 장바구니</h2>
     
     <div style="text-align: right; width: 80%; margin: 0 auto;">
         <a href="/" class="btn btn-home">🏠 메인으로</a>
+=======
+    <div class="mypage-container" style="display:block; width: 1000px; margin: 50px auto;">
+        
+        <h2 class="page-title">나의 장바구니</h2>
+        
+        <div style="text-align: right; margin-bottom: 20px;">
+            <a href="/" class="btn-outline" style="font-size:14px; padding:8px 16px; font-weight: bold;">메인 페이지로</a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(cartList)}" class="empty-state">
+            <i class="fas fa-shopping-cart"></i>
+            <p>장바구니가 비어있습니다.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(cartList)}" class="purchase-list-container">
+            
+            <div style="padding: 10px; border-bottom: 1px solid #eee; margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <label style="cursor:pointer;">
+                        <input type="checkbox" id="checkAll" checked> 
+                        <span style="font-weight:bold; margin-left:5px;">전체 선택</span>
+                    </label>
+                    <span id="selectedCountText" style="margin-left: 10px; font-size: 14px; color: #666;">0 / 0</span>
+                </div>
+                <button type="button" class="btn-delete-selected" onclick="removeSelectedCartItems()">선택 삭제</button>
+            </div>
+
+            <th:block th:each="cart : ${cartList}">
+                <div class="purchase-card">
+                    <div class="p-left">
+                        <input type="checkbox" name="chkLect" th:value="${cart.lectId}" th:data-price="${cart.price}" checked style="margin-right:15px; transform:scale(1.2);">
+                        <div class="p-thumb">
+                            <img th:src="${cart.lectThumbnail}" onerror="this.src='https://via.placeholder.com/120x75'">
+                        </div>
+                        <div class="p-info">
+                            <h4 th:text="${cart.lectName}">강의명</h4>
+                            <span th:text="${cart.instName}">강사명</span>
+                        </div>
+                    </div>
+                    <div class="p-right">
+                        <span class="p-price" th:text="${#numbers.formatInteger(cart.price, 0, 'COMMA') + '원'}">가격</span>
+                        
+                        <button type="button" 
+                                th:data-id="${cart.lectId}"
+                                onclick="removeCartItem(this.getAttribute('data-id'))"
+                                style="border:none; background:none; cursor:pointer; color:#888;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        
+                    </div>
+                </div>
+            </th:block>
+
+            <div class="cart-footer" style="margin-top: 30px; text-align: right; border-top: 2px solid #333; padding-top: 20px;">
+                <span style="font-size: 20px; font-weight: bold; margin-right: 20px;">
+                    총 결제 금액: <span id="totalPrice" style="color: #00c471;">0</span>원
+                </span>
+                <button type="button" onclick="requestPayment()" 
+                        style="background:#00c471; color:white; border:none; padding:12px 40px; border-radius:4px; font-size:16px; font-weight:bold; cursor:pointer;">
+                    결제하기
+                </button>
+            </div>
+        </div>
+>>>>>>> refs/heads/dev0220-2
     </div>
+<<<<<<< HEAD
 
     <div th:if="${#lists.isEmpty(cartList)}">
         <p>장바구니가 비어있습니다.</p>
@@ -93,5 +273,7 @@
         // 페이지 로드 시 초기 계산
         calcTotal();
     </script>
+=======
+>>>>>>> refs/heads/dev0220-2
 </body>
 </html>

@@ -26,5 +26,15 @@ $(function(){
 임시 강의 아이디 : <input type="text" name="lectId" value="L1">
 <input type="submit" value="시험 관리 페이지로" class="btn btn-info btn-sm">
  </form>
+<form th:action="@{/user/lecture/test/choiceTestFrm}" method="GET">
+임시 강사 아이디 : <input type="text" name="instId" value="inst1">
+임시 강의 아이디 : <input type="text" name="lectId" value="L1">
+<input type="submit" value="유저 시험 선택 페이지로" class="btn btn-info btn-sm">
+ </form>
+ 
+ <form th:action="@{/instructor/lecture/addLectFrm}" method="GET">
+임시 데이터 : <input type="text" name="instId" value="">
+<input type="submit" value="강사 - 강의 생성 페이지" class="btn btn-info btn-sm">
+ </form>
 </body>
 </html>

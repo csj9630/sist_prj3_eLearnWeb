@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+<<<<<<< HEAD
 <meta charset="UTF-8">
 <title>구매 내역</title>
 <style>
@@ -10,18 +11,34 @@
     th { background-color: #f2f2f2; }
     .btn-home { background-color: #555; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
 </style>
+=======
+    <meta charset="UTF-8">
+    <title>구매 내역</title>
+    <link rel="stylesheet" href="/css/user-mypage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+>>>>>>> refs/heads/dev0220-2
 </head>
 <body>
+<<<<<<< HEAD
     <h2>📜 구매 내역 (영수증)</h2>
     
     <div style="text-align: right; width: 80%; margin: 0 auto 20px;">
         <a href="/" class="btn-home">🏠 메인으로</a>
     </div>
+=======
+    <div th:replace="~{fragments/MyHeader :: header}"></div>
+>>>>>>> refs/heads/dev0220-2
 
+<<<<<<< HEAD
     <div th:if="${#lists.isEmpty(purchaseList)}">
         <p>구매 내역이 없습니다.</p>
     </div>
+=======
+    <div class="mypage-container">
+        <div th:replace="~{fragments/MySidebar :: sidebar('payrec')}"></div>
+>>>>>>> refs/heads/dev0220-2
 
+<<<<<<< HEAD
     <div th:if="${not #lists.isEmpty(purchaseList)}">
         <table>
             <thead>
@@ -43,6 +60,56 @@
                 </tr>
             </tbody>
         </table>
+=======
+        <div class="mypage-content">
+            <h2 class="page-title">구매 내역</h2>
+            
+            <div class="tab-menu">
+                <div class="tab-btn active">강의</div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(purchaseList)}" class="empty-state">
+			    <div class="empty-icon"><i class="fas fa-feather-alt"></i></div>
+			    <p style="font-size:18px; font-weight:700; margin-bottom:8px;">아직 구매 내역이 없어요</p>
+			    <p style="font-size:14px; color:#888; margin-bottom:24px;">나를 성장시켜줄 새로운 지식을 찾아보세요</p>
+			    <a href="/" class="btn-outline">강의 보러가기</a>
+			</div>
+
+			<div th:unless="${#lists.isEmpty(purchaseList)}" class="purchase-table-wrap">
+			    <table class="purchase-table">
+			        <colgroup>
+			            <col width="15%"> <col width="35%"> <col width="15%"> <col width="15%"> <col width="10%"> <col width="10%"> </colgroup>
+			        <thead>
+			            <tr>
+			                <th>이미지</th>
+			                <th>강의명</th>
+			                <th>강사</th>
+			                <th>구매날짜</th>
+			                <th>가격</th>
+			                <th>결제 상태</th>
+			            </tr>
+			        </thead>
+			        <tbody>
+			            <th:block th:each="pay : ${purchaseList}">
+			                <tr>
+			                    <td class="td-thumb">
+			                        <img th:src="${pay.lectThumbnail}" 
+			                             onerror="this.src='https://via.placeholder.com/120x75?text=Inflearn'"
+			                             alt="강의 썸네일">
+			                    </td>
+			                    <td class="td-name" th:text="${pay.lectName}">강의 제목</td>
+			                    <td th:text="${pay.instName}">강사명</td>
+			                    <td th:text="${#dates.format(pay.time, 'yyyy.MM.dd')}">2026.01.01</td>
+			                    <td class="td-price" th:text="${#numbers.formatInteger(pay.lectPrice, 0, 'COMMA') + '원'}">19,800원</td>
+			                    <td><span class="status-badge">결제완료</span></td>
+			                </tr>
+			            </th:block>
+			        </tbody>
+			    </table>
+			</div>
+
+        </div>
+>>>>>>> refs/heads/dev0220-2
     </div>
 </body>
 </html>

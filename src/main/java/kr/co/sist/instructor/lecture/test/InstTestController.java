@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -17,6 +18,7 @@ public class InstTestController {
 	
 	@Autowired
 	private InstTestService is;
+	
 	
 	// 시험문제 페이지 보기 ( 모든 시험 문제 조회 )
 	@PostMapping("/instTestFrm")
@@ -28,34 +30,50 @@ public class InstTestController {
 		return "/instructor/lecture/test/instTestFrm";
 	}//testFrm
 
+	//시험 목록 화면을 ajax로 보내줌
+		@PostMapping("/instTestListJson")
+		@ResponseBody 
+		public List<InstTestDomain> instTestListJson(InstTestViewDTO itvDTO) {
+		    return is.searchTest(itvDTO);
+		}//instTestListJson
+	
 	//시험문제 하나 조회
+	@GetMapping("/instTestOneFrm")
+	@ResponseBody
 	public String instTestOneFrm(Model model, InstTestViewDTO itvDTO, HttpSession session) {
-		InstTestDomain ltDomain = is.searchOneTest(itvDTO);
-		return "";
+		return is.searchOneTest(itvDTO);
 	}//instTestOneFrm
 	
-	// 시험문제 생성
+	/*
+	 * // 시험문제 생성
+	 * 
+	 * @PostMapping("/createTest") public String createTest(Model model, InstTestDTO
+	 * iDTO) { boolean flag = is.writeTest(iDTO); model.addAttribute("result",
+	 * flag);
+	 * 
+	 * return "/instructor/lecture/test/instTestResult"; }//createTest
+	 */	// 시험문제 생성
 	@PostMapping("/createTest")
+	@ResponseBody
 	public String createTest(Model model, InstTestDTO iDTO) {
-		boolean flag = is.writeTest(iDTO);
-		model.addAttribute("result", flag);
 		
-		return "/instructor/lecture/test/instTestResult";
+		return is.writeTest(iDTO);
 	}//createTest
 	
 	// 시험문제 수정
 	@PostMapping("/modifyTest")
+	@ResponseBody
 	public String modifyTest(Model model, InstTestDTO iDTO, HttpSession session) {
 		
-		return "";
-	}
+		return is.modifyTest(iDTO);
+	}//modifyTest
 	
 	// 시험문제 삭제
 	@PostMapping("/removeTest")
-	public String removeTest(Model model, int testId, HttpSession session) {
-		
-		return "";
-	}
+	@ResponseBody
+	public String removeTest(Model model, InstTestViewDTO itvDTO, HttpSession session) {
+		return is.removeTest(itvDTO);
+	}//modifyTest
 	
 	
 }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header">
+    <header>
+        <div class="header-inner">
+
+            <!-- intlearn로고 -->
+            <a href="#" class="logo">
+                <img src="/common/images/main_logo.png" alt="Inflearn" class="logo-img">
+            </a>
+
+            <!-- 강의/커뮤니티 (로고 옆) -->
+            <nav class="header-menu-left">
+                <a href="/user/lecture/lectureList" class="nav-text">
+                    <img src="/common/images/lecture.png" alt="강의" class="nav-icon">
+                    <span>강의</span>
+                </a>
+                <a href="/user/community/index" class="nav-text">
+                    <img src="/common/images/community.png" alt="커뮤니티" class="nav-icon">
+                    <span>커뮤니티</span>
+                </a>
+            </nav>
+
+            <!-- 검색바 (가운데) -->
+            <div class="header-search">
+                <i class="fas fa-search header-search-icon"></i>
+                <input type="text" id="header-search-input" placeholder="배우고 싶은 지식을 검색해보세요" class="header-search-input">
+            </div>
+
+            <!-- 우측 아이콘 그룹 -->
+            <div class="header-actions">
+
+                <!-- 로그인/로그아웃 버튼 (세션 상태에 따라 분기) -->
+                <a th:unless="${session.userName != null}" href="/common/member/loginFrm"
+                    class="header-auth-btn login-btn" title="로그인">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>로그인</span>
+                </a>
+                <a th:if="${session.userName != null}" href="/common/member/logout" class="header-auth-btn logout-btn"
+                    title="로그아웃">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>로그아웃</span>
+                </a>
+
+                <!-- 장바구니 -->
+                <a href="/user/payment/searchMyCart" class="header-icon" title="장바구니">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+
+                <!-- 사용자 이름 -->
+                <span th:if="${session.userName != null}" class="header-username"
+                    th:text="${session.userName} + '님'"></span>
+
+                <!-- 마이페이지 -->
+                <a href="/user/my/dashboard" class="profile-btn" title="마이페이지">
+                    <img th:if="${session.userImg != null}" th:src="${session.userImg}" class="profile-img" alt="프로필">
+                    <i th:unless="${session.userImg != null}" class="fas fa-user-circle"></i>
+                </a>
+
+            </div>
+            <!-- ------ --><!-- 위치설정을 위한 또 다른 div -->
+
+        </div>
+
+
+    </header>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/mainHeader.css">
+</div>
+
+</html>

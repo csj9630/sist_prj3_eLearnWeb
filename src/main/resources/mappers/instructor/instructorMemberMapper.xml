@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.instructor.member.InstructorMemberMapper">
+
+    <!-- 강사 등록 -->
+    <insert id="insertInstructor" parameterType="InstructorDTO">
+        INSERT INTO INSTRUCTOR (
+            INST_ID, PASSWORD, NAME, PHONE, EMAIL, BIRTH, PROFILE, REGIP, APPROVAL, ACTIVATION, REGDATE
+        ) VALUES (
+            #{instId}, #{password}, #{name}, #{phone, jdbcType=VARCHAR}, #{email}, #{birth, jdbcType=DATE}, #{profile, jdbcType=VARCHAR}, #{regip, jdbcType=VARCHAR}, 0, 1, SYSDATE
+        )
+    </insert>
+
+    <!-- 아이디 중복 확인 -->
+    <select id="selectId" parameterType="String" resultType="String">
+        SELECT INST_ID
+        FROM INSTRUCTOR
+        WHERE INST_ID = #{id}
+    </select>
+
+    <!-- 이름 중복 확인 -->
+    <select id="selectName" resultType="String" parameterType="String">
+        SELECT NAME FROM INSTRUCTOR WHERE NAME = #{name}
+    </select>
+
+    <!-- 전화번호 중복 확인 -->
+    <select id="selectPhone" resultType="String" parameterType="String">
+        SELECT PHONE FROM INSTRUCTOR WHERE PHONE = #{phone} AND ROWNUM &lt;= 1
+    </select>
+    
+</mapper>

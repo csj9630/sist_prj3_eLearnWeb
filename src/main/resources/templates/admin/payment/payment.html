@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>관리자 수익 관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
+  <link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+$(function(){
+
+});
+
+function profitByInst(){
+	var instName=$(".panel-select").val();
+	
+	$.ajax({
+		url:"/admin/payment/searchInstProfit",
+		type:"GET",
+		data:{instName: instName},
+		dataType:"json",
+		error:function(xhr){
+			alert(xhr.status);
+		},
+		success:function(data){
+			var tbody=$("#paymentTableBody");
+			tbody.empty();
+			
+			if(!data || data.length === 0) {
+				tbody.append('<tr><td style="text-align: center;" colspan="4">데이터가 없습니다.</td></tr>');
+				return;
+			}
+			
+			data.forEach(function(lect){
+				var row=`
+                <tr>
+                  <td>${lect.time ? lect.time.substring(0,10) : ''}</td>
+                  <td>${lect.lect_name}</td>
+                  <td>${lect.inst_name}</td>
+                  <td>${lect.inst_profit}</td>
+                </tr>
+			`;
+			tbody.append(row)
+			});
+		}//success
+	});
+	
+}
+</script>
+</head>
+<body class="admin-dashboard">
+  <div id="header">
+    <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+  </div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <th:block th:replace="~{fragments/adminSidebar :: adminSidebar}"></th:block>
+    </aside>
+
+    <main class="admin-content">
+      <section class="course-page">
+        <div class="panel-header">
+        <header class="course-header">
+          <h1>수익 관리</h1>
+        </header>
+        
+          <div class="panel-controls">
+            <select class="panel-select" onchange="profitByInst()">
+              <option value="">전체</option>
+              <option th:each="inst : ${instructor}" th:value="${inst}" th:text="${inst}"></option>
+            </select>
+            강의 총 수익
+            <div class="pill">
+              <span class="pill-value" th:text="${#numbers.formatInteger(totalProfit, 3, 'COMMA')}+'원'"></span>
+            </div>
+            관리자 수익
+            <div class="pill">
+              <span class="pill-value" th:text="${#numbers.formatInteger(adminProfit, 3, 'COMMA')}+'원'"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">날짜</th>
+                  <th scope="col">강의이름</th>
+                  <th scope="col">강사</th>
+                  <th scope="col">실제 수입</th>
+                </tr>
+              </thead>
+              <tbody id="paymentTableBody">
+                <tr th:each="lectProfit:${lectProfitList}">
+                  <td th:text="${#dates.format(lectProfit.time, 'yyyy-MM-dd')}"></td>
+                  <td th:text="${lectProfit.lect_name}"></td>
+                  <td th:text="${lectProfit.inst_name}"></td>
+                  <td th:text="${#numbers.formatInteger(lectProfit.inst_profit, 3, 'COMMA')}+'원'"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

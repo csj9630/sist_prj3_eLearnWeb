@@ -1,0 +1,201 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Insert title here</title>
+
+    <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+
+    <style type="text/css">
+      #wrap {
+        margin: 0px auto;
+        width: 1200px;
+        height: 1000px;
+      }
+
+      #header {
+        height: 150px;
+      }
+
+      #container {
+        height: 700px;
+      }
+
+      #footer {
+        height: 150px;
+      }
+
+      .thumb {
+        width: 80%;
+        border-radius: 5px;
+      }
+
+      .course-card {
+        transition: transform 0.2s ease-in-out;
+        cursor: pointer;
+      }
+
+      .course-card:hover {
+        transform: translateY(-5px); /* 호버 시 살짝 들리는 효과 */
+      }
+
+      .thumb-img {
+        aspect-ratio: 16/10; /* 썸네일 비율 고정 */
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .text-truncate {
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* 제목 두 줄 넘어가면 말줄임 */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        white-space: normal;
+      }
+    </style>
+
+    <!--JS 실습 파트-->
+    <script type="text/javascript">
+      $(function () {}); //document.ready
+    </script>
+  </head>
+  <body>
+    <div id="header">
+      <th:block th:replace="~{fragments/header :: header}" />
+    </div>
+    <div id="wrap">
+      <div id="container" class="container">
+        <h3 class="my-4">전체 강의 리스트</h3>
+        <div class="search-bar container mt-4 mb-5">
+          <form
+            action="/user/lecture/lectureList"
+            method="get"
+            class="row g-3 align-items-end justify-content-center"
+          >
+            <div class="col-md-2">
+              <label class="form-label small text-muted">카테고리</label>
+              <select name="catId" class="form-select">
+                <option value="">전체 카테고리</option>
+                <option
+                  th:each="cat : ${categoryList}"
+                  th:value="${cat.catId}"
+                  th:text="${cat.name}"
+                  th:selected="${cat.catId == lectureRangeDTO.catId}"
+                ></option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label small text-muted">스킬</label>
+              <select name="skillName" class="form-select">
+                <option value="">전체 스킬</option>
+                <option
+                  th:each="skill : ${skillList}"
+                  th:value="${skill.name}"
+                  th:text="${skill.name}"
+                  th:selected="${skill.name == lectureRangeDTO.skillName}"
+                ></option>
+              </select>
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label small text-muted">검색 조건</label>
+              <select name="field" class="form-select">
+                <option value="1" th:selected="${lectureRangeDTO.field == '1'}">
+                  강의명
+                </option>
+                <option value="2" th:selected="${lectureRangeDTO.field == '2'}">
+                  강사명
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label small text-muted">키워드</label>
+              <input
+                type="text"
+                name="keyword"
+                class="form-control"
+                placeholder="검색어를 입력하세요"
+                th:value="${lectureRangeDTO.keyword}"
+              />
+            </div>
+
+            <div class="col-md-1">
+              <button type="submit" class="btn btn-primary w-100">검색</button>
+            </div>
+          </form>
+        </div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+          <div
+            class="col"
+            th:each="lecture : ${lectureList}"
+            th:object="${lecture}"
+          >
+            <div class="card h-100 border-0 shadow-sm course-card">
+              <div class="position-relative">
+                <img
+                  th:src="|${imgPath}*{thumbnail}|"
+                  class="card-img-top thumb-img"
+                  alt="강의 썸네일"
+                />
+              </div>
+
+              <div class="card-body px-3">
+                <h6
+                  class="card-title fw-bold text-truncate mb-1"
+                  th:text="*{name}"
+                >
+                  강의명
+                </h6>
+                <p
+                  class="card-text text-muted small mb-2"
+                  th:text="*{instName}"
+                >
+                  강사명
+                </p>
+
+                <div
+                  class="d-flex align-items-center mb-2"
+                  style="font-size: 0.85rem"
+                >
+                  <span class="text-warning fw-bold me-1">★</span>
+                  <span
+                    class="fw-bold"
+                    th:text="*{#numbers.formatDecimal(avgScore, 1, 1)}"
+                    >4.9</span
+                  >
+                  <span class="text-muted ms-1" th:text="|(*{reviewCount})|"
+                    >(0)</span
+                  >
+                  <span class="ms-auto badge bg-light text-dark border">
+                    <span th:text="|*{userCount}명 수강|">0명</span>
+                  </span>
+                </div>
+
+                <div class="fw-bold fs-5 text-primary">
+                  <span
+                    th:text="|*{#numbers.formatInteger(price ?: 0, 3, 'COMMA')}원|"
+                    >0원</span
+                  >
+                </div>
+              </div>
+
+              <a
+                th:href="@{/user/lecture/detail(lectId=*{lectId})}"
+                class="stretched-link"
+              ></a>
+            </div>
+          </div>
+        </div>
+        <div class="mt-5 d-flex justify-content-center">
+          <div id="pagination" th:utext="${pagination}"></div>
+        </div>
+      </div>
+      <!--"container" -->
+    </div>
+    <div id="footer">
+      <th:block th:replace="~{fragments/footer :: footer}" />
+    </div>
+  </body>
+</html>

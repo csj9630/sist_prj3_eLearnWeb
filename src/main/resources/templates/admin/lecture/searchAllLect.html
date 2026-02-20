@@ -1,21 +1,200 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>관리자 대시보드</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
-  <link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script type="text/javascript">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>관리자 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
+<link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
+<!-- 다이얼로그 용 라이브러리 -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+<script type="text/javascript" th:inline="javascript">
+let lectureId=null;
+let open=null;
+let availability=null;
+let selectRow=null;
 $(function(){
-	$("#search").click(function(){
-		
-	})	
+	//중지 눌렀을 때 나오는 다이얼로그
+	$("#stopDialogUi").dialog({
+	    autoOpen: false,
+	    modal: true,
+	    width: 400,
+	    buttons: {
+	      "예": function () {
+	        $(this).dialog("close");
+	        //ajax로 과목
+	        $.ajax({
+	        	url:"/admin/lecture/updateLectState",
+	    		type:"POST",
+	    		data:{lectureId: lectureId, action: "stop"},
+	    		error:function(xhr){
+	    			alert(xhr.status);
+	    		},
+	    		success:function(data){
+					//stopLect 함수에서 open이라는 변수에 찾은 행에서 open이라는 id 검색
+					open.text("비공개");
+					selectRow.attr("availability", "0");
+	    		}//success
+	        });//ajax
+	      },
+	      "아니오": function () {
+	        $(this).dialog("close");
+	      }
+	    }
+	  });
+
+	//공개 눌렀을 때 나오는 다이얼로그
+	$("#openDialogUi").dialog({
+	    autoOpen: false,
+	    modal: true,
+	    width: 400,
+	    buttons: {
+	      "예": function () {
+	        $(this).dialog("close");
+	        //ajax로 과목
+	        $.ajax({
+	        	url:"/admin/lecture/updateLectState",
+	    		type:"POST",
+	    		data:{lectureId: lectureId, action: "open"},
+	    		error:function(xhr){
+	    			alert(xhr.status);
+	    		},
+	    		success:function(data){
+					//stopLect 함수에서 open이라는 변수에 찾은 행에서 open이라는 id 검색
+					open.text("공개");
+					selectRow.attr("availability", "1");
+					$("#resultDialogUi").dialog("open");
+	    		}//success
+	        });//ajax
+	      },
+	      "아니오": function () {
+	        $(this).dialog("close");
+	      }
+	    }
+	  });
+	
+	//공개 버튼 눌렀을 때
+	$(document).on("click", ".btn--primary", function(){ showLect(this); } );
+	//중지 버튼 눌렀을 때
+	$(document).on("click", ".btn--ghost", function(){ stopLect(this); } );
+	//검색 버튼 눌렀을 때
+	$(document).on("click", "#search", function(){ searchLect(this); });
 });
+
+function showLect(btn){
+	//이미 공개 상태이면 공개 버튼이 안눌리게
+	availability = $(btn).closest(".course-row").attr("availability");
+	selectRow = $(btn).closest(".course-row");
+	lectureId = $(btn).val();
+	open = $(btn).closest(".course-row").find("#open");
+	
+	if(availability==1) {
+		alert("이미 공개된 강의입니다.");
+		return;	
+	}
+	
+	$("#openDialogUi").dialog("open");
+}
+
+function stopLect(btn){
+	//이미 비공개 상태이면 중지 버튼이 안눌리게
+	availability = $(btn).closest(".course-row").attr("availability");
+	lectureId = $(btn).val();
+	open = $(btn).closest(".course-row").find("#open");
+	
+	if(availability==0) {
+		alert("이미 중지된 강의입니다.");
+		return;	
+	}
+	
+	$("#stopDialogUi").dialog("open");
+};
+
+//검색어 기능
+function searchLect(){
+	alert($("#searchLect").val());
+}
+
+//카테고리 누를 때 변경하는 테이블 데이터
+function lectByCategory(page){
+	//select 태그
+	var categoryName=$("#category").val();
+	var size=5;
+	
+	$.ajax({
+		url:"/admin/lecture/searchCategoryLect",
+		type:"GET",
+		data:{categoryName: categoryName, page: page, size: size},
+		dataType:"json",
+		error:function(xhr){
+			alert(xhr.status);
+		},
+		success:function(data){
+			console.log(data);
+			var tbody = $("#lectureTableBody");
+			var pagination = $("#pagination");
+			
+			pagination.empty();
+			tbody.empty();
+			//데이터가 없으면 메시지 출력
+			if (!data || !data.list || data.list.length === 0) {
+			    $("#pagination").empty();
+			    tbody.append('<tr><td style="text-align : center;" colspan="8">데이터 없습니다.</td></tr>');
+			    return;
+			}
+			
+			data.list.forEach(function(lect){
+			    var row = `
+			      <tr class="course-row" availability="${lect.availability}">
+			        <td class="course-thumb">
+			          <img src="/common/images/${lect.thumbnail}" alt="">
+			        </td>
+			        <td class="course-title">${lect.lect_name}</td>
+			        <td>${lect.score}</td>
+			        <td>${lect.usercount}</td>
+			        <td>${lect.inst_name}</td>
+			        <td>${lect.total_profit.toLocaleString("ko-kr")+"원"}</td>
+			        <td class="status status--open">
+			        	<span id="open">${lect.availability == 1 ? "공개" : "비공개"}</span>
+			        </td>
+			        <td class="course-actions">
+			          <button class="btn btn--primary" value="${lect.lect_id}">공개</button>
+			          <button class="btn btn--ghost" value="${lect.lect_id}">중지</button>
+			        </td>
+			      </tr>
+			    `;
+			    tbody.append(row);
+			  });
+				
+				var currentPage = Number(data.page) || 1;
+				var totalPage = Number(data.totalPage) || 1;
+				
+				if(totalPage >= 1) {
+					//이전
+					if (currentPage > 1) {
+					    pagination.append(`<a href="searchAllLect?page=${currentPage - 1}&size=${size}" class="page-btn" data-page="${currentPage - 1}">&lsaquo; 이전</a>`);
+					}
+					
+					var pageList = '<span class="page-list">';
+					for (let p = 1; p <= totalPage; p++) {
+				    	pageList += `<a href="searchAllLect?page=${currentPage}&size=${size}" class="page-btn ${p === currentPage ? 'is-active' : ''}" data-page="${p}">${p}</a>`;
+				    }
+					  pageList += '</span>';
+					  pagination.append(pageList);
+
+				  	// 다음
+				  	if (currentPage < totalPage) {
+				    	pagination.append(`<a href="searchAllLect?page=${currentPage + 1}&size=${size}" class="page-btn">다음 &rsaquo;</a>`);
+				  	}//end if
+				}//end if
+		}//success
+	});//ajax
+}
 </script>
 </head>
 <body class="admin-dashboard">
@@ -37,21 +216,23 @@ $(function(){
 
 		<!-- 옵션 선택바 -->
         <div class="course-toolbar">
+          <form id="cateName">
           <div class="course-filter">
             <label class="sr-only" for="category">카테고리</label>
-            <select id="category">
-              <option>카테고리 선택</option>
-              <option>개발</option>
-              <option>디자인</option>
-              <option>마케팅</option>
+            <select id="category" name="categoryName" onchange="lectByCategory(1)">
+              <option value="">전체</option>
+              <option th:each="category:${categoryList}"
+               th:value="${category}" th:text="${category}" th:selected="${category == alsDTO.categoryName}">
+              </option>
             </select>
           </div>
+          </form>
 
 		  <!-- 검색바 -->
-          <div class="course-search">
-            <input type="text" placeholder="강의명 / 강사 검색">
+          <!-- <div class="course-search">
+            <input type="text" placeholder="강의명 / 강사 검색" id="searchLect">
             <button type="button" id="search">검색</button>
-          </div>
+          </div> -->
         </div>
 
 		<!-- 테이블 내용 -->
@@ -68,8 +249,8 @@ $(function(){
               <th>관리</th>
             </tr>
           </thead>
-          <tbody>
-            <tr class="course-row" th:each="lects : ${lectList}" th:object="${lects}">
+          <tbody id="lectureTableBody">
+            <tr class="course-row" th:each="lects, i : ${lectByCategory}" th:object="${lects}" th:attr="availability=*{availability}">
               <td class="course-thumb">
                 <img th:src="@{'/common/images/'+*{thumbnail}}" alt="">
               </td>
@@ -77,18 +258,65 @@ $(function(){
               <td th:text="*{score}"></td>
               <td th:text="*{usercount}"></td>
               <td th:text="*{inst_name}"></td>
-              <td th:text="*{total_profit}"></td>
+              <td th:text="*{#numbers.formatInteger(total_profit, 3, 'COMMA')+'원'}"></td>
               <td class="status status--open">
-              <span th:if="*{availability eq 1}">공개</span>
-              <span th:unless="*{availability eq 1}">비공개</span>
+              <span id="open" th:text="*{availability eq 1 ? '공개':'비공개'}">공개</span>
               </td>
               <td class="course-actions">
-                <button class="btn btn--ghost">중지</button>
-                <button class="btn btn--primary">공개</button>
+                <button class="btn btn--primary" th:value="*{lect_id}">공개</button>
+                <button class="btn btn--ghost" th:id="'stop-'+${i.count}" th:value="*{lect_id}">중지</button>
               </td>
             </tr>
           </tbody>
         </table>
+
+        <nav class="pagination" id="pagination">
+          <a class="page-btn" th:if="${page > 1}"
+             th:href="@{/admin/lecture/searchAllLect(page=${page-1}, size=${size})}">
+            &lsaquo; 이전
+          </a>
+          <span class="page-list">
+            <a class="page-btn"
+               th:each="p : ${#numbers.sequence(1, totalPage)}"
+               th:text="${p}"
+               th:href="@{/admin/lecture/searchAllLect(page=${p}, size=${size})}"
+               th:classappend="${p == page} ? 'is-active' : ''"></a>
+          </span>
+          <a class="page-btn" th:if="${page < totalPage}"
+             th:href="@{/admin/lecture/searchAllLect(page=${page+1}, size=${size})}">
+            다음 &rsaquo;
+          </a>
+        </nav>
+        
+        <!-- 공개 눌렀을 때 다이얼로그 출력 -->
+        <div id="openDialogUi" title="">
+          <div class="confirm-card">
+            <div class="confirm-icon">
+              <span class="confirm-icon__dot"></span>
+            </div>
+            <h3 class="confirm-title">공개</h3>
+            <p class="confirm-message">해당 강의를 공개 하시겠습니까?</p>
+          </div>
+        </div>
+        
+        <!-- <div id="resultDialogUi" title="">
+  			<div class="confirm-card">
+    			<div class="confirm-icon"><span class="confirm-icon__dot"></span></div>
+    			<h3 class="confirm-title" id="resultTitle">공개</h3>
+    			<p class="confirm-message" id="resultMessage">강의가 공개 완료되었습니다.</p>
+  			</div>
+		</div> -->
+        
+		<!-- 중지 눌렀을 때 다이얼로그 출력 -->
+        <div id="stopDialogUi" title="">
+          <div class="confirm-card">
+            <div class="confirm-icon">
+              <span class="confirm-icon__dot"></span>
+            </div>
+            <h3 class="confirm-title">중지</h3>
+            <p class="confirm-message">해당 강의를 중지 하시겠습니까?</p>
+          </div>
+        </div>
       </section>
       
     </main>

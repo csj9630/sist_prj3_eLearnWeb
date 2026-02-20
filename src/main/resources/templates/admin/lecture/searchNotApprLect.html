@@ -1,14 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>관리자 대시보드</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
-  <link rel="stylesheet" th:href="@{/admin/lecture/notApprLecture.css}" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>관리자 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
+<link rel="stylesheet" th:href="@{/admin/lecture/notApprLecture.css}" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	$(document).on("click", ".page-btn", function(){
+		var page = $(this).data("page");
+		if (page) {
+			lectByCategory(page);
+		}
+	});
+});
+
+//카테고리 누를 때 변경하는 테이블 데이터
+function lectByCategory(page){
+	var categoryName=$("#category").val();
+	var size=5;
+	
+	$.ajax({
+		url:"/admin/lecture/searchNotApprCategoryLect",
+		type:"GET",
+		data:{categoryName: categoryName, page: page, size: size},
+		dataType:"json",
+		error:function(xhr){
+			alert(xhr.status);
+		},
+		success:function(data){
+			console.log(data);
+			var tbody = $("#lectureTableBody");
+			var pagination = $("#pagination");
+			tbody.empty();
+			pagination.empty();
+			
+			//데이터가 없으면 메시지 출력
+			if (!data || !data.list || data.list.length === 0) {
+			    tbody.append('<tr><td style= "text-align : center;" colspan="5">데이터 없음</td></tr>');
+			    return;
+			}
+			
+			data.list.forEach(function(lect){
+				var dateStr = lect.regDate ? lect.regDate.substring(0, 10) : '';
+			    var statusHtml = (lect.approval == 1)
+			      ? '<span>승인</span>'
+			      : '<span>대기중</span>';
+				
+			    var row = `
+			      <tr class="course-row">
+			        <td class="course-thumb">
+			          <img src="/common/images/${lect.thumbnail}" alt="">
+			        </td>
+			        <td class="course-title">
+			          <a href="/admin/lecture/searchDetailNotApprLect?lectureId=${lect.lect_id}">
+			            ${lect.lect_name}
+			          </a>
+			        </td>
+			        <td class="status status--open">${dateStr}</td>
+			        <td>${lect.inst_name}</td>
+			        <td class="status status--open">${statusHtml}</td>
+			      </tr>
+			    `;
+			    tbody.append(row);
+			  });
+			
+			var currentPage = Number(data.page) || 1;
+			var totalPage = Number(data.totalPage) || 1;
+			
+			if(totalPage >= 1) {
+				//이전
+				if (currentPage > 1) {
+				    pagination.append(`<a href="searchNotApprLect?page=${currentPage - 1}&size=${size}" class="page-btn" data-page="${currentPage - 1}">&lsaquo; 이전</a>`);
+				}
+				
+				var pageList = '<span class="page-list">';
+				for (let p = 1; p <= totalPage; p++) {
+			    	pageList += `<a href="searchNotApprLect?page=${currentPage}&size=${size}" class="page-btn ${p === currentPage ? 'is-active' : ''}" data-page="${p}">${p}</a>`;
+			    }
+				  pageList += '</span>';
+				  pagination.append(pageList);
+
+			  	// 다음
+			  	if (currentPage < totalPage) {
+			    	pagination.append(`<a href="searchNotApprLect?page=${currentPage + 1}&size=${size}" class="page-btn">다음 &rsaquo;</a>`);
+			  	}//end if
+			}//end if
+		}//success
+	});
+}
+</script>
 </head>
 <body class="admin-dashboard">
   <div id="header">
@@ -31,11 +117,10 @@
         <div class="course-toolbar">
           <div class="course-filter">
             <label class="sr-only" for="category">카테고리</label>
-            <select id="category">
-              <option>카테고리 선택</option>
-              <option>개발</option>
-              <option>디자인</option>
-              <option>마케팅</option>
+            <select id="category" name="categoryName" onchange="lectByCategory()">
+              <option th:value="${category}">전체</option>
+              <option th:each="category:${categoryList}"
+               th:value="${category}" th:text="${category}" th:selected="${category} == ${alsDTO.categoryName}"></option>
             </select>
           </div>
         </div>
@@ -51,28 +136,40 @@
               <th>상태</th>
             </tr>
           </thead>
-          <tbody>
-          <!-- 행 전체 클릭해서 넘어가게 하고 싶으면 onclick="location.href='/admin/dashboard'" --> 
+          <tbody id="lectureTableBody">
             <tr class="course-row" th:each="notApprLects : ${notApprLectList}" th:object="${notApprLects}">
-              <!-- 이미지 -->
               <td class="course-thumb">
                 <img th:src="@{'/common/images/'+*{thumbnail}}" alt="">
               </td>
-              <!-- 강의명 -->
-              <td class="course-title"><a th:href="@{/admin/dashboard}" th:text="*{lect_name}"></a></td>
-              <!-- 등록일 -->
+              <td class="course-title"><a th:href="@{/admin/lecture/searchDetailNotApprLect(lectureId=*{lect_id})}" th:text="*{lect_name}"></a></td>
               <td class="status status--open" th:text="*{regDate}"></td>
-              <!-- 강사명 -->
               <td th:text="*{inst_name}"></td>
-              <!-- 상태 -->
               <td class="status status--open">
               	<span th:if="*{approval eq 1}">승인</span>
               	<span th:unless="*{approval eq 1}">대기중</span>
               </td>
             </tr>
           </tbody>
-          
         </table>
+
+		<nav class="pagination" id="pagination">
+          <a class="page-btn" th:if="${page > 1}"
+             th:href="@{/admin/lecture/searchNotApprLect(page=${page-1}, size=${size})}">
+            &lsaquo; 이전
+          </a>
+          <span class="page-list">
+            <a class="page-btn"
+               th:each="p : ${#numbers.sequence(1, totalPage)}"
+               th:text="${p}"
+               th:href="@{/admin/lecture/searchNotApprLect(page=${p}, size=${size})}"
+               th:classappend="${p == page} ? 'is-active' : ''"></a>
+          </span>
+          <a class="page-btn" th:if="${page < totalPage}"
+             th:href="@{/admin/lecture/searchNotApprLect(page=${page+1}, size=${size})}">
+            다음 &rsaquo;
+          </a>
+        </nav>
+        
       </section>
     </main>
   </div>

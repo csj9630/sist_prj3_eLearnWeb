@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- /kr/co/sist/user/lecture/chapter/ChapterMapper.java  -->
+<mapper namespace="kr.co.sist.user.lecture.chapter.ChapterMapper">
+	<!--테스트용-->
+	<select id="selectTest" resultType="int">
+		select chptr_id
+		from   CHAPTER
+	</select>
+
+	<!--
+	사용처 : 강의id로 수강 강의표 조회, 진척,동영상 등은 제외하고 강의 커리큘럼으로 보여줄 용도
+	입력값 : LectId
+	결과값 : 해당 lect에 대한 챕터 정보 리스트
+	-->
+	<select id="selectChapterList" parameterType="String" resultType="chapterDomain">
+	select chptr_id, name, length, regdate, doc
+	from   chapter
+	where lect_id=#{lectId}
+	</select>
+	
+		
+	<!--학생id, 강의id로 수강 강의표 진척까지 조회-->
+	<select id="selectChapterProgress" parameterType="chapterDTO" resultType="stuChapterDomain">
+		select 
+	        c.chptr_id as chptrId, c.name, c.length, c.regdate, c.doc, c.video,
+	        nvl(m.progress, 0) as progress,
+	        nvl(m.state, 0) as state
+	    from 
+	        chapter c
+	    left join 
+	        my_chapter m on c.chptr_id = m.chptr_id 
+	        and m.user_id = #{userId}
+	    where 
+	        c.lect_id = #{lectId}
+	    order by 
+	        c.num asc
+	</select>
+	
+	
+	<!--
+	사용처 : 동영상 시청용 데이터 조회
+	입력값 : 학생id, LectId
+	결과값 : 해당 lect에 대한 수강 진척 리스트.
+	-->
+	<select id="selectVideoData" parameterType="chapterDTO" resultType="videoDomain">
+		select 
+	        m.user_id as userId, c.chptr_id as chptrId, c.name as title, c.length as videoLength, c.video as videoUrl, c.num,
+	        nvl(m.progtime, 0) as progtime,
+			nvl(m.progress, 0) as progress,
+	        nvl(m.state, 0) as state,
+	        nvl(m.actualtime, 0) as actualtime
+	    from 
+	        chapter c
+	    left join 
+	        my_chapter m on c.chptr_id = m.chptr_id 
+	        and m.user_id = #{userId}
+	    where 
+	        c.lect_id = #{lectId}	
+	    order by 
+	        c.num asc
+	</select>	
+	
+		<!--
+		사용처 : 동영상 시청이력 저장
+		입력값 : videoDTO
+		결과값 : int insert결과 
+		-->
+	 <insert id="insertMyChapter" parameterType="videoDTO" >
+	
+		INSERT INTO 
+			my_chapter(my_chapter_id, chptr_id, user_id, lastdate, progress, progtime, state, actualtime)
+		 VALUES (
+		  'MC' || SEQ_MY_CHAPTER_ID.NEXTVAL,
+		   #{chptrId},
+		   #{userId},
+		    SYSDATE,
+	     	 #{progress},
+		     #{progTime},
+		     #{state}
+		    )
+	 </insert>
+	 
+	 	<!--
+		사용처 : 동영상 시청이력 저장, 기존 값이 있으면 update, 없으면 insert 수행.
+		입력값 : videoDTO
+		결과값 : int insert결과 
+		-->
+	 <update id="mergeRecordtoMyChapter" parameterType="VideoDTO">
+		    MERGE INTO my_chapter m
+		    USING dual
+		    ON (m.user_id = #{userId} AND m.chptr_id = #{chptrId})
+		    WHEN MATCHED THEN
+		        UPDATE SET 
+		            progtime = #{progTime},
+		            progress = #{progress},
+		            state = #{state},
+		            lastdate = SYSDATE,
+		            actualtime = #{actualTime}
+		    WHEN NOT MATCHED THEN
+		        INSERT (my_chapter_id, chptr_id, user_id, lastdate, progress, progtime, state,actualtime)
+		        VALUES ('MC' || SEQ_MY_CHAPTER_ID.NEXTVAL, #{chptrId}, #{userId}, SYSDATE, #{progress}, #{progTime}, #{state},#{actualTime})
+	</update>
+	
+		 
+	 	<!--
+		사용처 : 학생 출석 체크, 영상 시청 시 출석 테이블에 insert..
+		입력값 : String userId
+		결과값 : int insert결과 
+		-->
+	 <insert id="insertStuAttendence" parameterType="String">
+		insert INTO ATTENDANCE (ATTEND_ID, USER_ID, ATTDATE)
+	 	VALUES  (SEQ_ATTENDANCE_ID.NEXTVAL,#{userId}, SYSDATE )
+	</insert>
+	
+	<!--파일 다운로드용 조회-->
+	<select id="selectFileInfo" resultType="FileDomain">
+	    SELECT CHPTR_ID, DOC 
+	    FROM CHAPTER 
+	    WHERE CHPTR_ID = #{chptrId}
+	</select>
+	
+		<!--파일 다운로드용 조회-->
+	<select id="getChapterProgress" parameterType="chapterDTO" resultType="map">
+		SELECT 
+		    COUNT(*) as total_chapters,
+		    COUNT(CASE WHEN mc.state = 2 THEN 1 END) as completed_chapters
+		FROM chapter c
+		LEFT JOIN my_chapter mc ON c.chapter_id = mc.chapter_id AND mc.user_id = #{userId}
+		WHERE c.course_id = #{lectId};
+	</select>
+	
+	<!-- 시험  최신 점수 조회-->
+	<select id="selectLatestTestScore" resultType="java.lang.Integer">
+	SELECT score
+	    FROM (
+	        SELECT 
+	            mt.score,
+	            ROW_NUMBER() OVER (ORDER BY mt.takedate DESC) as rnum
+	        FROM 
+	            test t
+	        JOIN 
+	            my_test mt ON t.test_id = mt.test_id
+	        WHERE 
+	            t.lect_id = #{lectId} 
+	            AND mt.user_id = #{userId}
+	    )
+	    WHERE rnum = 1
+	</select>
+</mapper>

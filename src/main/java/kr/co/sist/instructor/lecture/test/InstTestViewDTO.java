@@ -14,5 +14,5 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InstTestViewDTO {
-	private String instId, lectId;
+	private String instId, lectId,qid;
 }

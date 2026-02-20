@@ -36,10 +36,16 @@ public class AdminDashBoardService {
 		return count;
 	}//getTotalProfit
 	
-	public List<LectProfitDomain> getLectProfit() throws PersistenceException {
-		List<LectProfitDomain> lectProfitList;
+	public List<AdminDashBoardDomain> selectTopPayLecture() throws PersistenceException {
+		List<AdminDashBoardDomain> list=adbm.selectTopPayLecture();
 		
-		lectProfitList=adbm.selectLectProfit();
-		return lectProfitList;
-	}//getLectProfit
+		return list;
+	}//selectTopPayLecture
+	
+	public List<AdminDashBoardDomain> selectMostUserLecture() throws PersistenceException {
+		List<AdminDashBoardDomain> list=adbm.selectMostUserLecture();
+		
+		return list;
+	}//selectMostUserLecture
+	
 }

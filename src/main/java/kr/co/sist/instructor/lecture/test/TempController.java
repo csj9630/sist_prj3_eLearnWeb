@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class TempController {
 
-	@RequestMapping(value="/",method= {GET,POST})
+	@RequestMapping(value="/leeTest",method= {GET,POST})
 	public String main(Model model) {
 		
 		return "/myIndex";

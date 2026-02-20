@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.user.lecture.test.StuTestMapper">
+
+<!-- 시험 봤는지 유무 체크 -->
+<select id="selectCheckTest" resultType="Integer" parameterType="stuCheckTestDTO">
+select COUNT(*) from my_test WHERE USER_ID = #{userId} AND TEST_ID = #{testId}
+</select>
+
+<!-- 강의 ID로 시험 문제 하나 조회해서 사용자 화면에 뿌려주기 -->
+<select id="selectUserTest" resultType="stuTestViewDomain" parameterType="string">
+select t.test_id as id,lect_id as lectId,test_q_id as qid,num,content,opt1,opt2,opt3,opt4, 
+(select name from lecture where lect_id = t.lect_id) as lectName
+from test t, test_question tq
+where t.test_id = tq.test_id AND
+tq.test_id =
+(select test_id
+from test
+where lect_id = #{lectId})
+ORDER BY tq.num ASC
+</select>
+
+<!-- 사용자 시험 제출 -> DB에서 시험 정답 및 해설 받아올 때 사용할 쿼리문 -->
+<select id="selectUserQuestionAnswer" resultType="stuTestAnswerDomain" parameterType="string">
+select t.test_id as id,lect_id as lectId,test_q_id as qid,ans,exp, num
+from test t, test_question tq
+where t.test_id = tq.test_id AND
+tq.test_id =
+(select test_id
+from test
+where lect_id = #{lectId})
+ORDER BY tq.num ASC
+</select>
+
+<!-- 내 시험 이력 테이블에 값 넣기 -->
+<insert id="insertMyTest" parameterType="stuTestRecordDTO">
+<selectKey keyProperty="my_test_id" resultType="string" order="BEFORE">
+        SELECT 'MT' || SEQ_MY_TEST_ID.NEXTVAL FROM DUAL
+</selectKey>
+INSERT INTO MY_TEST (MY_TEST_ID, TEST_ID, USER_ID, score, takedate, ip) 
+VALUES (#{my_test_id}, #{id}, #{userId}, #{score}, SYSDATE, #{ip})
+</insert>
+
+<!-- 시험응시 테이블에 값 넣기 -->
+<insert id="insertTestExamination" >
+INSERT INTO TEST_EXAMINATION (test_q_num, my_test_id, choice) 
+VALUES (#{test_q_num}, #{my_test_id}, #{choice})
+</insert>
+
+<!-- 시험응시 테이블에서 응시 기록 삭제 -->
+<delete id="deleteTestExamination" parameterType="stuCheckTestDTO">
+    DELETE FROM TEST_EXAMINATION 
+    WHERE MY_TEST_ID IN (
+        SELECT MY_TEST_ID 
+        FROM MY_TEST 
+        WHERE USER_ID = #{userId} AND TEST_ID = #{testId}
+    )
+</delete>
+
+<!-- 내 시험이력 테이블에서 응시 기록 삭제 -->
+<delete id="deleteMyTest" parameterType="stuCheckTestDTO">
+    DELETE FROM MY_TEST 
+    WHERE USER_ID = #{userId} AND TEST_ID = #{testId}
+</delete>
+
+<!-- 해설모드에서 사용할 과거 시험 응시 내역 조회(선택했던 정답 및 기타 정보들 조회) -->
+<select id="selectUserExplanation" resultType="stuTestExplanationDomain" parameterType="stuCheckTestDTO">
+SELECT 
+    t.test_id as id, t.lect_id as lectId,tq.test_q_id as qid,tq.ans,tq.exp, tq.num,te.choice  
+    FROM test t,test_question tq,my_test mt,test_examination te
+WHERE 
+    t.test_id = tq.test_id 
+    AND t.test_id = mt.test_id 
+    AND mt.my_test_id = te.my_test_id 
+    AND tq.num = te.test_q_num
+    AND mt.user_id = #{userId} 
+    AND t.lect_id = #{lectId}
+ORDER BY tq.num ASC
+</select>
+
+</mapper>

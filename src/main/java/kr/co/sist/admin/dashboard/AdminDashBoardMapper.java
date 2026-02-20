@@ -11,5 +11,7 @@ public interface AdminDashBoardMapper {
 	public int selectCountLect();
 	public int selectCountUser();
 	public int selectAllProfit();
-	public List<LectProfitDomain> selectLectProfit();
+	public List<AdminDashBoardDomain> selectTopPayLecture();
+	public List<AdminDashBoardDomain> selectMostUserLecture();
+	
 }

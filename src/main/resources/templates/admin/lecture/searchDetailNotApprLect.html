@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>강의 상세 관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
+<link rel="stylesheet" th:href="@{/admin/lecture/notApprLecture.css}" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	$(".btn--primary").click(function(){
+		if(!confirm("강의를 승인하겠습니까?")) return;
+		
+		var lectureId=$("#lectId").val();
+		$.ajax({
+			url:"/admin/lecture/approve",
+			type:"POST",
+			data:{lectureId: lectureId},
+			error:function(xhr){
+				alert(xhr.status);
+			},
+			success:function(data){
+				alert("승인이 완료 되었습니다.");
+				//여기에 승인 상태를 변경하는 dom 작성
+				$("#appr").text("승인")
+			}//success
+		});//ajax
+	});//click
+	
+	$(".btn--ghost").click(function(){
+		alert("승인 거절 메시지 폼 생성");
+	})
+});
+</script>
+</head>
+<body class="admin-dashboard">
+  <div id="header">
+    <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+  </div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <th:block th:replace="~{fragments/adminSidebar :: adminSidebar}"></th:block>
+    </aside>
+
+    <main class="admin-content">
+      <section class="course-page">
+        <header class="course-header">
+          <h1>강의 상세</h1>
+        </header>
+
+        <!-- 상세 정보 카드 -->
+        <div class="dashboard-panel">
+          <div class="panel-header">
+            <div>
+              <h2>강의 정보</h2>
+            </div>
+            <div class="panel-controls">
+              <button class="btn btn--primary">승인</button>
+              <button class="btn btn--ghost">승인 거절</button>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="table-wrap">
+              <table class="data-table" th:each="lecture:${lecture}">
+               	<input type="hidden" id="lectId" th:value="${lecture.lect_id}"/>
+                <tbody>
+                  <tr>
+                    <th scope="row">강의명</th>
+                    <td th:text="${lecture.lect_name}">강의명</td>
+                    <th scope="row">카테고리</th>
+                  	<td th:text="${lecture.category_name}">카테고리</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">강사</th>
+                    <td th:text="${lecture.inst_name}">강사명</td>
+                    <th scope="row">등록일</th>
+                    <td colspan="3" th:text="${#dates.format(lecture.regDate, 'yyyy-MM-dd')}"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">가격</th>
+                    <td th:text="${#numbers.formatInteger(lecture.price, 3, 'COMMA')+'원'}"></td>
+                    <th scope="row">수강생</th>
+                    <td colspan="3" th:text="${lecture.user_count}"></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">승인</th>
+                    <td th:text="${lecture.approval == 1 ? '승인' : '대기'}" id="appr">승인</td>
+                  	<th scope="row">소개</th>
+                    <td colspan="3" th:text="${lecture.intro}">소개 텍스트</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 커리큘럼 -->
+        <div class="dashboard-panel" style="margin-top: 20px;">
+          <div class="panel-header">
+            <div>
+              <h2>커리큘럼</h2>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="table-wrap">
+              <table class="data-table curriculum-table">
+                <thead>
+                  <tr>
+                    <th scope="col">챕터명</th>
+                    <th scope="col">강의 시간</th>
+                    <th scope="col">업로드 날짜</th>
+                    <th scope="col">강의 자료</th>
+                    <th scope="col">강의 시청</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="ch : ${chapter}">
+                    <td th:text="${ch.ch_name}"></td>
+                    <td th:text="${ch.ch_length}+':00'"></td>
+                    <td th:text="${ch.ch_regdate}"></td>
+                    <td th:text="${ch.ch_doc}"></td>
+                    <td>
+                      <a th:href="${ch.ch_video}" th:text="${ch.ch_video}" target="_blank"></a>
+                    </td>
+                  </tr>
+                  <!-- <tr th:if="${chapterList == null or #lists.isEmpty(chapterList)}">
+                    <td colspan="4">등록된 커리큘럼이 없습니다.</td>
+                  </tr> -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+</body>
+</html>

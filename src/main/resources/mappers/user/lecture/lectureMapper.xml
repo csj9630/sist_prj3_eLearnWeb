@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- /kr/co/sist/user/lecture/chapter/ChapterMapper.java  -->
+<mapper namespace="kr.co.sist.user.lecture.LectureMapper">
+
+	<!--강의 개수 조회.-->
+	<select id="selectLectureCount" parameterType="lectureRangeDTO" resultType="int">
+		SELECT COUNT(DISTINCT l.lect_id) 
+	    FROM lecture l
+	    JOIN instructor i ON l.inst_id = i.inst_id
+	    <if test="skillName != null and skillName != ''">
+	    JOIN relative_skill rs ON l.lect_id = rs.lect_id
+	    </if>
+	    <where>
+	        l.approval = 1
+	        AND l.availability = 1
+	        <if test="catId != null and catId != ''">
+	            AND l.cat_id = #{catId}
+	        </if>
+	        <if test="skillName != null and skillName != ''">
+	            AND rs.name = #{skillName}
+	        </if>
+	        <if test="keyword != null and keyword != ''">
+	            AND INSTR(${fieldStr}, #{keyword}) != 0
+	        </if>
+	    </where>
+	</select>
+
+	<!--메인화면용 강의리스트, 리뷰정보까지 조회-->
+	<select id="selectLectureList" parameterType="lectureRangeDTO" resultType="mainLectureDomain">
+		SELECT 
+	        lectId, name, instname, thumbnail, price, usercount, reviewCount, avgScore
+	    FROM (
+	        SELECT ROWNUM as rnum, temp.* FROM (
+	            SELECT DISTINCT
+	                l.lect_id as lectId, 
+	                l.name, 
+	                i.name as instname,
+	                l.thumbnail, 
+	                l.price, 
+	                l.usercount,
+	                COUNT(r.review_id) OVER(PARTITION BY l.lect_id) as reviewCount,
+	                AVG(r.score) OVER(PARTITION BY l.lect_id) as avgScore
+	            FROM lecture l
+	            JOIN instructor i ON l.inst_id = i.inst_id
+	            LEFT OUTER JOIN review r ON l.lect_id = r.lect_id
+	            <if test="skillName != null and skillName != ''">
+	            JOIN relative_skill rs ON l.lect_id = rs.lect_id
+	            </if>
+	            <where>
+	                l.approval = 1
+	                AND l.availability = 1
+	                <if test="catId != null and catId != ''">
+	                    AND l.cat_id = #{catId}
+	                </if>
+	                <if test="skillName != null and skillName != ''">
+	                    AND rs.skill_id = #{skillName}
+	                </if>
+	                <if test="keyword != null and keyword != ''">
+	                    AND INSTR(${fieldStr}, #{keyword}) != 0
+	                </if>
+	            </where>
+	            ORDER BY l.lect_id DESC
+	        ) temp
+	    ) WHERE rnum BETWEEN #{startNum} AND #{endNum}
+	</select>
+	
+		<select id="selectLectureList0" parameterType="lectureRangeDTO" resultType="mainLectureDomain">
+	    SELECT * FROM (
+	        SELECT ROWNUM as rnum, temp.* FROM (
+	            SELECT 
+	                l.lect_id as lectId, l.name, i.name as instname,
+	                l.thumbnail, l.price, l.usercount,
+	                COUNT(r.review_id) OVER(PARTITION BY l.lect_id) as reviewCount,
+	                AVG(r.score) OVER(PARTITION BY l.lect_id) as avgScore
+	            FROM lecture l
+	            JOIN instructor i ON l.inst_id = i.inst_id
+	            LEFT OUTER JOIN review r ON l.lect_id = r.lect_id
+	            <where>
+	                l.approval = 1
+	                <if test="keyword != null and keyword != ''">
+	                    AND INSTR(${fieldStr}, #{keyword}) != 0
+	                </if>
+	            </where>
+	            ORDER BY l.lect_id DESC
+	        ) temp
+	    ) WHERE rnum BETWEEN #{startNum} AND #{endNum}
+	</select>
+	
+	<!--==========강의 상세 페이지 ===================-->
+	<!-- 강의 / 강사 정보-->
+	<select id="selectLectureDetail" parameterType="String" resultType="lectureDetailDomain">
+		SELECT 
+	        l.lect_id as lectId, 
+	        l.name, 
+	        l.price, 
+	        l.thumbnail, 
+	        l.shortint, 
+	        l.intro, 
+	        l.count, 
+	        l.length,
+	        i.name as instName
+	    FROM lecture l
+	    JOIN instructor i ON l.inst_id = i.inst_id
+	    WHERE l.lect_id = #{lectId}
+	</select>
+	
+	<!--리뷰 목록-->
+	<select id="selectLectureReviews" parameterType="String" resultType="userReviewDomain">
+	    SELECT review_id, score, content, regdate, user_id
+	    FROM   review
+	    WHERE  lect_id = #{lectId}
+	    ORDER BY regdate DESC
+	</select>
+</mapper>

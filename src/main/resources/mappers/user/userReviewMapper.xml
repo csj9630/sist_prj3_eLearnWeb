@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.user.lecture.review.UserReviewMapper">
+	<!-- review 테이블에 게시글을 추가하는 작업 -->
+	<insert id = "insertReview" parameterType = "userReviewDTO">
+		insert into review(review_id, score, content, regdate, regip, lect_id, user_id)
+		values('R' || seq_review_id.nextval, #{score}, #{content}, sysdate, #{regip}, #{lect_id}, #{user_id})
+	</insert>
+	
+	<select id = "selectReviewTotalCnt" parameterType = "userReviewRangeDTO" resultType = "int">
+		select	count(*) cnt
+		from	review
+		<where>
+				lect_id = #{lectId}
+			<if test = "keyword neq null and keyword neq ''">
+				and instr(${fieldStr}, #{keyword}) != 0
+			</if>
+		</where>
+	</select>
+	
+	<select id="selectMyReview" parameterType="userReviewDTO" resultType="userReviewDomain">
+	    select  r.review_id, r.score, r.content, r.regdate, r.regip, r.lect_id, r.user_id,
+	            u.name, u.profile
+	    from    review r
+	    join    users u on r.user_id = u.user_id
+	    where   r.lect_id = #{lect_id} and r.user_id = #{user_id}
+	</select>
+	
+	<select id = "selectReviewAvgScore" parameterType = "userReviewRangeDTO" resultType = "double">
+		select	avg(score)
+		from	review
+		where	lect_id = #{lectId}
+	</select>
+	
+	<select id = "selectRangeReview" parameterType = "userReviewRangeDTO" resultType = "userReviewDomain">
+		select  review_id, score, content, regdate, regip, user_id, name, profile
+		from    (
+		        select  r.review_id, r.score, r.content, r.regdate, r.regip, r.user_id,
+		                u.name, u.profile,
+		                row_number() over(order by r.regdate desc) as rnum
+		        from    review r
+		        join    users u on r.user_id = u.user_id
+		<where>
+						lect_id = #{lectId}
+			<if test = "keyword neq null and keyword neq ''">
+						and instr(${fieldStr}, #{keyword}) != 0
+			</if>
+		</where>
+				)
+		where	rnum between #{startNum} and #{endNum}
+	</select>
+	
+	<!-- 글 번호를 받아서 해당하는 글 하나를 검색 (사용자) -->
+	<select id = "selectReviewDetailUser" parameterType = "String" resultType = "userReviewDomain">
+		select	review_id, score, content, regdate, regip, lect_id, user_id
+		from	review
+		where	review_id = #{reviewId}
+	</select>
+	
+	<!-- 글 번호를 받아서 해당하는 글 하나를 검색 (강사) -->
+	<select id = "selectReviewDetailInstructor" parameterType = "String" resultType = "userReviewDomain">
+		select	review_id, score, content, regdate, regip, lect_id, user_id
+		from	review
+		where	review_id = #{reviewId}
+	</select>
+	
+	<!-- 글 번호를 받아서 해당하는 글 하나를 검색 (관리자) -->
+	<select id = "selectReviewDetailAdmin" parameterType = "String" resultType = "userReviewDomain">
+		select	review_id, score, content, regdate, regip, lect_id, user_id
+		from	review
+		where	review_id = #{reviewId}
+	</select>
+	
+	<!-- 글 번호와 아이디를 입력 받아서 해당 글의 내용과 아이피를 변경 -->
+	<update id = "updateReview" parameterType = "userReviewDTO">
+		update	review
+		set		score = #{score}, content = #{content}, regip = #{regip}
+		where	review_id = #{review_id} and user_id = #{user_id}
+	</update>
+	
+	<!-- 글 번호와 아이디를 받아 관리자임을 확인 후 공지사항 삭제 -->
+	<delete id = "deleteReview" parameterType = "userReviewDTO">
+		delete from	review
+		where		review_id = #{review_id} and user_id = #{user_id}
+	</delete>
+</mapper>
