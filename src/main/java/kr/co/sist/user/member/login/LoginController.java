@@ -46,7 +46,7 @@ public class LoginController {
 			System.out.println("세션 설정 완료: " + session.getAttribute("userEmail"));
 			System.out.println("SET userId: " + ud.getId());
 
-			return "redirect:/"; // 메인 페이지로 이동
+			return "redirect:/main"; // 메인 페이지로 이동
 		} else { // 로그인 실패
 			System.out.println("로그인 실패: ud is null");
 			model.addAttribute("msg", "아이디 또는 비밀번호를 확인해주세요.");
@@ -67,7 +67,7 @@ public class LoginController {
 		session.invalidate();
 
 		System.out.println("---- 세션 무효화 완료 ----");
-		return "redirect:/";
+		return "redirect:/main";
 	}
 
 }

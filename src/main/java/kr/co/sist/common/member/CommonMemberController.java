@@ -125,7 +125,7 @@ public class CommonMemberController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate(); // 세션 전체 삭제 (userId, userName 등 모두 제거)
-        return "redirect:/"; // 메인 페이지로 이동
+        return "redirect:/main"; // 메인 페이지로 이동
     }
 
 }
