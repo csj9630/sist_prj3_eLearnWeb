@@ -61,5 +61,10 @@ public class AdminLectureService {
 	public int approvalLecture(String lectureId) throws PersistenceException {
 		return alm.updateApproval(lectureId);
 	}
+	
+	//강의 거절 사유
+	public int rejectReason(String lectureId, String reason) throws PersistenceException {
+		return alm.rejcetLecture(lectureId, reason);
+	}
 
 }

@@ -33,7 +33,7 @@ $(function(){
         <article class="stat-card">
           <div class="stat-header">
             <h2 class="stat-label">총 강사 수</h2>
-            <a th:href="@{/admin/dashboard}"><span class="more-link">더보기</span></a>
+            <a th:href="@{/admin/member/instructorList}"><span class="more-link">더보기</span></a>
           </div>
           <div class="stat-value" th:text="${instCnt}+'명'"></div>
         </article>
@@ -50,7 +50,7 @@ $(function(){
         <article class="stat-card">
           <div class="stat-header">
             <h2 class="stat-label">총 수강생 수</h2>
-            <a th:href="@{/admin/dashboard}"><span class="more-link">더보기</span></a>
+            <a th:href="@{/admin/member/userList}"><span class="more-link">더보기</span></a>
           </div>
           <div class="stat-value" th:text="${userCnt}+'명'"></div>
         </article>

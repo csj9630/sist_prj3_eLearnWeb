@@ -12,7 +12,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script type="text/javascript">
 $(function(){
-	$(".btn--primary").click(function(){
+	$("#btnApprove").click(function(){
 		if(!confirm("강의를 승인하겠습니까?")) return;
 		
 		var lectureId=$("#lectId").val();
@@ -31,9 +31,36 @@ $(function(){
 		});//ajax
 	});//click
 	
-	$(".btn--ghost").click(function(){
-		alert("승인 거절 메시지 폼 생성");
+	$("#btnRejectToggle").click(function(){
+		$("#rejectModal").addClass("is-open").attr("aria-hidden", "false");
 	})
+	$("#btnRejectCancel, .modal__backdrop").click(function(){
+		$("#rejectModal").removeClass("is-open").attr("aria-hidden", "true");
+		$("#rejectReason").val("");
+	});
+
+	$("#btnReject").click(function(){
+		var lectureId=$("#lectId").val();
+		var reason=$("#rejectReason").val().trim();
+		if(reason.length===0){
+			alert("거절 사유를 입력하세요.");
+			return;
+		}
+		$.ajax({
+			url:"/admin/lecture/reject",
+			type:"POST",
+			data:{lectureId: lectureId, reason: reason},
+			error:function(xhr){
+				alert(xhr.status);
+			},
+			success:function(data){
+				alert("거절 처리가 완료되었습니다.");
+				$("#appr").text("거절");
+				$("#rejectModal").removeClass("is-open").attr("aria-hidden", "true");
+				$("#rejectReason").val("");
+			}
+		});
+	});
 });
 </script>
 </head>
@@ -60,8 +87,8 @@ $(function(){
               <h2>강의 정보</h2>
             </div>
             <div class="panel-controls">
-              <button class="btn btn--primary">승인</button>
-              <button class="btn btn--ghost">승인 거절</button>
+              <button type="button" class="btn btn--primary" id="btnApprove">승인</button>
+              <button type="button" class="btn btn--ghost" id="btnRejectToggle">승인 거절</button>
             </div>
           </div>
 
@@ -142,5 +169,19 @@ $(function(){
       </section>
     </main>
   </div>
+  <!-- 모달  -->
+  <div id="rejectModal" class="modal" aria-hidden="true">
+    <div class="modal__backdrop"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="rejectTitle">
+      <h3 id="rejectTitle">거절 사유 입력</h3>
+      <label for="rejectReason">거절 사유 :</label>
+      <textarea id="rejectReason" rows="4" placeholder="거절 사유를 입력하세요"></textarea>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" id="btnReject">제출</button>
+        <button type="button" class="btn btn--ghost" id="btnRejectCancel">취소</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
+

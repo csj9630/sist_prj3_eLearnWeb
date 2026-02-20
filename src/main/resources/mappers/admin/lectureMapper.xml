@@ -133,4 +133,12 @@ where lect_id = #{lectureId}
 and approval = 0
 </update>
 
+<!-- 강의 거절 사유 -->
+<update id="rejcetLecture" parameterType="String">
+update lecture
+set reject_reason = #{reason}
+where lect_id = #{lectureId}
+and approval = 0
+</update>
+
 </mapper>
