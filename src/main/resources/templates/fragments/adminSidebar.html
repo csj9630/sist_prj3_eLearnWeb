@@ -23,9 +23,6 @@ $(function(){
     <li><a class="admin-sidebar-link" th:href="@{/admin/member/userList}">회원 관리</a></li>
     <li><a class="admin-sidebar-link" th:href="@{/admin/member/instructorList}">강사 관리</a></li>
     <li><a class="admin-sidebar-link" th:href="@{/admin/announcement/announcementList}">공지사항 관리</a></li>
-    <li><a class="admin-sidebar-link" th:href="@{/admin/member/searchUser}">회원 관리</a></li>
-    <li><a class="admin-sidebar-link" th:href="@{/admin/member/searchInst}">강사 관리</a></li>
-    <li><a class="admin-sidebar-link" th:href="@{/admin/announcement/searchAllAnn}">공지사항 관리</a></li>
     <li><a class="admin-sidebar-link" th:href="@{/admin/lecture/searchNotApprLect}" th:classappend="${currentUri == '/admin/lecture/searchNotApprLect'} ? 'is-active' : '' ">강의 관리</a></li>
     <li><a class="admin-sidebar-link" th:href="@{/admin/payment/searchPayPriceSum}" th:classappend="${currentUri == '/admin/payment/searchPayPriceSum'} ? 'is-active' : '' ">수익 관리</a></li>
     <li><a class="admin-sidebar-link" th:href="@{/admin/review/adminReviewList}">리뷰 관리</a></li>
