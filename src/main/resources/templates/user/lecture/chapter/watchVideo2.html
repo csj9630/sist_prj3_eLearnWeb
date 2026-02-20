@@ -69,6 +69,8 @@
       const videoJSONArr = /*[[${vdList}]]*/ "default_value";
       const startChptrId = /*[[${startChptrId}]]*/ "default_id";
       const exitUrl = /*[[@{/csj}]]*/ "/";
+      
+      const currentUserId = /*[[${session.userId}]]*/ "noName"; //세션에서 아이디 저장.
 
       console.log(videoJSONArr);
 
@@ -241,7 +243,7 @@
         const actualTime = realTime;
 
         const saveData = {
-          userId: videoData.userId || "noName", //나중에 id는 session에서 받아올 것.-> 완료
+          userId: currentUserId,
           chptrId: videoData.chptrId || "unknown",
           progTime: currentTime || 0,
           videoLength: videoLength || 0,
