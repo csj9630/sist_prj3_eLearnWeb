@@ -83,13 +83,17 @@
       const interval = 1000; //반복 추적시간.
 
       //지정 시간마다 실제 시청 시간을 추척함.
+      
       setInterval(() => {
-        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-          trackVideoTime(getTime());
-
-          //테스트용.
-          $("#lastTime").text(lastTime);
-          $("#realTime").text(realTime);
+    	  //player 객체가 멀쩡할 때만 작동.
+    	  if (player && typeof player.getPlayerState === 'function') {
+	        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+	          trackVideoTime(getTime());
+	
+	          //테스트용.
+	          $("#lastTime").text(lastTime);
+	          $("#realTime").text(realTime);
+	        }
         }
       }, interval);
 
@@ -107,7 +111,7 @@
         VideoChapterReady(startChptrId, videoJSONArr);
 
         //테스트를 위해 일단 다 보여주면서 시작.
-        //$(".playerSection").addClass("loaded");
+        $(".playerSection").addClass("loaded");
         //************ 버튼 할당 ******************
         $("#btnExit").click(function () {
           checkUnload = false; //알림 안뜨고 나가기.
@@ -299,7 +303,7 @@
       //          after the API code downloads.
 
       function onYouTubeIframeAPIReady() {
-        if (videoData && videoData.progTime) {
+        if (videoData && videoData.videoUrl) {
           player = new YT.Player("player", {
             height: "390",
             width: "640",
