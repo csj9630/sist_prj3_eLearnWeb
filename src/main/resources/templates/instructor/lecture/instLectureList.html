@@ -197,7 +197,8 @@
                 <th>상태</th>
                 <th>공개</th>
                 <th>관리</th>
-                <th>상세 보기</th>
+                <th>강의 상세</th>
+                <th>시험 관리</th>
               </tr>
             </thead>
             <tbody>
@@ -243,7 +244,7 @@
                     th:onclick="showRejectReason([[${lect.rejectReason}]])"
                     style="cursor: pointer"
                     title="클릭하여 사유 확인"
-                    >반려</span
+                    >  반려(Click)</span
                   >
                   <span th:if="*{approval == 1}" class="status-badge bg-pass"
                     >승인</span
@@ -264,19 +265,20 @@
                   >
                 </td>
                 <td class="course-actions">
-                  <a
+<!--                   <a
                     th:href="@{/instructor/lecture/edit(lectId=*{lectId})}"
-                    class="btn btn--primary"
+                    class="btn btn--ghost"
                     style="font-size: 12px; padding: 5px 10px"
                     >강의 수정</a
                   >
-                      <br/>
+                      <br/> -->
                   <button
                     
-                    class="btn btn--ghost"
+                    class="btn"
                     th:onclick="changeAvailability([[*{lectId}]], [[*{availability}]])"
 				    style="font-size: 12px; padding: 5px 10px"
 				    th:text="*{availability == 1} ? '비공개하기' : '공개하기'"
+				    th:classappend="*{availability == 1} ? 'btn-danger' : 'btn--primary'"
                   >
                     공개 설정
                   </button>
@@ -284,7 +286,14 @@
 					<td class="course-actions">
 					    <a th:href="@{/instructor/lecture/detail(lectId=*{lectId})}" 
 					       class="btn btn--ghost" 
-					       style="font-size: 12px; padding: 5px 10px; border: 1px solid #ccc;">상세 보기</a>
+					       style="font-size: 12px; padding: 5px 10px; border: 1px solid #ccc;">상세/수정</a>
+					</td>
+						<td class="course-actions">
+						<!--시험 관리 버튼  -->
+						
+					    <a th:href="@{/instructor/lecture/test/instTestFrm}" 
+					       class="btn btn--ghost" 
+					       style="font-size: 12px; padding: 5px 10px; border: 1px solid #ccc;">시험 상세</a>
 					</td>
               </tr>
             </tbody>
