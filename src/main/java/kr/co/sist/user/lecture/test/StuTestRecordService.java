@@ -53,7 +53,7 @@ public class StuTestRecordService {
 		} catch (PersistenceException pe) {
 			pe.printStackTrace();
 			return flag = false;
-		} // end catch
+		} // end catch.
 	}
 
 	// 사용자 - 시험 문제 제출 -> 정답 비교 후(채점) 해설 및 정답 가져오기
