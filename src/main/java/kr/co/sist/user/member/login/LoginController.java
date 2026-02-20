@@ -38,13 +38,15 @@ public class LoginController {
 			session.setAttribute("userId", ud.getId());
 			session.setAttribute("userName", ud.getName());
 			session.setAttribute("userEmail", ud.getEmail());
+			// 프로필 이미지 경로 세션 저장 (null이면 헤더에서 기본 아이콘 표시)
+			session.setAttribute("userImg", ud.getImg());
 
 			System.out.println("세션 설정 완료: " + session.getId());
 			System.out.println("세션 설정 완료: " + session.getAttribute("userName"));
 			System.out.println("세션 설정 완료: " + session.getAttribute("userEmail"));
 			System.out.println("SET userId: " + ud.getId());
 
-			return "redirect:/"; // 메인 페이지로 이동
+			return "redirect:/main"; // 메인 페이지로 이동
 		} else { // 로그인 실패
 			System.out.println("로그인 실패: ud is null");
 			model.addAttribute("msg", "아이디 또는 비밀번호를 확인해주세요.");
@@ -65,7 +67,7 @@ public class LoginController {
 		session.invalidate();
 
 		System.out.println("---- 세션 무효화 완료 ----");
-		return "redirect:/";
+		return "redirect:/main";
 	}
 
 }

@@ -499,8 +499,8 @@
             // 비밀번호 유효성 검사 함수
             // ===============================================
             function validatePassword(password) {
-                // 1. 길이 체크 (8~32자) 및 공백 체크
-                const lengthValid = password.length >= 8 && password.length <= 32;
+                // 1. 길이 체크 (6~32자) 및 공백 체크
+                const lengthValid = password.length >= 6 && password.length <= 32;
                 const noSpaces = !/\s/.test(password);
 
                 return {
@@ -710,36 +710,8 @@
                 });
             });
 
-            // ===============================================
-            // 이메일 인증 모달
-            // ===============================================
-            function openEmailModal() {
-                const email = $('#email').val();
-                $('#modalEmail').val(email || '');
-                $('#modalAuthCode').val('');
-                $('#modalMsg1').text('').removeClass('success fail');
-                $('#modalMsg2').text('').removeClass('success fail');
-                $('#emailModalStep2').hide();
-                $('#emailAuthModal').show();
-            }
 
-            function closeEmailModal() {
-                $('#emailAuthModal').hide();
-            }
 
-            $('#btnVerifyEmailModal').on('click', function () {
-                openEmailModal();
-            });
-
-            $('#closeEmailModal').on('click', function () {
-                closeEmailModal();
-            });
-
-            $('#emailAuthModal').on('click', function (e) {
-                if (e.target === this) {
-                    closeEmailModal();
-                }
-            });
 
             $('#btnModalSend').on('click', function () {
                 const email = $('#modalEmail').val().trim();
@@ -804,7 +776,7 @@
 
                             $('#email').val(email);
                             $('#emailCodeInputArea').hide();
-                            $('#btnVerifyEmail').text('\uC778\uC99D\uC644\uB8CC').prop('disabled', true).addClass('verified');
+                            $('#btnVerifyEmail').text('인증완료').prop('disabled', true).addClass('verified');
                             $('#email').prop('readonly', true).css('background-color', '#f0f0f0');
                             isEmailVerified = true;
                             updateEmailAddr(email);
@@ -1049,122 +1021,108 @@
     </script>
 </head>
 
-<body>
-    <div th:fragment="content">
-        <!-- =============================================== -->
-        <!-- 내 프로필 섹션 -->
-        <!-- =============================================== -->
-        <div class="section">
-            <div class="section-header">
-                <span class="section-title">내 프로필</span>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-cancel" id="btnCancel">취소</button>
-                    <button type="button" class="btn btn-save" id="btnSave">저장</button>
-                </div>
-            </div>
+<div th:fragment="content">
 
-            <!-- 프로필 이미지 -->
-            <div class="form-row">
-                <div class="form-label">이미지</div>
-                <div class="form-content">
-                    <div class="profile-img-container">
-                        <div class="profile-img-box">
-                            <img id="profileImage" th:src="${user.img}" alt="프로필 이미지">
-                        </div>
-                        <div>
-                            <button type="button" class="btn-img-change" id="btnChangeImage">변경</button>
-                            <input type="file" id="profileImageInput" accept="image/*" style="display:none;">
-                            <div class="img-upload-info">
-                                <span class="highlight">✓</span> JPG, GIF, PNG 확장자<br>
-                                <span class="highlight">✓</span> 1MB 이하의 이미지
-                            </div>
-                        </div>
+    <!-- 페이지 타이틀 (대시보드와 동일한 스타일) -->
+    <h2 class="page-title">설정 <span class="sub-title">계정 정보를 관리하세요</span></h2>
+
+    <!-- =============================================== -->
+    <!-- 내 프로필 섹션 -->
+    <!-- =============================================== -->
+    <div class="dash-section" style="margin-bottom: 20px;">
+        <div class="section-head">
+            <span>내 프로필</span>
+            <div class="btn-group">
+                <button type="button" class="btn btn-cancel" id="btnCancel">취소</button>
+                <button type="button" class="btn btn-save" id="btnSave">저장</button>
+            </div>
+        </div>
+
+        <!-- 프로필 이미지 -->
+        <div class="form-row">
+            <div class="form-label">이미지</div>
+            <div class="form-content">
+                <div class="profile-img-container">
+                    <div class="profile-img-box">
+                        <img id="profileImage" th:src="${user.img}" alt="프로필 이미지">
                     </div>
-                </div>
-            </div>
-
-            <!-- 닉네임 -->
-            <div class="form-row">
-                <div class="form-label">닉네임</div>
-                <div class="form-content">
-                    <input type="text" class="form-input" id="nickname"
-                        th:value="${user.name != null ? user.name : 'Devil Site'}" value="Devil Site"
-                        placeholder="닉네임을 입력하세요">
-                </div>
-            </div>
-
-            <!-- 아이디 (수정 불가) -->
-            <div class="form-row">
-                <div class="form-label">아이디</div>
-                <div class="form-content">
-                    <input type="text" class="form-input" id="userId"
-                        th:value="${user.id != null ? user.id : 'ljw0232'}" value="ljw0232" disabled>
-                </div>
-            </div>
-
-            <!-- 자기소개 -->
-            <div class="form-row">
-                <div class="form-label">자기소개</div>
-                <div class="form-content">
-                    <div class="editor-container">
-                        <!-- 서머노트 에디터 -->
-                        <textarea class="form-textarea" id="intro" placeholder="나만의 스킬, 깃허브 링크 등으로 소개글을 채워보세요."
-                            th:utext="${user.intro}"></textarea>
+                    <div>
+                        <button type="button" class="btn-img-change" id="btnChangeImage">변경</button>
+                        <input type="file" id="profileImageInput" accept="image/*" style="display:none;">
+                        <div class="img-upload-info">
+                            <span class="highlight">✓</span> JPG, GIF, PNG 확장자<br>
+                            <span class="highlight">✓</span> 1MB 이하의 이미지
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- =============================================== -->
-        <!-- 기본 정보 섹션 -->
-        <!-- =============================================== -->
-        <div class="section">
-            <div class="section-header">
-                <span class="section-title">기본 정보</span>
+        <!-- 닉네임 -->
+        <div class="form-row">
+            <div class="form-label">닉네임</div>
+            <div class="form-content">
+                <input type="text" class="form-input" id="nickname"
+                    th:value="${user.name != null ? user.name : 'Devil Site'}" value="Devil Site"
+                    placeholder="닉네임을 입력하세요">
             </div>
+        </div>
 
-            <!-- 이메일 -->
-            <div class="form-row">
-                <div class="form-label">
-                    이메일
-                    <span class="info-icon" title="이메일 인증이 필요합니다">ⓘ</span>
-                </div>
-                <div class="form-content">
-                    <div class="input-with-btn">
-                        <input type="email" class="form-input" id="email"
-                            th:value="${user.email != null ? user.email : 'ljw0232@gmail.com'}"
-                            value="ljw0232@gmail.com">
-                        <button type="button" class="btn-verify" id="btnVerifyEmail">인증</button>
-                        <button type="button" class="btn-verify" id="btnVerifyEmailModal">모달 테스트</button>
-                    </div>
-                    <!-- 이메일 인증번호 입력 (숨김) -->
-                    <div id="emailCodeInputArea" class="input-with-btn" style="display: none; margin-top: 10px;">
-                        <input type="text" class="form-input" id="emailAuthCode" placeholder="인증번호 6자리 입력">
-                        <button type="button" class="btn-verify" id="btnConfirmEmail">확인</button>
-                    </div>
-                    <!-- 이메일 인증 모달 -->
-                    <div id="emailAuthModal" class="modal">
-                        <div class="modal-content">
-                            <span class="close-modal" id="closeEmailModal">&times;</span>
-                            <div class="modal-title">이메일 인증 (모달 테스트)</div>
-                            <div id="emailModalStep1">
-                                <input type="email" id="modalEmail" class="modal-input" placeholder="example@email.com">
-                                <button type="button" class="btn-verify" id="btnModalSend">인증번호 발송</button>
-                                <div id="modalMsg1" class="modal-msg"></div>
-                            </div>
-                            <div id="emailModalStep2" style="display: none;">
-                                <input type="text" id="modalAuthCode" class="modal-input" maxlength="6"
-                                    placeholder="인증번호 6자리 입력">
-                                <button type="button" class="btn-verify" id="btnModalVerify">확인</button>
-                                <div id="modalMsg2" class="modal-msg"></div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- 아이디 (수정 불가) -->
+        <div class="form-row">
+            <div class="form-label">아이디</div>
+            <div class="form-content">
+                <input type="text" class="form-input" id="userId" th:value="${user.id != null ? user.id : 'ljw0232'}"
+                    value="ljw0232" disabled>
+            </div>
+        </div>
+
+        <!-- 자기소개 -->
+        <div class="form-row">
+            <div class="form-label">자기소개</div>
+            <div class="form-content">
+                <div class="editor-container">
+                    <!-- 서머노트 에디터 -->
+                    <textarea class="form-textarea" id="intro" placeholder="나만의 스킬, 깃허브 링크 등으로 소개글을 채워보세요."
+                        th:utext="${user.intro}"></textarea>
                 </div>
             </div>
+        </div>
+    </div>
 
+    <!-- =============================================== -->
+    <!-- 기본 정보 섹션 -->
+    <!-- =============================================== -->
+    <div class="dash-section" style="margin-bottom: 20px;">
+        <div class="section-head">
+            <span>기본 정보</span>
+        </div>
 
-            <!-- 비밀번호 ---->
+        <!-- 이메일 -->
+        <div class="form-row">
+            <div class="form-label">
+                이메일
+                <span class="info-icon" title="이메일 인증이 필요합니다">ⓘ</span>
+            </div>
+            <div class="form-content">
+                <div class="input-with-btn">
+                    <input type="email" class="form-input" id="email"
+                        th:value="${user.email != null ? user.email : 'ljw0232@gmail.com'}" value="ljw0232@gmail.com">
+                    <button type="button" class="btn-verify" id="btnVerifyEmail">인증</button>
+                </div>
+                <!-- 이메일 인증번호 입력 (숨김) -->
+                <div id="emailCodeInputArea" class="input-with-btn" style="display: none; margin-top: 10px;">
+                    <input type="text" class="form-input" id="emailAuthCode" placeholder="인증번호 6자리 입력">
+                    <button type="button" class="btn-verify" id="btnConfirmEmail">확인</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 비밀번호 변경 섹션 -->
+        <div class="dash-section" style="margin-bottom: 20px;">
+            <div class="section-head">
+                <span>비밀번호 변경</span>
+            </div>
             <div class="form-row">
                 <div class="form-label">비밀번호</div>
                 <div class="form-content">
@@ -1184,7 +1142,7 @@
                             <div class="password-requirements">
                                 <div class="requirement" id="req-length">
                                     <span class="icon check-icon"></span>
-                                    8자 이상 32자 이하 입력 (공백 제외)
+                                    6자 이상 32자 이하 입력 (공백 제외)
                                 </div>
                             </div>
                         </div>
@@ -1205,8 +1163,13 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- 휴대폰 -->
+        <!-- 휴대폰 변경 섹션 -->
+        <div class="dash-section" style="margin-bottom: 20px;">
+            <div class="section-head">
+                <span>연락처 변경</span>
+            </div>
             <div class="form-row">
                 <div class="form-label">휴대폰</div>
                 <div class="form-content">
@@ -1223,24 +1186,15 @@
                 </div>
             </div>
 
-
             <!-- 계정 탈퇴 -->
-            <div class="account-delete">
-                <a href="#">계정 탈퇴</a>
+            <div style="text-align:right; margin-top: 16px;">
+                <button type="button" id="btnDeleteAccount"
+                    style="color:#bbb; font-size:13px; text-decoration:underline; background:none; border:none; cursor:pointer;">회원
+                    탈퇴</button>
             </div>
+
         </div>
-    </div>
 
-    <!-- 회원 탈퇴 버튼 영역 -->
-    <div class="setting-container"
-        style="margin-top: 20px; text-align: right; background-color: transparent; box-shadow: none;">
-        <button type="button" id="btnDeleteAccount"
-            style="color: #999; text-decoration: underline; background: none; border: none; cursor: pointer;">회원
-            탈퇴</button>
-    </div>
-
-
-
-</body>
+        </body>
 
 </html>

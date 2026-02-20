@@ -2,7 +2,6 @@ package kr.co.sist.instructor.lecture;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,12 +12,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import kr.co.sist.common.file.FileService;
+
 @Service
 public class InstLectureService {
 
 	@Autowired
 	private InstLectureMapper im;
 
+	@Autowired
+	private FileService fileService;
+	
 	@Value("${file.lecture.upload-path}")
 	private String uploadImgPath;
 
@@ -89,25 +93,14 @@ public class InstLectureService {
 
 	// 파일 저장 전용 메서드
 	public String uploadThumbnail(MultipartFile thumbFile) {
-		//이미지 지정을 안하면 기본 이름으로 early (eternal) return
-		if (thumbFile == null || thumbFile.isEmpty()) {
-			return "default.png";
-		}//if
+		String savedName = null;
 		try {
-			//밀리초 방식에서 UUID 방식으로 변경.
-//			String saveName =  System.currentTimeMillis() + "_" + thumbFile.getOriginalFilename();
-			String saveName =  UUID.randomUUID() + "_" + thumbFile.getOriginalFilename();
-			File saveDir = new File(uploadImgPath);
-			if (!saveDir.exists())
-				saveDir.mkdirs();
-
-			thumbFile.transferTo(new File(uploadImgPath, saveName));
-			return saveName;
+			savedName = fileService.uploadFile(thumbFile, uploadImgPath);
 		} catch (IOException e) {
-			System.err.println(">>> 파일 업로드 중 예외 발생!");
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return null;
-		}//catch
+		}
+	    return (savedName == null) ? "default.png" : savedName;
 	}//method
 
 	// 수정 로직
