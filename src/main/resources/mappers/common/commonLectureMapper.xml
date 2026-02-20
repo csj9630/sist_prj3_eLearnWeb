@@ -16,4 +16,11 @@
 	    FROM   RELATIVE_SKILL
 	    ORDER BY name ASC
 	</select>
+	
+	<!--myLecture에서 학생이 해당 강의를 수강하는지 개수를 체크한다. -->
+	<select id="selectMyLectureCount" resultType="int">
+	    SELECT  COUNT(*)
+	    FROM   MY_LECTURE
+	    WHERE USER_ID=#{userId} AND LECT_ID=#{lectId}
+	</select>
 </mapper>
