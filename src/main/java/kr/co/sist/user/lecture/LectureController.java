@@ -71,7 +71,7 @@ public class LectureController {
 	    model.addAllAttributes(filters);
 	    model.addAttribute("imgPath", imgPath);
 	    
-	    return "user/lecture/lecutureList";
+	    return "user/lecture/lectureList";
 	}// method
 	
 	/**

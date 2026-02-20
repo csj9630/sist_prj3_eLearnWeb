@@ -1,6 +1,5 @@
 package kr.co.sist.user.lecture.chapter;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 
 import jakarta.servlet.http.HttpSession;
+import kr.co.sist.common.file.FileService;
 import kr.co.sist.common.lecture.CommonLectureService;
 
 @RequestMapping("/lecture/chapter")
@@ -40,6 +40,9 @@ public class ChapterController {
 
 	@Autowired
 	private CommonLectureService common;
+
+	@Autowired
+	private FileService fileService;
 
 	@Value("${user.upload-doc-dir}") // application.properties에 설정된 경로 (예: C:/uploads/)
 	private String uploadDocDir;
@@ -75,7 +78,7 @@ public class ChapterController {
 
 			return "common/err/err";
 		} // if : 얼리 리턴
-		
+
 		// 수강 챕터 목록 만들어서 리턴.
 		ChapterDTO cdto = new ChapterDTO(userId, lectId);
 		List<StuChapterDomain> list = cs.searchChapterProgress(cdto); // 수강 이력 리스트
@@ -143,7 +146,7 @@ public class ChapterController {
 	}// method
 
 	/**
-	 * 파일 다운로드 전 파일 존재 여부 체크.
+	 * Ajax - 파일 다운로드 전 파일 존재 여부 체크.
 	 * 
 	 * @param chptrId
 	 * @return
@@ -154,52 +157,46 @@ public class ChapterController {
 		Map<String, Boolean> response = new HashMap<>();
 		try {
 			FileDomain fileDomain = cs.getFileInfo(chptrId);
-			Path filePath = Paths.get(uploadDocDir).resolve(fileDomain.getDoc()).normalize();
-			File file = filePath.toFile();
+			String fileName = fileDomain.getDoc();
+
+			// 파일 서비스에서 파일 존재 체크.
+			boolean exists = fileService.checkFileExists(fileName, uploadDocDir);
 
 			// 파일이 존재하고 읽기 가능한지 확인
-			response.put("exists", file.exists() && file.isFile());
+			response.put("exists", exists);
 		} catch (Exception e) {
 			response.put("exists", false);
 		}
 		return response;
-	}
+		
+	}//method
 
 	/**
-	 * 파일 다운로드
+	 * 파일 다운로드, 기본적으로 위의 파일 존재 체크를 먼저 하고 실행한다.
 	 * 
 	 * @param chptrId
 	 * @return
 	 */
 	@GetMapping("/download")
 	public ResponseEntity<Resource> downloadFile(@RequestParam("chptrId") String chptrId) {
+		// 요청 결과는 기본 실패
+		ResponseEntity<Resource> result = ResponseEntity.internalServerError().build();
+
 		try {
-			// 1. Service를 통해 DB 조회
+			// DB 파일명을 조회
 			FileDomain fileDomain = cs.getFileInfo(chptrId);
-			String fileName = fileDomain.getDoc();
 
-			// 2. 물리적 경로 설정
-			Path filePath = Paths.get(uploadDocDir).resolve(fileName).normalize();
-			Resource resource = new UrlResource(filePath.toUri());
+			// 조회된 게 없으면 null을 직접 넣어서 에러 없게 하기..
+			String fileName = (fileDomain != null) ? fileDomain.getDoc() : null;
 
-			if (!resource.exists()) {
-				return ResponseEntity.notFound().build();
-			}
+			// 파일 서비스(파일명,파일경로)로 다운로드하고 결과 저장
+			result = fileService.downloadFile(fileDomain.getDoc(), uploadDocDir);
 
-			// 3. 파일명 인코딩 및 헤더 설정
-			String encodedFileName = UriUtils.encode(fileName, StandardCharsets.UTF_8);
-
-			return ResponseEntity.ok()
-					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"")
-					.header(HttpHeaders.CONTENT_TYPE, "application/octet-stream").body(resource);
-
-		} catch (RuntimeException e) {
-			// Service에서 던진 예외 처리
-			return ResponseEntity.badRequest().build();
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.internalServerError().build();
-		}
-	}
+		} // catch
+
+		return result;
+	}// method
 
 }// class
