@@ -18,7 +18,7 @@ SELECT
     L.PRICE AS price,
     L.SHORTINT AS shortint,
     L.CAT_ID AS category,
-    '/common/images/lecture_thumb_njwVersion/' || L.THUMBNAIL AS thumbnail,
+    '/common/images/lecture_thumbs/' || L.THUMBNAIL AS thumbnail,
     L.USERCOUNT AS usercount,
     NVL(ROUND(AVG(R.SCORE), 1), 0) AS rating,
     COUNT(R.REVIEW_ID) AS reviewCount

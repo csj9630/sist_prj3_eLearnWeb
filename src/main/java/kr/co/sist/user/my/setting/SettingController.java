@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/user/my/setting")
 public class SettingController {
 
-    @org.springframework.beans.factory.annotation.Value("${user.upload-dir}")
+    @Value("${user.upload-profile-dir}")
     private String uploadDir;
 
     @Autowired
@@ -64,7 +65,7 @@ public class SettingController {
             try {
                 // 외부 경로 저장 (C:/upload/profile/{userId}/)
                 // 1. 사용자 ID별 폴더 생성
-                File saveDir = new File(uploadDir + "profile" + File.separator + userId);
+                File saveDir = new File(uploadDir + userId);
                 if (!saveDir.exists())
                     saveDir.mkdirs();
 
