@@ -63,5 +63,16 @@ public class StuTestService {
 		    }
 		    return list;
 		}
+		
+		//사용자 응시 기록 존재할 경우 과거 체크했던 정답 및 데이터 가져오기.
+		public String searchTestId(String instId) {
+			String testId = "";
+			try {
+				testId = stMapper.selectTestId(instId);
+			} catch (PersistenceException pe) {
+				pe.printStackTrace();
+			}
+			return testId;
+		}
 	
 }//StuTestService

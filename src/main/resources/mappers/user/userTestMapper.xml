@@ -80,4 +80,9 @@ WHERE
 ORDER BY tq.num ASC
 </select>
 
+<select id="selectTestId" parameterType="String" resultType="String">
+select test_id
+from test t
+where lect_id = #{lectId}
+</select>
 </mapper>
