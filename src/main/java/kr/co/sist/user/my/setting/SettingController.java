@@ -46,13 +46,6 @@ public class SettingController {
     }
 
     /**
-     * 이메일 인증 팝업 페이지
-     */
-    // ===========================
-    // 프로필 정보 수정
-    // ===========================
-
-    /**
      * 프로필 정보 통합 수정 (이미지, 닉네임, 자기소개)
      */
     @PostMapping("/updateProfile")
@@ -65,8 +58,6 @@ public class SettingController {
 
         String userId = (String) session.getAttribute("userId");
         String resultMsg = "success";
-
-        // ... (updateProfile method)
 
         // 1. 프로필 이미지 변경
         if (profileImage != null && !profileImage.isEmpty()) {

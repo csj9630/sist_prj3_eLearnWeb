@@ -45,4 +45,13 @@ public interface InstructorMemberMapper {
      */
     public String selectPhone(String phone) throws PersistenceException;
 
+    /**
+     * 이메일 중복 확인
+     * 
+     * @param email 이메일
+     * @return 이메일 (없으면 null)
+     * @throws PersistenceException
+     */
+    public String selectEmail(String email) throws PersistenceException;
+
 }

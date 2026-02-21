@@ -30,32 +30,56 @@
             <!-- 우측 아이콘 그룹 -->
             <div class="header-actions">
 
-                <!-- 로그인/로그아웃 버튼 (세션 상태에 따라 분기) -->
-                <a th:unless="${session.userName != null}" href="/common/member/loginFrm"
+                <!-- 1. 비로그인 상태 (유저, 강사 모두 아닐 때) -->
+                <a th:if="${session.userId == null and session.instructorId == null}" href="/common/member/loginFrm"
                     class="header-auth-btn login-btn" title="로그인">
                     <i class="fas fa-sign-in-alt"></i>
                     <span>로그인</span>
                 </a>
-                <a th:if="${session.userName != null}" href="/common/member/logout" class="header-auth-btn logout-btn"
-                    title="로그아웃">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>로그아웃</span>
-                </a>
 
-                <!-- 장바구니 -->
-                <a href="/user/payment/searchMyCart" class="header-icon" title="장바구니">
-                    <i class="fas fa-shopping-cart"></i>
-                </a>
+                <!-- 2. 일반 유저 로그인 상태 -->
+                <th:block th:if="${session.userId != null}">
+                    <a href="/common/member/logout" class="header-auth-btn logout-btn" title="로그아웃">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>로그아웃</span>
+                    </a>
 
-                <!-- 사용자 이름 -->
-                <span th:if="${session.userName != null}" class="header-username"
-                    th:text="${session.userName} + '님'"></span>
+                    <!-- 장바구니 -->
+                    <a href="/user/payment/searchMyCart" class="header-icon" title="장바구니">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
 
-                <!-- 마이페이지 -->
-                <a href="/user/my/dashboard" class="profile-btn" title="마이페이지">
-                    <img th:if="${session.userImg != null}" th:src="${session.userImg}" class="profile-img" alt="프로필">
-                    <i th:unless="${session.userImg != null}" class="fas fa-user-circle"></i>
-                </a>
+                    <!-- 사용자 이름 -->
+                    <span class="header-username" th:text="${session.userName} + '님'"></span>
+
+                    <!-- 마이페이지 -->
+                    <a href="/user/my/dashboard" class="profile-btn" title="마이페이지">
+                        <img th:if="${session.userImg != null}" th:src="${session.userImg}" class="profile-img"
+                            alt="프로필">
+                        <i th:unless="${session.userImg != null}" class="fas fa-user-circle"></i>
+                    </a>
+                </th:block>
+
+                <!-- 3. 강사 로그인 상태 -->
+                <th:block th:if="${session.instructorId != null}">
+                    <a href="/instructor/login/logout" class="header-auth-btn logout-btn" title="로그아웃">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>로그아웃</span>
+                    </a>
+
+                    <!-- 내 수익확인 (강사 전용 아이콘) -->
+                    <a href="/instructor/payment/inst_payment" class="header-icon" title="내 수익 조회">
+                        <i class="fas fa-coins"></i>
+                    </a>
+
+                    <!-- 강사 이름 표시 -->
+                    <span class="header-username" th:text="${session.instructorId} + ' 강사님'"></span>
+
+                    <!-- 강사 대시보드 (마이페이지 형태) -->
+                    <a href="/instructor/dashboard" class="profile-btn" title="강사 대시보드">
+                        <i class="fas fa-chalkboard-teacher" style="font-size: 24px; color: #4a4a4a;"></i>
+                    </a>
+                </th:block>
 
             </div>
             <!-- ------ --><!-- 위치설정을 위한 또 다른 div -->

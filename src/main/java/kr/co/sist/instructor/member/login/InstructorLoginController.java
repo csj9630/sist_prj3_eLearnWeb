@@ -28,7 +28,15 @@ public class InstructorLoginController {
     }
 
     @PostMapping("/loginProcess")
-    public String loginProcess(InstructorDTO iDTO, HttpSession session, Model model) {
+    public String loginProcess(InstructorDTO iDTO, jakarta.servlet.http.HttpServletRequest request, Model model) {
+        // 기존 세션 무효화 (동시 로그인 방지: 강사/유저 세션 충돌 해결)
+        HttpSession oldSession = request.getSession(false);
+        if (oldSession != null) {
+            oldSession.invalidate();
+        }
+        // 속성을 담을 새 세션 발급
+        HttpSession session = request.getSession(true);
+
         InstructorDomain iDomain = instructorLoginService.login(iDTO);
         if (iDomain != null) {
             session.setAttribute("instructorId", iDomain.getInstId());

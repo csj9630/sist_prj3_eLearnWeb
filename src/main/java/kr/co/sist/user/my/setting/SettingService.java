@@ -29,9 +29,7 @@ public class SettingService {
     @Autowired
     private CryptoUtil cryptoUtil;
 
-    // ===========================
     // 정보 조회
-    // ===========================
 
     /**
      * 설정 페이지 정보 조회
@@ -60,10 +58,7 @@ public class SettingService {
         return sd;
     }
 
-    // ===========================
     // 프로필 정보 수정
-    // ===========================
-
     /**
      * 프로필 이미지 변경
      *
