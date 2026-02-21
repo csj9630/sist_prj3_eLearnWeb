@@ -17,7 +17,7 @@ public class InstChapterController {
     private InstChapterService chapterService;
 
     /**
-     * 챕터 관리 페이지 이동
+     * 챕터 관리 페이지  이동
      * @par	m lectId 강의 ID
      */
     @GetMapping("/manage")
