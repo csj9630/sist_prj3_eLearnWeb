@@ -55,9 +55,9 @@ public class PaymentController {
         String userId = (String) session.getAttribute("userId");
 
         // 로그인하지 않은 경우
-        if (userId == null) {
-            return "login_required";
-        } // end if
+//        if (userId == null) {
+//            return "login_required";
+//        } // end if
 
         boolean result = ps.addLectureToCart(userId, lectId);
         return result ? "success" : "duplicate";
@@ -70,10 +70,10 @@ public class PaymentController {
         String userId = (String) session.getAttribute("userId");
 
         // userId없다면 user1으로 설정.
-        if (userId == null) {
-            userId = "user1";
-            session.setAttribute("userId", userId);
-        } // end if
+//        if (userId == null) {
+//            userId = "user1";
+//            session.setAttribute("userId", userId);
+//        } // end if
 
         List<MyCartDTO> list = ps.getMyCart(userId);
         model.addAttribute("cartList", list);
@@ -119,10 +119,10 @@ public class PaymentController {
     public String searchMyPurchase(HttpSession session, Model model) {
         String userId = (String) session.getAttribute("userId");
 
-        if (userId == null) {
-            userId = "user1"; // 테스트용 기본값
-            session.setAttribute("userId", userId);
-        } // end if
+//        if (userId == null) {
+//            userId = "user1"; // 테스트용 기본값
+//            session.setAttribute("userId", userId);
+//        } // end if
 
         List<PayDetailDTO> list = ps.searchPurchaseLectures(userId);
         model.addAttribute("purchaseList", list);
@@ -141,8 +141,8 @@ public class PaymentController {
             HttpSession session, Model model) {
 
         String userId = (String) session.getAttribute("userId");
-        if (userId == null)
-            userId = "user1"; // 임시방편:세션없다면 user1으로 설정.(후에 수정할 것)
+//        if (userId == null)
+//            userId = "user1"; // 임시방편:세션없다면 user1으로 설정.(후에 수정할 것)
 
         try {
             // 토스 서버로 최종 승인 요청

@@ -45,7 +45,7 @@
         </a>
           
         <!-- 마이페이지 --><!-- 로그인, 세션때문에 프로필이 아닌 우선 대시보드로 가게 만듦. 후에 수정 -->
-        <a href="/user/my/dashboard" class="profile-btn" title="마이페이지">
+        <a href="/user/my/dashboard/user_dashboard" class="profile-btn" title="마이페이지">
         <img th:if="${session.userImg != null}" 
              th:src="${session.userImg}" 
              class="profile-img" alt="프로필">

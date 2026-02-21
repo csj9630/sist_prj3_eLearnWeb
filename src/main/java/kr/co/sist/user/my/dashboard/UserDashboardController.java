@@ -28,14 +28,14 @@ public class UserDashboardController {
   	@Value("${file.lecture.img-path}")
   	private String imgPath;
 
-    @GetMapping({"", "/index", "/user_dashboard"}) 
+    @GetMapping({"","/user_dashboard"}) 
     public String dashboard(HttpSession session, Model model) {
         // 1. 세션 체크 (테스트용. user1)
         String userId = (String) session.getAttribute("userId");
-        if (userId == null) {
-            userId = "user1";
-            session.setAttribute("userId", userId);
-        }//end if
+//        if (userId == null) {
+//            userId = "user1";
+//            session.setAttribute("userId", userId);
+//        }//end if
 
         //최근 학습 강의(2개)
         List<UserMyLectureDomain> list = userMyLectureService.searchMyLectureList(userId,null);

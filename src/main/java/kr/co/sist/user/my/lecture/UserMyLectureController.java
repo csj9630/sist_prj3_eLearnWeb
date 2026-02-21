@@ -22,7 +22,7 @@ public class UserMyLectureController {
     @Value("${file.lecture.img-path}")
   	private String imgPath;
 
-    @GetMapping("")
+    @GetMapping({"","/user_myLecture"})
     public String myLectureList(
             @RequestParam(value = "title", required = false) String title, // 검색어 (없을 수도 있음)
             HttpSession session, Model model) {
@@ -30,10 +30,10 @@ public class UserMyLectureController {
         String userId = (String) session.getAttribute("userId");
         
         // (테스트용) 로그인 안 되어 있으면 강제 설정
-        if(userId == null) {
-            userId = "user1"; 
-            session.setAttribute("userId", userId);
-        }
+//        if(userId == null) {
+//            userId = "user1"; 
+//            session.setAttribute("userId", userId);
+//        }
 
         // title이 null이면 전체 조회, 있으면 검색 조회
         List<UserMyLectureDomain> list = umls.searchMyLectureList(userId, title);
