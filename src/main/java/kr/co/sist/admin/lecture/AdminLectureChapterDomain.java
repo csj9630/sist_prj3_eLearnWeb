@@ -15,6 +15,6 @@ import lombok.ToString;
 @ToString
 public class AdminLectureChapterDomain {
 	private int ch_num, ch_length;
-	private String ch_name, ch_video, ch_doc;
+	private String ch_id, ch_name, ch_video, ch_doc;
 	private Date ch_regdate;
 }

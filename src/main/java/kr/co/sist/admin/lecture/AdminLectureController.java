@@ -1,10 +1,19 @@
 package kr.co.sist.admin.lecture;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +21,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kr.co.sist.common.file.FileService;
+import kr.co.sist.user.lecture.chapter.ChapterService;
+import kr.co.sist.user.lecture.chapter.FileDomain;
 
 @Controller
 @RequestMapping("/admin/lecture")
@@ -22,6 +35,17 @@ public class AdminLectureController {
 	@Autowired
 	private AdminLectureService als;
 	
+	@Autowired
+	private ChapterService cs ;
+
+    // 프로필 이미지 파일 저장 경로 (출력만 할 때는 당장 안 쓰지만 세팅 유지)
+    @Value("${file.lecture.img-path}")
+    private String profileUploadPath;
+	
+    // 파일 업로드 위치
+    @Value("${user.upload-doc-dir}")
+    private String uploadDocDir;
+    
 	/**
 	 * 교육 과목 화면 처리 method
 	 * @param model
@@ -47,7 +71,8 @@ public class AdminLectureController {
 		model.addAttribute("alsDTO", alsDTO);
 		model.addAttribute("categoryList", category);
 		model.addAttribute("lectByCategory", lectureByCategory);
-		
+		model.addAttribute("profileUploadPath", profileUploadPath);
+
 		//헤더에 사용할 페이지명
 		model.addAttribute("pageTitle", "교육 과목 관리");
 		model.addAttribute("currentUri", req.getRequestURI());
@@ -126,6 +151,7 @@ public class AdminLectureController {
 		//헤더에 사용할 페이지명
 		model.addAttribute("pageTitle", "강의 관리");
 		model.addAttribute("currentUri", req.getRequestURI());
+		model.addAttribute("profileUploadPath", profileUploadPath);
 		
 		return "admin/lecture/searchNotApprLect";
 	}
@@ -169,9 +195,43 @@ public class AdminLectureController {
 		
 		model.addAttribute("lecture", lectureDetail);
 		model.addAttribute("chapter", lectureChapter);
+		model.addAttribute("uploadDocDir", uploadDocDir);
 		
 		return "admin/lecture/searchDetailNotApprLect";
 	}
+	
+	//파일 다운로드
+	@GetMapping("/file")
+    public ResponseEntity<Resource> downloadFile(@RequestParam("chptrId") String chptrId) {
+        try {
+            // 1. Service를 통해 DB 조회
+            FileDomain fileDomain = cs.getFileInfo(chptrId);
+            String fileName = fileDomain.getDoc();
+            
+            // 2. 물리적 경로 설정
+            Path filePath = Paths.get(uploadDocDir).resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // 3. 파일명 인코딩 및 헤더 설정
+            String encodedFileName = UriUtils.encode(fileName, StandardCharsets.UTF_8);
+            
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
+                .body(resource);
+
+        } catch (RuntimeException e) {
+            // Service에서 던진 예외 처리
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 	
 	/**
 	 * 강의 상태 승인
@@ -183,6 +243,11 @@ public class AdminLectureController {
 		als.approvalLecture(lectureId);
 	}
 	
+	/**
+	 * 강의 상태 거절
+	 * @param lectureId
+	 * @param reason
+	 */
 	@PostMapping("/reject")
 	@ResponseBody
 	public void reject(@RequestParam String lectureId, @RequestParam String reason) {

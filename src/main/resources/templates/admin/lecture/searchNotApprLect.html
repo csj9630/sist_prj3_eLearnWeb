@@ -37,6 +37,7 @@ function lectByCategory(page){
 			console.log(data);
 			var tbody = $("#lectureTableBody");
 			var pagination = $("#pagination");
+			var profileUploadPath = $("#profileUploadPath").val();			
 			tbody.empty();
 			pagination.empty();
 			
@@ -55,7 +56,7 @@ function lectByCategory(page){
 			    var row = `
 			      <tr class="course-row">
 			        <td class="course-thumb">
-			          <img src="/common/images/${lect.thumbnail}" alt="">
+			          <img src="${profileUploadPath}${lect.thumbnail}" alt="">
 			        </td>
 			        <td class="course-title">
 			          <a href="/admin/lecture/searchDetailNotApprLect?lectureId=${lect.lect_id}">
@@ -139,7 +140,7 @@ function lectByCategory(page){
           <tbody id="lectureTableBody">
             <tr class="course-row" th:each="notApprLects : ${notApprLectList}" th:object="${notApprLects}">
               <td class="course-thumb">
-                <img th:src="@{'/common/images/'+*{thumbnail}}" alt="">
+                <img th:src="@{|${profileUploadPath}*{thumbnail}|}" alt="">
               </td>
               <td class="course-title"><a th:href="@{/admin/lecture/searchDetailNotApprLect(lectureId=*{lect_id})}" th:text="*{lect_name}"></a></td>
               <td class="status status--open" th:text="*{regDate}"></td>
@@ -151,7 +152,8 @@ function lectByCategory(page){
             </tr>
           </tbody>
         </table>
-
+		<input type="hidden" id="profileUploadPath" th:value="${profileUploadPath}">
+		
 		<nav class="pagination" id="pagination">
           <a class="page-btn" th:if="${page > 1}"
              th:href="@{/admin/lecture/searchNotApprLect(page=${page-1}, size=${size})}">
