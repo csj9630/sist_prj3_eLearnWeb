@@ -150,16 +150,15 @@ $(function(){
                 <tbody>
                   <tr th:each="ch : ${chapter}">
                     <td th:text="${ch.ch_name}"></td>
-                    <td th:text="${ch.ch_length}+':00'"></td>
+                    <td th:text="${ch.ch_length}+'분'"></td>
                     <td th:text="${ch.ch_regdate}"></td>
-                    <td th:text="${ch.ch_doc}"></td>
+                    <td>
+                      <a th:href="@{/admin/lecture/file(chptrId=${ch.ch_id})}" th:text="${ch.ch_doc}"></a>
+					</td>
                     <td>
                       <a th:href="${ch.ch_video}" th:text="${ch.ch_video}" target="_blank"></a>
                     </td>
                   </tr>
-                  <!-- <tr th:if="${chapterList == null or #lists.isEmpty(chapterList)}">
-                    <td colspan="4">등록된 커리큘럼이 없습니다.</td>
-                  </tr> -->
                 </tbody>
               </table>
             </div>

@@ -125,6 +125,7 @@ function lectByCategory(page){
 	//select 태그
 	var categoryName=$("#category").val();
 	var size=5;
+	var profileUploadPath = $("#profileUploadPath").val();	
 	
 	$.ajax({
 		url:"/admin/lecture/searchCategoryLect",
@@ -152,7 +153,7 @@ function lectByCategory(page){
 			    var row = `
 			      <tr class="course-row" availability="${lect.availability}">
 			        <td class="course-thumb">
-			          <img src="/common/images/${lect.thumbnail}" alt="">
+			          <img src="${profileUploadPath}${lect.thumbnail}" alt="">
 			        </td>
 			        <td class="course-title">${lect.lect_name}</td>
 			        <td>${lect.score}</td>
@@ -252,7 +253,7 @@ function lectByCategory(page){
           <tbody id="lectureTableBody">
             <tr class="course-row" th:each="lects, i : ${lectByCategory}" th:object="${lects}" th:attr="availability=*{availability}">
               <td class="course-thumb">
-                <img th:src="@{'/common/images/'+*{thumbnail}}" alt="">
+                <img th:src="@{|${profileUploadPath}*{thumbnail}|}" alt="">
               </td>
               <td class="course-title" th:text="*{lect_name}"></td>
               <td th:text="*{score}"></td>
@@ -269,7 +270,8 @@ function lectByCategory(page){
             </tr>
           </tbody>
         </table>
-
+		<input type="hidden" id="profileUploadPath" th:value="${profileUploadPath}">
+		
         <nav class="pagination" id="pagination">
           <a class="page-btn" th:if="${page > 1}"
              th:href="@{/admin/lecture/searchAllLect(page=${page-1}, size=${size})}">
