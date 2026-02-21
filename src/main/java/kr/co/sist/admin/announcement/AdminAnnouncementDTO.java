@@ -8,14 +8,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-@Alias("announcementDTO")
+@Alias("adminAnnouncementDTO")
 @Getter
 @Setter
 @ToString
 public class AdminAnnouncementDTO {
- 
-	private int ann_id, views;
-	private String title, content, regip, adm_id; 
-	private Date regdate;
+	
+	private int		ann_id, views;
+	private String	title, content, regip, adm_id; 
+	private Date	regdate;
 	
 }

@@ -141,7 +141,7 @@ public class UserReviewController {
 		return "/user/lecture/review/reviewRemoveProcess";
 	} // removeReviewProcess
 	
-	// 🌟 [추가됨] 모달에 띄울 리뷰 정보를 JSON 형태로 반환하는 AJAX 전용 메서드
+	// 모달에 띄울 리뷰 정보를 JSON 형태로 반환하는 AJAX 전용 메서드
 	@ResponseBody
 	@GetMapping("/reviewDetailAjax")
 	public ResponseEntity<UserReviewDomain> reviewDetailAjax(@RequestParam String reviewId) {

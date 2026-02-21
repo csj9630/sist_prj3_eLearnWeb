@@ -126,7 +126,7 @@ public class UserReviewService {
 		String content = "";
 		for(UserReviewDomain rDomain : reviewList) {
 			content = rDomain.getContent();
-			if(content != null && content.length() > 19) {
+			if(content != null && content.length() > 20) {
 				rDomain.setContent(content.substring(0, 20) + "...");
 			} // end if
 		} // end for

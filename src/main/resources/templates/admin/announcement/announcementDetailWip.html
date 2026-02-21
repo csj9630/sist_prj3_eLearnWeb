@@ -15,14 +15,42 @@
 <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
 <script type="text/javascript" th:inline="javascript">
 $(function() {
-	$("#btnWrite").click(function() {
-		location.href = "/admin/announcement/writeFrm";
-	}); // click
+    $('#content').summernote({
+        placeholder: '공지사항 내용을 작성해주세요.',
+        tabsize: 2,
+        height: 300,
+        width: 500,
+        toolbar: [
+			// [groupName, [list of button]]
+			['style', ['bold', 'italic', 'underline', 'clear']],
+			['font', ['strikethrough', 'superscript', 'subscript']],
+			['fontsize', ['fontsize']],
+			['color', ['color']],
+			['para', ['ul', 'ol', 'paragraph']],
+			['height', ['height']],
+			['insert', ['link', 'picture']]
+		]
+    });
+    
+	$("#btnModify").click(function() {
+		if(confirm("글을 정말 수정하시겠습니까?")) {
+			// 내용에 값이 있는지 유효성 검증
+			if($("#content").val() == "" || $("#content").val() == "<p></p>") {
+				alert("내용은 필수 입력입니다.");
+				return;
+			} // end if
+			$("#frm")[0].action = "/admin/announcement/modifyAnnouncementProcess?currentPage=[[${param.currentPage}]]";
+			$("#frm").submit();
+		}
+		
+	});
 	
-	$("#btnSearch").click(function() {
-		searchAnnouncement();
-	}); // click
-	
+	$("#btnDelete").click(function() {
+		if(confirm("글을 정말 삭제하시겠습니까?")) {
+			$("#frm")[0].action = "/admin/announcement/removeAnnouncementProcess?currentPage=[[${param.currentPage}]]";
+			$("#frm").submit();
+		}
+	});
 }); // ready
 
 function searchAnnouncement() {
@@ -36,42 +64,34 @@ function searchAnnouncement() {
   <div id="header">
     <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
   </div>
-
+	
   <div class="admin-layout">
     <aside class="admin-sidebar">
       <th:block th:replace="~{fragments/adminSidebar :: adminSidebar}"></th:block>
     </aside>
-
+	
 	<!-- 좌측 상단 제목 -->
     <main class="admin-content">
       <section class="announcement-page">
         <header class="announcement-header">
-          <h1>공지사항 관리</h1>
+          <h1>공지사항 세부 관리</h1>
         </header>
-
+		
 		<!-- 옵션 선택바 -->
         <div class="announcement-toolbar" style = "display: flex;">
-          <!-- 
+          <!--
           <form th:action = "@{/admin/announcement/announcementList}" id = "announcementSearchFrm">
           -->
           <form th:action = "@{{url}(url = '/admin/announcement/announcementList', field = ${param.lectId}, keyword = ${param.keyword},currentPage = ${param.currentPage})}" id = "announcementSearchFrm">
           <div class="announcement-filter">
-          	<select name = "field" id = "field">
-			<option value = "1" th:selected = "${param.field ne null and param.field[0] eq '1'}">제목</option>
-			<option value = "2" th:selected = "${param.field ne null and param.field[0] eq '2'}">내용</option>
-			<option value = "3" th:selected = "${param.field ne null and param.field[0] eq '3'}">작성자</option>
-			</select>
-			<input type = "text" name = "keyword" id = "keyword" th:value = "${param.keyword != null ? param.keyword : ''}" style = "height: 30px"/>
-			<input type = "hidden" name = "currentPage" id = "currentPage" th:value = "${param.currentPage == null ? 1 : param.currentPage}"/>
-			<input type = "text" style = "display: none"/>
-			<input type = "button" value = "검색" id = "btnSearch" class = "btn btn--primary"/>
+          	<span>제목</span>
 		  </div>
           </form>
-		  <div  style = "margin-left: auto;">
+		  <div style = "margin-left: auto;">
 			<input type = "button" value = "글쓰기" class = "btn btn--primary" id = "btnWrite"/>
 		  </div>
         </div>
-
+		
 		<!-- 테이블 내용 -->
 		<table class = "announcement-table">
 		<thead>
@@ -98,9 +118,6 @@ function searchAnnouncement() {
 		</tr>
 		</tbody>
 		</table>
-		<div id = "pagination" style = "text-align: center; display: center;">
-			<div th:utext = "${pagination}"></div>
-		</div>
       </section>
       
     </main>
