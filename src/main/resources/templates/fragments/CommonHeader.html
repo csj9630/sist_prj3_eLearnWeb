@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header">
+<header>
+
+    <div class="header-inner">
+    		
+    		<!-- 공통 -->
+        <a href="/" class="logo">
+            <img src="/common/images/main_logo.png" alt="Intlearn" class="logo-img">
+        </a>
+        <!-- 공통 -->
+
+        <nav class="header-menu">
+        		<!-- 사용자 -->
+            <th:block th:unless="${session.instId != null}">
+                <a href="/user/lecture/lectureList" class="nav-text">
+                    <img src="/common/images/lecture.png" alt="강의" class="nav-icon">
+                    <span>강의</span>
+                </a>
+                <a href="/user/community/index" class="nav-text">
+                    <img src="/common/images/community.png" alt="커뮤니티" class="nav-icon">
+                    <span>커뮤니티</span>
+                </a>
+            </th:block>
+            <!-- 사용자 -->
+
+			<!-- 강사 -->
+            <th:block th:if="${session.instId != null}">
+                <a href="/instructor/lecture/lectureList" class="nav-text">
+                    <img src="/common/images/lecture.png" alt="강의" class="nav-icon">
+                    <span>강의</span>
+                </a>
+                <a href="/instructor/community/index" class="nav-text">
+                    <img src="/common/images/community.png" alt="커뮤니티" class="nav-icon">
+                    <span>커뮤니티</span>
+                </a>
+            </th:block>
+            <!-- 강사 -->
+        </nav>
+        
+        <div class="header-actions">
+        		
+        		
+            <a th:unless="${session.userName != null}" href="/common/member/loginFrm"
+                class="header-auth-btn login-btn" title="로그인">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>로그인</span>
+            </a>
+            <a th:if="${session.userName != null}" href="/common/member/logout" class="header-auth-btn logout-btn"
+                title="로그아웃">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>로그아웃</span>
+            </a>
+
+            <th:block th:unless="${session.instId != null}">
+                <a href="/user/payment/searchMyCart" class="header-icon" title="장바구니">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                
+                <a href="/user/my/dashboard" class="profile-btn" title="마이페이지">
+                    <img th:if="${session.userImg != null}" 
+                         th:src="${session.userImg}" 
+                         class="profile-img" alt="프로필">
+                    <i th:unless="${session.userImg != null}" class="fas fa-user-circle"></i>
+                </a>
+            </th:block>
+
+            <th:block th:if="${session.instId != null}">
+                <a href="/instructor/payment/inst_payment" class="header-icon" title="내 수익 조회">
+                    <i class="fas fa-coins"></i>
+                </a>
+                
+                <a href="/instructor/dashboard" class="profile-btn" title="마이페이지"> 
+                    <img th:if="${session.userImg != null}" 
+                         th:src="${session.userImg}" 
+                         class="profile-img" alt="프로필">
+                    <i th:unless="${session.userImg != null}" class="fas fa-user-circle"></i>
+                </a>
+            </th:block>
+
+        </div>
+        
+    </div>
+</header>
+</div>
+</html>
