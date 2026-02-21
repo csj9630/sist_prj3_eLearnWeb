@@ -11,7 +11,7 @@
         ml.USER_ID AS userId,
         ml.LECT_ID AS lectId,
         l.NAME AS lectName,
-        '/common/images/lecture_thumb_njwVersion/' || l.THUMBNAIL AS thumbnail,
+        l.THUMBNAIL AS thumbnail,
         l.SHORTINT AS shortIntro,
         i.NAME AS instName,
         ml.REGDATE AS regDate,

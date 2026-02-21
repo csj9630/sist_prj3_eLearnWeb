@@ -28,6 +28,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService ps;
+    
+    @Value("${file.lecture.img-path}")
+  	private String imgPath;
 
     // @Value("${toss.secret-key}")
     // private String TOSS_SECRET_KEY;
@@ -39,7 +42,7 @@ public class PaymentController {
     @PostMapping("/addLectToCart")
     public String addLectToCart(String userId, String lectId) {
         ps.addLectureToCart(userId, lectId);
-        return "redirect:/user/payment/searchMyCart";
+        return "redirect:user/payment/searchMyCart";
     }// addLectToCart
 
     /**
@@ -74,6 +77,7 @@ public class PaymentController {
 
         List<MyCartDTO> list = ps.getMyCart(userId);
         model.addAttribute("cartList", list);
+        model.addAttribute("imgPath", imgPath);
 
         return "user/payment/cart";
     }// searchMyCart
@@ -122,6 +126,7 @@ public class PaymentController {
 
         List<PayDetailDTO> list = ps.searchPurchaseLectures(userId);
         model.addAttribute("purchaseList", list);
+        model.addAttribute("imgPath", imgPath);
 
         return "user/payment/purchase_list";
     }// searchMyPurchase

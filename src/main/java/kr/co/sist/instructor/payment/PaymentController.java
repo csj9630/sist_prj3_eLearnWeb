@@ -3,6 +3,7 @@ package kr.co.sist.instructor.payment;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,10 @@ public class PaymentController {
 
     @Autowired
     private PaymentService ps;
+    
+  //강의 썸네일 이미지 저장 경로
+  	@Value("${file.lecture.img-path}")
+  	private String imgPath;
     
     // 내 수익 조회 페이지(일단 링크 2개로 매핑함)
     @GetMapping({"/searchMyPay","/inst_payment"}) 
@@ -43,6 +48,7 @@ public class PaymentController {
         model.addAttribute("totalRevenue", totalRevenue);
         model.addAttribute("list", list);
         model.addAttribute("searchMonth", searchMonth); //드롭다운용 현재 날짜
+        model.addAttribute("imgPath", imgPath);
         
         return "instructor/payment/inst_payment";
     }//searchMyPay

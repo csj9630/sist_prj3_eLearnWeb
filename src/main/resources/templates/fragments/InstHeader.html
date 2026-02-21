@@ -31,6 +31,18 @@
         <!-- ------ --><!-- 위치설정을 위한 또 다른 div -->
         <div class="header-actions">
         
+        <!-- 로그인/로그아웃 버튼 (세션 상태에 따라 분기) -->
+                <a th:unless="${session.userName != null}" href="/common/member/loginFrm"
+                    class="header-auth-btn login-btn" title="로그인">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>로그인</span>
+                </a>
+                <a th:if="${session.userName != null}" href="/common/member/logout" class="header-auth-btn logout-btn"
+                    title="로그아웃">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>로그아웃</span>
+                </a>
+        
         <!-- 내 수익확인 -->
         <a href="/instructor/payment/inst_payment" class="header-icon" title="내 수익 조회">
             <i class="fas fa-coins"></i>
@@ -53,6 +65,6 @@
 </header>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-<link rel="stylesheet" href="/css/user-mypage.css">
+<link rel="stylesheet" href="/css/user-mypage.css"><!-- css는 남지우(나)가 만든 user-mypage.css 사용했습니다. -->
 </div>
 </html>

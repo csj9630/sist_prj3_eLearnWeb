@@ -16,8 +16,7 @@
                      AND ROWNUM = 1), 
                     '학습 시작 전'
                 ) AS chptrName,
-                '/common/images/lecture_thumb_njwVersion/' || l.THUMBNAIL AS thumbnail,
-                -- 여기서는 LASTDATE를 잘 쓰고 계십니다.
+                l.THUMBNAIL AS thumbnail,
                 NVL(
                     (SELECT MAX(mc.LASTDATE) FROM MY_CHAPTER mc 
                      JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID 
@@ -52,7 +51,7 @@
     <select id="selectLectureDetail" parameterType="String" resultType="kr.co.sist.user.my.lecture.UserMyLectureDomain">
         SELECT 
             ml.MYLECT_ID AS myLectId,   ml.USER_ID AS userId,       ml.LECT_ID AS lectId,
-            l.NAME AS lectName,         '/common/images/lecture_thumb_njwVersion/' || l.THUMBNAIL AS thumbnail,   l.SHORTINT AS shortIntro,
+            l.NAME AS lectName,         l.THUMBNAIL AS thumbnail,   l.SHORTINT AS shortIntro,
             l.USERCOUNT AS userCount,   c.NAME AS catName,          i.NAME AS instName,
             ml.REGDATE AS regDate,
             l.COUNT AS totalChapter,

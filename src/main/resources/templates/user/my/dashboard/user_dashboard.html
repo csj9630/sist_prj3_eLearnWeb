@@ -86,9 +86,11 @@
                                style="display: flex; flex-direction: column; text-decoration: none; color: inherit; cursor: pointer;">
                             
                                 <div class="card-thumb">
-                                    <img th:src="${lect.thumbnail != null ? lect.thumbnail : 'https://via.placeholder.com/260x145?text=No+Image'}"
-                                        onerror="this.src='https://via.placeholder.com/260x145?text=Inflearn'"
-                                        alt="강의 썸네일" style="height: 100%">
+                                     <img
+									 th:src="|${imgPath}*{lect.thumbnail}|"
+									 alt="썸네일"
+									 onerror="this.src = '/common/images/default.png'"
+									 />
                                 </div>
 
                                 <div class="card-body">

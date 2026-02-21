@@ -148,7 +148,11 @@
                     <div class="p-left">
                         <input type="checkbox" name="chkLect" th:value="${cart.lectId}" th:data-price="${cart.price}" checked style="margin-right:15px; transform:scale(1.2);">
                         <div class="p-thumb">
-                            <img th:src="${cart.lectThumbnail}" onerror="this.src='https://via.placeholder.com/120x75'">
+                            <img
+							 th:src="|${imgPath}${cart.lectThumbnail}|"
+							 alt="썸네일"
+							 onerror="this.src = '/common/images/default.png'"
+							 />
                         </div>
                         <div class="p-info">
                             <h4 th:text="${cart.lectName}">강의명</h4>

@@ -3,6 +3,7 @@ package kr.co.sist.user.my.lecture;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,9 @@ public class UserMyLectureController {
 
     @Autowired
     private UserMyLectureService umls;
+    
+    @Value("${file.lecture.img-path}")
+  	private String imgPath;
 
     @GetMapping("")
     public String myLectureList(
@@ -35,6 +39,7 @@ public class UserMyLectureController {
         List<UserMyLectureDomain> list = umls.searchMyLectureList(userId, title);
         
         model.addAttribute("myLectureList", list);
+        model.addAttribute("imgPath", imgPath);
         
         return "user/my/lecture/my_lecture_list";
     }

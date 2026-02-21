@@ -133,8 +133,13 @@ function searchRevenue() {
                         
                         <td>
                             <div class="lect-info">
-                                <img th:src="${item.thumbnail}" 
-                                     onerror="this.src='https://via.placeholder.com/80x50?text=No+Img'" 
+	                            <!-- <img
+								 th:src="|${imgPath}*{item.thumbnail}|"
+								 alt="썸네일"
+								 onerror="this.src = '/common/images/default.png'"
+								 /> -->
+                                <img th:src="|${imgPath}*{item.thumbnail}|" 
+                                     onerror="this.src = '/common/images/default.png'" 
                                      class="lect-thumb" alt="썸네일">
                                 
                                 <div class="lect-text">

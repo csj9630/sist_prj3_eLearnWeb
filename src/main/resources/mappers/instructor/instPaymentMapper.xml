@@ -22,7 +22,7 @@
             l.LECT_ID AS lectId,
             l.NAME AS lectName,
             l.INST_ID AS instId,
-            '/common/images/lecture_thumb_njwVersion/' || l.THUMBNAIL AS thumbnail,
+            l.THUMBNAIL AS thumbnail,
             TO_CHAR(l.REGDATE, 'YYYY-MM-DD') AS openDate,
             l.USERCOUNT AS userCount,
             
