@@ -55,7 +55,7 @@ public class ChapterController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping("/viewProgressList")
+	@GetMapping("/list")
 	public String viewChapterProgress(@RequestParam String lectId, HttpSession session, Model model) {
 		String userId = (String) session.getAttribute("userId");
 
@@ -98,6 +98,7 @@ public class ChapterController {
 		String userId = (String) session.getAttribute("userId");
 		ChapterDTO cdto = new ChapterDTO(userId, lectId);
 		List<VideoDomain> vdList = cs.getVideoInfoList(cdto);
+		String lectName = cs.getLectureName(lectId);
 
 		// 출석 체크. 실패 시 에러메시지 전달.
 		try {
@@ -107,7 +108,9 @@ public class ChapterController {
 		} // end catch
 
 		model.addAttribute("vdList", vdList); // 영상 정보 리스트을 전송.
-		model.addAttribute("startChptrId", chptrId); // 처음 재생할 번호 전송.
+		model.addAttribute("lectId", lectId);
+		model.addAttribute("lectName", lectName);
+		model.addAttribute("startChptrId", chptrId); // 처음 재생할 챕터ID 전송.
 
 		return "user/lecture/chapter/watchVideo2";
 	}// method

@@ -101,6 +101,10 @@
     <th:block th:replace="~{fragments/footer :: footer}"></th:block>
 
     <script th:inline="javascript">
+   
+    const chp =  [[${chapterProgress}]];
+	  
+    console.log(chp);
         function handleExamStart(lectId, isReady) {
             if (!isReady) {
                 alert("아직 모든 강의를 완료하지 않았습니다.");

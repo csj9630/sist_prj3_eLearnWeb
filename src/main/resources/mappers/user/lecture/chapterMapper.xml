@@ -27,7 +27,10 @@
 		select 
 	        c.chptr_id as chptrId, c.name, c.length, c.regdate, c.doc, c.video, c.num,
 	        nvl(m.progress, 0) as progress,
-	        nvl(m.state, 0) as state
+	        nvl(m.state, 0) as state,
+	        nvl(m.progtime, 0) as progTime,
+       		 nvl(m.actualtime, 0) as actualTime
+	        
 	    from 
 	        chapter c
 	    left join 
@@ -103,7 +106,12 @@
 		        INSERT (my_chapter_id, chptr_id, user_id, lastdate, progress, progtime, state,actualtime)
 		        VALUES ('MC' || SEQ_MY_CHAPTER_ID.NEXTVAL, #{chptrId}, #{userId}, SYSDATE, #{progress}, #{progTime}, #{state},#{actualTime})
 	</update>
-	
+	<!--영상 전체 길이를 업데이트해준다.-->
+	<update id="updateChapterLength" parameterType="videoDTO">
+	    UPDATE chapter
+	    SET    length = #{videoLength}
+	    WHERE  chptr_id = #{chptrId}
+	</update>
 		 
 	 	<!--
 		사용처 : 학생 출석 체크, 영상 시청 시 출석 테이블에 insert..

@@ -21,5 +21,5 @@ public interface ChapterMapper {
 	public Integer selectLatestTestScore(String userId, String lectId);
 	public Integer selectChapterTestState(ChapterDTO cdto);
 	public String selectLectureName(String lectId);
-	
+	public int updateChapterLength(VideoDTO vdto);
 }

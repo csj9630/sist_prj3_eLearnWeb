@@ -1,7 +1,6 @@
 package kr.co.sist.user.lecture.chapter;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.slf4j.Logger;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ChapterService {
@@ -70,11 +70,12 @@ public class ChapterService {
 		return vdList;
 	}// method
 
-	// @Transactional // Service 메서드 안의 모든 쿼리가 성공 시 커밋, 하나라도 실패 시 rollBack;
+	 @Transactional // Service 메서드 안의 모든 쿼리가 성공 시 커밋, 하나라도 실패 시 rollBack;
 	public boolean saveVideoRecord(VideoDTO vdto) {
 		boolean flag = false;
 		try {
 			flag = cm.mergeRecordtoMyChapter(vdto) == 1;
+			flag = cm.updateChapterLength(vdto) == 1;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} // end catch

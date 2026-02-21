@@ -80,7 +80,6 @@ public class VideoDTO {
 	        // 단, 시청 시간(progTime)은 0부터 다시 시작하더라도 progress는 100 유지
 		} else if (this.progress >= 95 || this.actualTime >= this.videoLength) {
 			this.state = 2; // 완료
-			this.progTime=0;//영상 시간을 처음으로 돌아가기.
 		} else if (this.progress > 0 || this.actualTime > 0 || this.progTime > 0) {
 			this.state = 1; // 시청 중
 		} else {
