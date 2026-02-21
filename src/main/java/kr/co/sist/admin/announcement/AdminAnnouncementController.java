@@ -32,25 +32,25 @@ public class AdminAnnouncementController {
 		rDTO.setStartNum(startNum);
 		rDTO.setEndNum(endNum);
 		rDTO.setTotalPage(totalPage);
-		rDTO.setUrl("/admin/announcement/announcementList");
+		rDTO.setUrl("admin/announcement/announcementList");
 		
 		System.out.println(as);
 		
 		List<AdminAnnouncementDomain> announcementList = as.searchAnnouncementList(rDTO); // 게시글 내용
-		String pagination = as.pagination2(rDTO); // 페이지네이션
+		String pagination = as.pagination(rDTO); // 페이지네이션
 		
 		model.addAttribute("listNum", totalCount - (currentPage - 1)*pageScale);
 		model.addAttribute("announcementList", announcementList);
 		model.addAttribute("pagination", pagination);
 		
-		return "/admin/announcement/announcementList";
+		return "admin/announcement/announcementList";
 	} // announcementList
 	
 	@GetMapping("/writeFrm")
 	public String writeForm(HttpServletRequest request, Model model) {
 		model.addAttribute("ip", request.getRemoteAddr());
 		
-		return "/admin/announcement/writeFrm";
+		return "admin/announcement/writeFrm";
 	} // writeForm
 	
 	@PostMapping("/announcementWriteFrmProcess")
@@ -71,7 +71,7 @@ public class AdminAnnouncementController {
 		model.addAttribute("msg", resultMsg);
 		model.addAttribute("flag", flag);
 		
-		return "/admin/announcement/announcementWriteFrmProcess";
+		return "admin/announcement/announcementWriteFrmProcess";
 	} // writeFormProcess
 	
 	@GetMapping("/announcementDetail")
@@ -80,7 +80,7 @@ public class AdminAnnouncementController {
 		model.addAttribute("announcementDomain", announcementDomain);
 
 		
-		return "/admin/announcement/announcementDetail";
+		return "admin/announcement/announcementDetail";
 	} // announcementDetail
 	
 	@PostMapping("/modifyAnnouncementProcess")
@@ -96,22 +96,22 @@ public class AdminAnnouncementController {
 		boolean flag = as.modifyAnnouncement(aDTO);
 		model.addAttribute("flag", flag);
 		
-		return "/admin/announcement/modifyAnnouncementProcess";
+		return "admin/announcement/announcementModifyProcess";
 	} // modifyAnnouncementProcess
 	
-	@PostMapping("/removeAnnouncementProcess")
+	@PostMapping("removeAnnouncementProcess")
 	public String removeAnnouncementProcess(HttpSession session, AdminAnnouncementDTO aDTO, Model model) {
 		
 		// 임시
 		session.setAttribute("adm_id", "admin1");
+		// 임시
 		String admId = (String) session.getAttribute("adm_id");
 		aDTO.setAdm_id(admId);
-		// 임시
 		
 		boolean flag = as.removeAnnouncement(aDTO);
 		model.addAttribute("flag", flag);
 		
-		return "/admin/announcement/removeAnnouncementProcess";
+		return "admin/announcement/announcementRemoveProcess";
 	} // removeAnnouncementProcess
 	
 } // class

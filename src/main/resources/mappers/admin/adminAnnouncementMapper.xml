@@ -4,7 +4,7 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.co.sist.admin.announcement.AdminAnnouncementMapper">
 	<!-- announcement 테이블에 게시글을 추가하는 작업 -->
-	<insert id = "insertAnnouncement" parameterType = "announcementDTO">
+	<insert id = "insertAnnouncement" parameterType = "adminAnnouncementDTO">
 		insert into announcement(ann_id, title, content, regip, adm_id)
 		values(seq_announcement_id.nextval, #{title}, #{content}, #{regip}, #{adm_id})
 	</insert>
@@ -19,7 +19,7 @@
 		</where>
 	</select>
 	
-	<select id = "selectRangeAnnouncement" parameterType = "adminAnnouncementRangeDTO" resultType = "announcementDomain">
+	<select id = "selectRangeAnnouncement" parameterType = "adminAnnouncementRangeDTO" resultType = "adminAnnouncementDomain">
 		select	ann_id, title, content, views, regdate, regip, adm_id
 		from   (select	ann_id, title, content, views, regdate, regip, adm_id,
 						row_number() over(order by regdate desc) rnum
@@ -34,7 +34,7 @@
 	</select>
 	
 	<!-- 글 번호를 받아서 해당하는 글 하나를 검색 -->
-	<select id = "selectAnnouncementDetail" parameterType = "Integer" resultType = "announcementDomain">
+	<select id = "selectAnnouncementDetail" parameterType = "Integer" resultType = "adminAnnouncementDomain">
 		select	title, content, views, regdate, regip, adm_id
 		from	announcement
 		where	ann_id = #{ann_id}
@@ -48,14 +48,14 @@
 	</update>
 	
 	<!-- 글 번호와 아이디를 입력 받아서 해당 글의 내용과 아이피를 변경 -->
-	<update id = "updateAnnouncement" parameterType = "announcementDTO">
+	<update id = "updateAnnouncement" parameterType = "adminAnnouncementDTO">
 		update	announcement
 		set		content = #{content}, regip = #{regip}
 		where	ann_id = #{ann_id} and adm_id = #{adm_id}
 	</update>
 	
 	<!-- 글 번호와 아이디를 받아 관리자임을 확인 후 공지사항 삭제 -->
-	<delete id = "deleteAnnouncement" parameterType = "announcementDTO">
+	<delete id = "deleteAnnouncement" parameterType = "adminAnnouncementDTO">
 		delete from	announcement
 		where		ann_id = #{ann_id} and adm_id = #{adm_id}
 	</delete>
