@@ -127,11 +127,14 @@ public class ChapterService {
 	}// method
     
     //모든 영상 상태가 시청완료인지 체크.
-    public boolean isExamReady(List<StuChapterDomain> list) {
-    	if (list == null || list.isEmpty()) return false;
+    public boolean isExamReady(String userId, String lectId) {
+    	
+     	ChapterDTO cdto = new ChapterDTO(userId, lectId);
         
-        // 모든 챕터의 state가 2인지 확인 (Java 8 스트림 활용)
-        return list.stream().allMatch(chapter -> "2".equals(chapter.getState()));
+     	//시청상태가 모두 2(완료)이면 0을 리턴한다.
+     	//영상 시청 상태가 완료(2)가 아닌 챕터 개수를 리턴
+     	//즉, 0이 나오면 모두 시청했다는 거다.
+     	return cm.selectChapterTestState(cdto)==0;
 	}// method
     
     //최신 시험 점수 가져옴.
@@ -139,5 +142,12 @@ public class ChapterService {
         // 최신 응시 기록이 없으면 MyBatis는 null을 반환합니다.
         return cm.selectLatestTestScore(userId, lectId);
     }
+    
+    //lectID로 강의명 리턴.
+    public String getLectureName(String lectId) {
+
+    	return cm.selectLectureName(lectId);
+    }
+    
 
 }// class

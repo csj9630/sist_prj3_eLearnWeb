@@ -69,11 +69,14 @@ public class ChapterController {
 		// 수강 챕터 목록 만들어서 리턴.
 		ChapterDTO cdto = new ChapterDTO(userId, lectId);
 		List<StuChapterDomain> list = cs.searchChapterProgress(cdto); // 수강 이력 리스트
-		boolean isExamReady = cs.isExamReady(list); // 시험 버튼 활성화 여부
+		boolean isExamReady = cs.isExamReady(userId, lectId); // 시험 버튼 활성화 여부
 		Integer latestScore = cs.getLatestScore(userId, lectId); // 최신 시험 점수
-
+		String lectName = cs.getLectureName(lectId);
+		
+		
 		model.addAttribute("chapterProgress", list);
 		model.addAttribute("lectId", lectId);
+		model.addAttribute("lectName", lectName);
 		model.addAttribute("isExamReady", isExamReady);
 		model.addAttribute("examScore", latestScore);
 

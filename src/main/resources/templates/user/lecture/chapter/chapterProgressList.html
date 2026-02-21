@@ -1,181 +1,117 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-
-<th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
-
-<style type="text/css">
-#wrap {
-	margin: 0px auto;
-	width: 1200px;
-	height: 1000px;
-}
-
-#header {
-	height: 150px;
-}
-
-#container {
-	height: 700px;
-}
-
-#footer {
-	height: 150px;
-}
-</style>
-
-<!--JS 실습 파트-->
-<script  th:inline="javascript">
-	$(function() {
-
-	});//document.ready
-	
-	/**
-	 * 시험 응시 핸들러
-	 * @param {string} lectId - 강의 ID
-	 * @param {boolean} isReady - 응시 가능 여부
-	 */
-	function handleExamStart(lectId, isReady) {
-	    // 비활성화된 버튼을 뚫고 들어올 경우
-	    if (!isReady) {
-	        alert("아직 수강 완료하지 않은 강의가 있습니다. 모든 강의를 시청해 주세요.");
-	        return;
-	    }
-
-	    // 2. 시험 시작 전 컨펌창 (추가/수정 용이)
-	    if (!confirm("시험에 응시하시겠습니까?\n응시 중에는 창을 닫지 마세요.")) {
-	        return;
-	    }
-
-	    // ******************URL 지정***************************
-	    //const examUrl = `/exam/take?lectId=${lectId}`;
-	    const examUrl = '/csj';//테스트용
-	    
-	    
-	    // 페이지 이동
-	    location.href = examUrl;
-	}//func
-	
-	function checkAndDownload(chptrId) {
-		
-	    // 1. 서버에 파일 존재 여부 확인 요청
-	    fetch(`/lecture/chapter/checkFile?chptrId=${chptrId}`)
-	        .then(response => response.json())
-	        .then(data => {
-	            if (data.exists) {
-	                // 2. 파일이 있으면 실제 다운로드 실행
-	                // (이 경로는 기존에 만든 ResponseEntity 반환 메서드와 연결됨)
-	                location.href = `/lecture/chapter/download?chptrId=${chptrId}`;
-	            } else {
-	                // 3. 파일이 없으면 알림창 출력
-	                alert("죄송합니다. 서버에 실제 파일이 존재하지 않거나 찾을 수 없습니다.");
-	            }
-	        })
-	        .catch(error => {
-	            console.error('Error:', error);
-	            alert("서버 통신 중 오류가 발생했습니다.");
-	        });
-	}
-</script>
+    <meta charset="UTF-8">
+    <title>학습 진도 내역 - intlearn</title>
+    <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/chapter-progress.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-	<div id="wrap">
-		<div id="container">
+    <th:block th:replace="~{fragments/MyHeader :: header}"></th:block>
 
-			<h3>강의 수강리스트</h3>
-
-
-			<table class="table table-hover">
-				<thead>
-					<tr>
-						<th style="width: 150px;">강의명</th>
-						<th style="width: 100px;">강의시간</th>
-						<th style="width: 150px;">업로드날짜</th>
-						<th style="width: 150px;">강의자료</th>
-						<th style="width: 150px;">강의진척률</th>
-						<th style="width: 70px;">출석여부</th>
-						<th style="width: 200px;">강의시청</th>
-					</tr>
-				</thead>
-				<tbody>
-
-					<th:block th:if="${chapterProgress.empty}">
-						<tr>
-							<td colspan="7" style="text-align: center;">데이터가 존재하지 않습니다</td>
-						</tr>
-					</th:block>
-
-					<tr th:each="cdto, i : ${chapterProgress}" th:object="${cdto}">
-						<td th:text="*{name}">01강 객체지향의 이해</td>
-						<td th:text="*{lengthStr}">24:30</td>
-						<td th:text="*{#dates.format(regdate, 'yyyy-MM-dd')}">2024-05-20</td>
-
-						<td><th:block th:if="*{not #strings.isEmpty(doc)}">
-								<button type="button" class="btn btn-sm btn-outline-info"
-									th:text="| 📥 자료 받기 : *{doc} |"
-									th:onclick="checkAndDownload([[*{chptrId}]])">📥 자료 받기
-								</button>
-							</th:block> <span th:unless="*{not #strings.isEmpty(doc)}"
-							class="text-muted" style="font-size: 0.8em;"> 준비중 </span></td>
-
-
-
-						<td th:text="|*{progress}%|"></td>
-						<td th:text="*{stateStr}"></td>
-						<td><a
-							th:href="@{/lecture/chapter/video(lectId=${lectId}, chptrId=*{chptrId})}"
-							class="btn btn-sm btn-info">▶️</a></td>
-					</tr>
-
-				<tfoot th:if="${not #lists.isEmpty(chapterProgress)}">
-					<tr
-						style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
-                        <td colspan="4">
-                            <strong th:if="${isExamReady}"
-							class="text-primary">
-                                ✅ 모든 강의 수강 완료! 시험 응시가 가능합니다.
-                            </strong>
-                            <strong th:unless="${isExamReady}"
-							class="text-danger">
-                                🔒 모든 강의를 100% 수강해야 시험에 응시할 수 있습니다.
-                            </strong>
-                        </td>
-                        
-						<td colspan="2" class="text-center align-middle">
-						    <span class="badge"
-						          th:classappend="${isExamReady ? 'text-bg-primary' : 'text-bg-secondary'}"
-						          style="font-size: 0.9em; padding: 0.5em 0.8em;">
-						        시험 점수: 
-						        <b th:text="${examScore != null ? examScore + '점' : '-'}">-</b>
-						    </span>
-						</td>
-                        
-                        <td style="text-align: center;">
-                            <button type="button" id="examBtn"
-								class="btn w-100"
-								th:classappend="${isExamReady ? 'btn-primary' : 'btn-secondary'}"
-								th:disabled="${!isExamReady}"
-								th:onclick="handleExamStart([[${lectId}]], [[${isExamReady}]])">
-                                <span
-									th:text="${isExamReady ? '📝 시험 응시' : '응시 불가'}"></span>
-                            </button>
-                        </td>
-                    </tr>
-                </tfoot>
-				</tbody>
-				
-			</table>
-			
-
-			
+    <div class="progress-container">
+        <div class="course-header">
+		    <h2 th:text="${lectName != null ? lectName : '수강 강의 정보'}">강의 제목</h2>
+		    
+		    <div class="course-info-summary">
+		        <i class="far fa-play-circle"></i> 총 
+		        <span th:text="${chapterProgress != null ? #lists.size(chapterProgress) : 0}">0</span>개 강의
+		        </div>
 		</div>
-		<!--"container" -->
 
+        <div class="chapter-list-card">
+            <div th:if="${#lists.isEmpty(chapterProgress)}" class="chapter-item" style="justify-content: center; padding: 50px; color: #999;">
+                수강 가능한 강의 데이터가 없습니다.
+            </div>
 
-	</div>
+            <div th:each="cp : ${chapterProgress}" class="chapter-item">
+                <div class="chapter-status" th:classappend="${cp.state == 2 ? 'completed' : ''}">
+                    <i th:class="${cp.state == 2 ? 'fas fa-check-circle' : 'far fa-circle'}"></i>
+                </div>
 
+                <div class="chapter-main">
+                    <a th:href="@{/user/lecture/chapter/watch(chptrId=${cp.chptrId})}" 
+                       class="chapter-title" 
+                       th:text="${cp.num + '차시. ' + cp.name}">차시 제목</a>
+                    
+                    <div class="progress-wrapper">
+                        <div class="custom-progress">
+                            <div class="progress-fill" th:style="|width: ${cp.progress}%|"></div>
+                        </div>
+                        <div class="progress-percent" th:text="${cp.progress + '%'}">0%</div>
+                    </div>
+                    
+                    <div class="chapter-time">
+                        <i class="far fa-clock"></i> 
+                        학습 지점: <span th:text="${cp.progTimeStr}">00:00</span> / <span th:text="${cp.lengthStr}">00:00</span>
+                    </div>
+                </div>
 
+               <div class="chapter-action d-flex align-items-center">
+				    <th:block th:if="${cp.doc != null and cp.doc != ''}">
+				        <a th:href="@{/lecture/chapter/download(chptrId=${cp.chptrId})}" 
+				           class="btn btn-sm btn-outline-secondary me-2" 
+				           title="강의 자료 다운로드"
+				           style="border-radius: 20px; padding: 6px 12px; font-size: 13px;">
+				            <i class="fas fa-file-download"></i> 자료
+				        </a>
+				    </th:block>
+				
+				    <a th:href="@{/lecture/chapter/video(lectId=${lectId},chptrId=${cp.chptrId})}"
+				       class="btn btn-sm" 
+				       th:classappend="${cp.state == 2 ? 'btn-outline-success' : 'btn-primary'}"
+				       style="border-radius: 20px; padding: 6px 18px; font-weight: 600;">
+				       
+				       <span th:switch="${cp.state}">
+				           <span th:case="0">학습 시작</span>
+				           <span th:case="2">다시보기</span>
+				           <span th:case="*">이어서 학습</span>
+				       </span>
+				    </a>
+				</div>
+            </div>
+        </div>
+
+        <div class="exam-card">
+            <div class="exam-info">
+                <h4><i class="fas fa-award text-warning"></i> 강의 수료 시험</h4>
+                <div class="exam-status-msg">
+                    <span th:if="${isExamReady}" class="text-success fw-bold">
+                        <i class="fas fa-unlock"></i> 축하합니다! 모든 과정을 이수하여 시험 응시가 가능합니다.
+                    </span>
+                    <span th:unless="${isExamReady}" class="text-muted">
+                        <i class="fas fa-lock"></i> 모든 강의 진도율이 100%가 되어야 시험에 응시할 수 있습니다.
+                    </span>
+                    
+                    <span th:if="${examScore != null}" class="score-badge">
+                        최근 점수: <span th:text="${examScore}">0</span>점
+                    </span>
+                </div>
+            </div>
+            
+            <button type="button" class="btn-exam"
+                    th:disabled="${!isExamReady}"
+                    th:onclick="handleExamStart([[${lectId}]], [[${isExamReady}]])">
+                <span th:text="${isExamReady ? '📝 시험 응시하기' : '학습 진행 중'}"></span>
+            </button>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/footer :: footer}"></th:block>
+
+    <script th:inline="javascript">
+        function handleExamStart(lectId, isReady) {
+            if (!isReady) {
+                alert("아직 모든 강의를 완료하지 않았습니다.");
+                return;
+            }
+            if (confirm("시험을 시작하시겠습니까? 확인을 누르면 시험 페이지로 이동합니다.")) {
+            	const examUrl = /*[[@{/user/lecture/test/choiceTestFrm(lectId=${lectId})}]]*/ '/user/lecture/test/choiceTestFrm?lectId=' + lectId;
+                
+                location.href = examUrl;
+            }
+        }
+    </script>
 </body>
 </html>

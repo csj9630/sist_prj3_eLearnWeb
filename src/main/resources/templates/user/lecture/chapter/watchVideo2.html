@@ -69,7 +69,7 @@
       const videoJSONArr = /*[[${vdList}]]*/ "default_value";
       const startChptrId = /*[[${startChptrId}]]*/ "default_id";
       const exitUrl = /*[[@{/csj}]]*/ "/";
-      
+
       const currentUserId = /*[[${session.userId}]]*/ "noName"; //세션에서 아이디 저장.
 
       console.log(videoJSONArr);
@@ -81,21 +81,27 @@
       var player;
 
       var lastTime = 0; // 현재 시청시간
-      var realTime = 0; //실제 시청시간
+      var maxTime = 0; //실제 시청시간-->영상 시청한 최대 위치로 변경.
       const interval = 1000; //반복 추적시간.
 
       //지정 시간마다 실제 시청 시간을 추척함.
-      
       setInterval(() => {
-    	  //player 객체가 멀쩡할 때만 작동.
-    	  if (player && typeof player.getPlayerState === 'function') {
-	        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
-	          trackVideoTime(getTime());
-	
-	          //테스트용.
-	          $("#lastTime").text(lastTime);
-	          $("#realTime").text(realTime);
-	        }
+        //player 객체가 멀쩡할 때만 작동.
+        if (player && typeof player.getPlayerState === "function") {
+          //현재 재생 시간보다 최대시간이 크면 갱신.
+          var currentT = getTime();
+          if (currentT > maxTime) {
+            maxTime = currentT;
+          } //if
+
+          //영상 실제 시간에서 최대 시간으로 변경.
+          // if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+          //   trackVideoTime(getTime());
+
+          //   //테스트용.
+          //   $("#lastTime").text(lastTime);
+          //   $("#maxTime").text(maxTime);
+          // }
         }
       }, interval);
 
@@ -139,7 +145,8 @@
         playVideoByIndex(i);
       }
 
-      //실제 시청시간을 추적.
+      //실제 시청시간을 추적.-> 이제 안 쓴다.
+      /*
       function trackVideoTime(currentTime) {
         const playbackRate = player.getPlaybackRate(); // 현재 재생 속도
         const range = playbackRate + 0.5; //범위값
@@ -148,13 +155,14 @@
 
         //0< (현재 시간 - 마지막 저장시간) < 1.2 일때만 정상 재생 인정.
         if (zeta > 0 && zeta < range) {
-          realTime += Math.floor(zeta / playbackRate);
-          //realTime++;
+          maxTime += Math.floor(zeta / playbackRate);
+          //maxTime++;
         } //if
 
         //마지막 저장시간 업데이트
         lastTime = currentTime;
       } //func
+      */
 
       //초기 시작 때 사용.
       //num 컬럼으로 videoList에서 일치하는 videoJson 하나를 전역 저장.
@@ -170,7 +178,7 @@
           currentIndex = 0; // 에러 방지용 기본값
         }
         videoData = jsonArr[currentIndex]; //index로 videoJson을 전역 저장.
-        realTime = videoData.actualTime; //DB값 로드 :실제 시청시간
+        maxTime = videoData.actualTime || 0; //DB값 로드 :실제 시청시간, 없으면 0
         updateRowHighlight(currentIndex); //목록에서 현재 영상 하이라이트.
       } //function
 
@@ -200,7 +208,7 @@
         videoJSONArr[currentIndex].progTime = getTime();
 
         //변경 전 video 실제 시청시간을 jsonArr에 갱신.
-        videoJSONArr[currentIndex].actualTime = realTime;
+        videoJSONArr[currentIndex].actualTime = maxTime;
 
         //index 번호로 영상 재생 및 시간 지정
         loadVideo(videoData.videoUrl, startTime);
@@ -209,7 +217,7 @@
         updateRowHighlight(index);
 
         currentIndex = index; // 전역 변수로 현재 번호 저장.
-        realTime = videoData.actualTime; //실제 시청시간
+        maxTime = videoData.actualTime; //실제 시청시간
       } //function
 
       //강의 목록에서 현재 영상에 하이라이트 효과.
@@ -240,7 +248,7 @@
 
         const currentTime = getTime();
         const videoLength = getVideoLength();
-        const actualTime = realTime;
+        const actualTime = maxTime;
 
         const saveData = {
           userId: currentUserId,
@@ -394,10 +402,10 @@
               th:text="${session.userId}"
             ></span>
           </h5>
-<!--           <span>마지막 시청시간 : </span>
+          <!--           <span>마지막 시청시간 : </span>
           <h4 id="lastTime">시간</h4>
           <span>실제 시청인정시간 : </span>
-          <h4 id="realTime">시간</h4> -->
+          <h4 id="maxTime">시간</h4> -->
         </div>
         <!--로딩 화면 -->
         <div id="loading" class="text-center">

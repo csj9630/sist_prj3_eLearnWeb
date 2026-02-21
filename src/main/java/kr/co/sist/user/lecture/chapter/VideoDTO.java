@@ -66,21 +66,21 @@ public class VideoDTO {
 			return;
 		}
 
-		// 1. 진행률 계산 (소수점 버림)
+		// 진행률 계산 (소수점 버림)
 		this.progress = (int) ((long) this.actualTime * 100 / this.videoLength);
 
-		// 진행률이 100을 넘지 않게 함
-		if (this.progress > 100) {
+		// 진행률이 95% 이상이면 그냥 100으로. 100을 넘지 않게 함
+		if (this.progress > 95) {
 			this.progress = 100;
 		} // if
 
-		// 2. 상태(state) 결정 : 95% 이상이면 완료 처리
+		// 상태(state) 결정 : 95% 이상이면 완료 처리
 		if (this.state != null && this.state == 2) {
 	        // 이미 완료된 강의이므로 state는 2 고정
 	        // 단, 시청 시간(progTime)은 0부터 다시 시작하더라도 progress는 100 유지
 		} else if (this.progress >= 95 || this.actualTime >= this.videoLength) {
 			this.state = 2; // 완료
-			//this.progress=0;//처음으로 돌아가기.
+			this.progTime=0;//영상 시간을 처음으로 돌아가기.
 		} else if (this.progress > 0 || this.actualTime > 0 || this.progTime > 0) {
 			this.state = 1; // 시청 중
 		} else {

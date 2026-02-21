@@ -19,5 +19,7 @@ public interface ChapterMapper {
 	public FileDomain selectFileInfo(String chptrId);
 	public Map<String, Object> getChapterProgress(String userId, String lectId);
 	public Integer selectLatestTestScore(String userId, String lectId);
+	public Integer selectChapterTestState(ChapterDTO cdto);
+	public String selectLectureName(String lectId);
 	
 }

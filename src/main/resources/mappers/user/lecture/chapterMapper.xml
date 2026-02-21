@@ -25,7 +25,7 @@
 	<!--학생id, 강의id로 수강 강의표 진척까지 조회-->
 	<select id="selectChapterProgress" parameterType="chapterDTO" resultType="stuChapterDomain">
 		select 
-	        c.chptr_id as chptrId, c.name, c.length, c.regdate, c.doc, c.video,
+	        c.chptr_id as chptrId, c.name, c.length, c.regdate, c.doc, c.video, c.num,
 	        nvl(m.progress, 0) as progress,
 	        nvl(m.state, 0) as state
 	    from 
@@ -148,5 +148,27 @@
 	            AND mt.user_id = #{userId}
 	    )
 	    WHERE rnum = 1
+	</select>
+	
+	<!-- 영상 시청 상태가 완료(2)가 아닌 챕터 개수를 리턴.-->
+	<!-- 전체 챕터 수 - 완료한챕터수 = 0 이면 시청 완료. -->
+	<select id="selectChapterTestState" parameterType="chapterDTO" resultType="int">
+	SELECT 
+	        (SELECT COUNT(*) FROM CHAPTER WHERE LECT_ID = #{lectId}) 
+	        - 
+	        (SELECT COUNT(*) 
+	         FROM MY_CHAPTER mc
+	         JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID
+	         WHERE mc.USER_ID = #{userId} 
+	           AND c.LECT_ID = #{lectId} 
+	           AND mc.STATE = 2) -- 완료한 챕터 수
+    FROM DUAL
+	</select>
+	
+	<!-- lectID로 강의명 가져오기.-->
+	<select id="selectLectureName"  resultType="String">
+	SELECT name
+	FROM   lecture
+	WHERE  LECT_ID = #{lectId}
 	</select>
 </mapper>
