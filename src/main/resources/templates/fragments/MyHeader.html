@@ -27,6 +27,18 @@
         <!-- ------ --><!-- 위치설정을 위한 또 다른 div -->
         <div class="header-actions">
         
+        <!-- 로그인/로그아웃 버튼 (세션 상태에 따라 분기) -->
+                <a th:unless="${session.userName != null}" href="/common/member/loginFrm"
+                    class="header-auth-btn login-btn" title="로그인">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>로그인</span>
+                </a>
+                <a th:if="${session.userName != null}" href="/common/member/logout" class="header-auth-btn logout-btn"
+                    title="로그아웃">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>로그아웃</span>
+                </a>
+        
         <!-- 장바구니 -->
         <a href="/user/payment/searchMyCart" class="header-icon" title="장바구니">
             <i class="fas fa-shopping-cart"></i>
