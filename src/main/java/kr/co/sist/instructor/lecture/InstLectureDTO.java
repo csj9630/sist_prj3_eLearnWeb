@@ -15,6 +15,7 @@ public class InstLectureDTO {
     private String shortint;// 강의요약 소개 (SHORTINT)
     private String intro;   // 강의 상세 소개 (INTRO - CLOB)
     private String catId;   // 카테고리 (CAT_ID)
+    private String catName;   // 카테고리명 (CAT_NAME)
     private String thumbnail;   // 썸네일 파일명 (THUMBNAIL)
     private int price;      // 강의 가격 (PRICE)
     private String instId;  // 강사 아이디 (세션에서 설정)

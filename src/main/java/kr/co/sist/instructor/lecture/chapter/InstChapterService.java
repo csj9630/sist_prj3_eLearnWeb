@@ -18,8 +18,8 @@ public class InstChapterService {
 	private InstChapterMapper icMapper;
 
 	@Autowired
-	private FileService fileService;
-
+    private FileService fileService;
+	
 	@Value("${user.upload-doc-dir}") // 강의 자료 경로
 	private String uploadDocPath;
 

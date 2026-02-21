@@ -1,0 +1,309 @@
+.course-page {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.course-header h1 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  margin-bottom: 50px;
+}
+
+
+.course-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.course-filter select,
+.course-search input {
+  height: 36px;
+  border: 1px solid var(--stroke);
+  border-radius: 10px;
+  padding: 0 12px;
+  background: #fff;
+  font-size: 13px;
+}
+
+.course-search {
+  display: flex;
+  gap: 8px;
+}
+
+.course-search button {
+  height: 36px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.course-table {
+  border: 1px solid var(--stroke);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.course-table thead th {
+  font-weight: 700;
+  color: var(--muted);
+  background: #f7f7f7;
+  font-size: 12px;
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.course-table tbody td {
+  padding: 12px 14px;
+  border-bottom: none;
+  vertical-align: middle;
+  font-size: 13px;
+}
+
+.course-table tbody tr {
+  border-bottom: 1px solid var(--stroke);
+}
+
+.course-row:hover {
+  background: #f9fbff;
+}
+
+.course-thumb img {
+  width: 56px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.course-title {
+  font-weight: 600;
+}
+
+.status--open {
+  color: #2f7d4f;
+  font-weight: 600;
+}
+
+.status--hold {
+  color: #d04b4b;
+  font-weight: 600;
+}
+
+.course-actions {
+  align-items: center;    
+  line-height: normal;
+  gap: 6px;
+}
+
+.btn {
+  height: 30px;
+  line-height: 30px;
+  align-items: center;
+  display: inline-flex;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: #5f6ad7;
+  color: #fff;
+}
+
+.btn--ghost {
+  background: #eef0f5;
+  color: #333;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.confirm-card {
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 6px 8px 0;
+  gap: 6px;
+}
+
+.confirm-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #eef1ff;
+  display: grid;
+  place-items: center;
+}
+
+.confirm-icon__dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #5f6ad7;
+  display: inline-block;
+}
+
+.confirm-title {
+  margin: 6px 0 2px;
+  font-size: 18px;
+}
+
+.confirm-message {
+  margin: 0;
+  font-size: 12px;
+  color: #8b9097;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"],
+.ui-dialog[aria-describedby="stopDialogUi"] {
+  border-radius: 14px;
+  border: 2px solid #34c4b2;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(17, 24, 39, 0.12);
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-titlebar,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-titlebar {
+  display: none;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-content,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-content {
+  padding: 18px 20px 8px;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-buttonpane,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-buttonpane {
+  border-top: none;
+  padding: 10px 16px 16px;
+  margin: 0;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-buttonset,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-buttonset {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-buttonset button,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-buttonset button {
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-buttonset button:first-child,
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-buttonset button:first-child {
+  background: #eef0f5;
+  color: #444;
+}
+
+.ui-dialog[aria-describedby="openDialogUi"] .ui-dialog-buttonset button:last-child {
+  background: #5f6ad7;
+  color: #fff;
+}
+
+.ui-dialog[aria-describedby="stopDialogUi"] .ui-dialog-buttonset button:last-child {
+  background: #9aa0a6;
+  color: #fff;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+  font-size: 13px;
+  color: #7b8088;
+}
+
+.page-list {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #7b8088;
+  background: transparent;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.page-btn:hover {
+  color: #3a3f46;
+  background: #eef1f5;
+}
+
+.page-btn.is-active {
+  background: #0b3b73;
+  color: #fff;
+}
+
+@media (max-width: 1200px) {
+  .course-table thead th:nth-child(1),
+  .course-table tbody td:nth-child(1) {
+    width: 70px;
+  }
+}
+
+@media (max-width: 960px) {
+  .course-page {
+    padding: 18px;
+  }
+
+  .course-table thead th:last-child,
+  .course-table tbody td:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .course-table thead th:nth-child(3),
+  .course-table tbody td:nth-child(3),
+  .course-table thead th:nth-child(4),
+  .course-table tbody td:nth-child(4),
+  .course-table thead th:nth-child(6),
+  .course-table tbody td:nth-child(6),
+  .course-table thead th:nth-child(7),
+  .course-table tbody td:nth-child(7) {
+    display: none;
+  }
+}

@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kr.co.sist.common.lecture.CommonLectureService;
+import kr.co.sist.instructor.lecture.chapter.InstChapterDTO;
+import kr.co.sist.instructor.lecture.chapter.InstChapterService;
 import kr.co.sist.user.lecture.LectureService;
 
 @RequestMapping("instructor/lecture")
@@ -27,6 +29,9 @@ import kr.co.sist.user.lecture.LectureService;
 public class InstLectureController {
 	@Autowired
 	private InstLectureService ls;
+	
+	@Autowired
+	private InstChapterService cls;
 
 	@Autowired
 	private CommonLectureService commonService; // 공통 서비스 주입
@@ -130,15 +135,18 @@ public class InstLectureController {
 	@GetMapping("/detail")
 	public String lectureDetail(@RequestParam("lectId") String lectId, Model model) {
 		InstLectureDTO ldto = ls.getLectureDetail(lectId);
-	    
+		List<InstChapterDTO> chapterList = cls.searchChapterList(lectId);
 	    model.addAttribute("ldto", ldto);
-	    model.addAttribute("isDetail", true); // 상세 보기용 플래그
-	    
-	    // 폼 구성에 필요한 전체 스킬 목록도 가져오기 (기존 서비스 메서드 활용)
-	    model.addAttribute("categoryList", commonService.getAllCategories());
-	    model.addAttribute("existingSkills", commonService.getAllSkills());
+//	    model.addAttribute("isDetail", true); // 상세 보기용 플래그
+//	    
+	    if (ldto != null) {
+			model.addAttribute("ldto", ldto);
+			model.addAttribute("skills", ldto.getSkills()); // HTML에서 ${skills}로 반복문 사용
+		}
+	    model.addAttribute("chapterList", chapterList);
 		model.addAttribute("imgPath", imgPath);
-	    return "instructor/lecture/lectureForm"; // 기존 등록 폼 재사용
+		
+	    return "instructor/lecture/instlectureDetail"; // 기존 등록 폼 재사용
 	}
 	
 	// 수정 폼 열기

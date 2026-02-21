@@ -10,7 +10,8 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    	<th:block th:replace="~{fragments/cdn :: cdn}"></th:block><!-- cdn 전부 -->
+    <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+    <!-- cdn 전부 -->
     <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
     <link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
     <!-- 다이얼로그 용 라이브러리 -->
@@ -47,7 +48,7 @@
         font-size: 0.85em;
         font-weight: bold;
       }
-       /* 승인대기 */
+      /* 승인대기 */
       .bg-wait {
         background-color: #ffeeba;
         color: #856404;
@@ -56,36 +57,36 @@
       .bg-pass {
         background-color: #d4edda;
         color: #155724;
-      } 
+      }
       /* 반려 */
       .bg-reject {
         background-color: #f8d7da;
         color: #721c24;
-      } 
-      
+      }
+
       /* 공개중 */
       .bg-open {
         background-color: #b7f5f4;
         color: black;
-      } 
-      
-            /* 비공개중 */
+      }
+
+      /* 비공개중 */
       .bg-close {
         background-color: #616565;
         color: white;
-      } 
-      
+      }
+
       /* 수입 */
       .text-cash {
         color: #28a745;
         font-weight: bold;
       }
       /* 테이블 중앙 정렬 */
-		.course-table th, 
-		.course-table td {
-		    text-align: center !important;
-		    vertical-align: middle !important; 
-		}
+      .course-table th,
+      .course-table td {
+        text-align: center !important;
+        vertical-align: middle !important;
+      }
     </style>
 
     <script>
@@ -96,31 +97,31 @@
           // 간단하게 alert로 띄우거나, 팀원의 다이얼로그 로직을 활용하세요.
           alert("🚨 반려 사유\n--------------------------\n" + reason);
         }
-      }//function
-      
+      } //function
+
       function changeAvailability(lectId, currentStatus) {
-    	    // 1이면 0으로, 0이면 1로 반전
-    	    const nextStatus = (currentStatus == 1) ? 0 : 1;
-    	    const statusText = (nextStatus == 1) ? "공개" : "비공개";
+        // 1이면 0으로, 0이면 1로 반전
+        const nextStatus = currentStatus == 1 ? 0 : 1;
+        const statusText = nextStatus == 1 ? "공개" : "비공개";
 
-    	    if(!confirm(`강의를 ${statusText} 상태로 전환하시겠습니까?`)) return;
+        if (!confirm(`강의를 ${statusText} 상태로 전환하시겠습니까?`)) return;
 
-    	    $.ajax({
-    	        url: '/instructor/lecture/updateAvailability',
-    	        type: 'POST',
-    	        data: { 
-    	            lectId: lectId, 
-    	            availability: nextStatus 
-    	        },
-    	        success: function(response) {
-    	            alert(statusText + " 상태로 변경되었습니다.");
-    	            location.reload(); // 간단하게 페이지 새로고침으로 반영
-    	        },
-    	        error: function() {
-    	            alert("상태 변경 중 오류가 발생했습니다.");
-    	        }
-    	    });
-      }//function
+        $.ajax({
+          url: "/instructor/lecture/updateAvailability",
+          type: "POST",
+          data: {
+            lectId: lectId,
+            availability: nextStatus,
+          },
+          success: function (response) {
+            alert(statusText + " 상태로 변경되었습니다.");
+            location.reload(); // 간단하게 페이지 새로고침으로 반영
+          },
+          error: function () {
+            alert("상태 변경 중 오류가 발생했습니다.");
+          },
+        });
+      } //function
     </script>
   </head>
   <body class="admin-dashboard">
@@ -186,10 +187,18 @@
         </section>
 
         <div class="dashboard-panel">
+          <div>
+            <a
+              th:href="@{/instructor/lecture/manage}"
+              class="btn btn-success"
+              style="font-size: 17px; padding: 5px 10px; border: 1px solid #ccc"
+              >강의 추가</a
+            >
+          </div>
           <table class="course-table text-center">
             <thead>
-              <tr >
-                <th >이미지</th>
+              <tr>
+                <th>이미지</th>
                 <th>강의명</th>
                 <th>평점</th>
                 <th>수강생</th>
@@ -244,7 +253,8 @@
                     th:onclick="showRejectReason([[${lect.rejectReason}]])"
                     style="cursor: pointer"
                     title="클릭하여 사유 확인"
-                    >  반려(Click)</span
+                  >
+                    반려(Click)</span
                   >
                   <span th:if="*{approval == 1}" class="status-badge bg-pass"
                     >승인</span
@@ -256,16 +266,20 @@
                   >
                 </td>
                 <td>
-                  <span th:if="*{availability == 1}" class="status-badge bg-open"
+                  <span
+                    th:if="*{availability == 1}"
+                    class="status-badge bg-open"
                     >[공개중]</span
                   >
-              
-                  <span th:unless="*{availability == 1}" class="status-badge bg-close"
+
+                  <span
+                    th:unless="*{availability == 1}"
+                    class="status-badge bg-close"
                     >[비공개]</span
                   >
                 </td>
                 <td class="course-actions">
-<!--                   <a
+                  <!--                   <a
                     th:href="@{/instructor/lecture/edit(lectId=*{lectId})}"
                     class="btn btn--ghost"
                     style="font-size: 12px; padding: 5px 10px"
@@ -273,28 +287,41 @@
                   >
                       <br/> -->
                   <button
-                    
                     class="btn"
                     th:onclick="changeAvailability([[*{lectId}]], [[*{availability}]])"
-				    style="font-size: 12px; padding: 5px 10px"
-				    th:text="*{availability == 1} ? '비공개하기' : '공개하기'"
-				    th:classappend="*{availability == 1} ? 'btn-danger' : 'btn--primary'"
+                    style="font-size: 12px; padding: 5px 10px"
+                    th:text="*{availability == 1} ? '비공개하기' : '공개하기'"
+                    th:classappend="*{availability == 1} ? 'btn-danger' : 'btn--primary'"
                   >
                     공개 설정
                   </button>
                 </td>
-					<td class="course-actions">
-					    <a th:href="@{/instructor/lecture/detail(lectId=*{lectId})}" 
-					       class="btn btn--ghost" 
-					       style="font-size: 12px; padding: 5px 10px; border: 1px solid #ccc;">상세/수정</a>
-					</td>
-						<td class="course-actions">
-						<!--시험 관리 버튼  -->
-						
-					    <a th:href="@{/instructor/lecture/test/instTestFrm}" 
-					       class="btn btn--ghost" 
-					       style="font-size: 12px; padding: 5px 10px; border: 1px solid #ccc;">시험 상세</a>
-					</td>
+                <td class="course-actions">
+                  <a
+                    th:href="@{/instructor/lecture/detail(lectId=*{lectId})}"
+                    class="btn btn--ghost"
+                    style="
+                      font-size: 12px;
+                      padding: 5px 10px;
+                      border: 1px solid #ccc;
+                    "
+                    >상세</a
+                  >
+                </td>
+                <td class="course-actions">
+                  <!--시험 관리 버튼  -->
+
+                  <a
+                    th:href="@{/instructor/lecture/test/instTestFrm}"
+                    class="btn btn--ghost"
+                    style="
+                      font-size: 12px;
+                      padding: 5px 10px;
+                      border: 1px solid #ccc;
+                    "
+                    >시험 상세</a
+                  >
+                </td>
               </tr>
             </tbody>
           </table>

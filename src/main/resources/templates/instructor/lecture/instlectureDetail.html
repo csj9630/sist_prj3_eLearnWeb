@@ -1,0 +1,136 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>강의 상세 내역</title>
+    
+    <link rel="stylesheet" th:href="@{/instructor/dashboard/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/instructor/lecture/notApprLecture.css}" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      /* 강사용 하단 액션 버튼 스타일 (CSS 파일에 없는 부분만 추가) */
+      .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+      }
+      .btn-lg { padding: 10px 25px; font-size: 1.1rem; border-radius: 8px; font-weight: 600; text-decoration: none; }
+      .btn-default { background: #f8f9fa; color: #333; border: 1px solid #ddd; }
+      .btn-warning { background: #ffc107; color: #000; border: none; }
+      .btn-success { background: #198754; color: #fff; border: none; }
+      
+      /* 기존 CSS와 충돌 방지 및 레이아웃 보정 */
+      .admin-layout { padding: 20px; display: block; }
+    </style>
+  </head>
+  
+  <body class="admin-dashboard">
+    <div class="admin-layout">
+      <main class="main-content">
+        <section class="course-page">
+          <header class="course-header">
+            <h1>강의 상세 내역</h1>
+          </header>
+
+          <div class="course-section">
+            <h3 class="section-title">기본 정보</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">썸네일</span>
+                <div class="info-value">
+                  <img th:src="@{'/upload/' + ${ldto.thumbnail}}" alt="썸네일" style="max-width: 250px; border-radius: 12px;" />
+                </div>
+              </div>
+
+              <div class="info-item">
+                <span class="info-label">카테고리</span>
+                <span class="info-value" th:text="${ldto.catName}"></span>
+              </div>
+              
+              <div class="info-item">
+                <span class="info-label">강의명</span>
+                <span class="info-value fw-bold" th:text="${ldto.name}"></span>
+              </div>
+
+              <div class="info-item">
+                <span class="info-label">강의 가격</span>
+                <span class="info-value" th:text="${#numbers.formatInteger(ldto.price, 0, 'COMMA')} + ' 원'"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-section mt-4">
+            <h3 class="section-title">상세 소개</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">한줄 소개</span>
+                <span class="info-value" th:text="${ldto.shortint}"></span>
+              </div>
+              
+              <div class="info-item">
+                <span class="info-label">관련 스킬</span>
+                <div class="info-value">
+                  <span class="skill-tag" th:each="skill : ${skills}" th:text="${skill}" 
+                        style="background:#eef2f8; padding:4px 12px; border-radius:15px; margin-right:5px; font-size:13px; color:#1f6feb;"></span>
+                </div>
+              </div>
+
+              <div class="info-item content-area">
+                <span class="info-label">상세 내용</span>
+                <div class="info-value" th:utext="${ldto.intro}" style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #eee;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="course-section mt-4">
+            <h3 class="section-title">커리큘럼 목록</h3>
+            <div class="table-container">
+              <table class="curriculum-table">
+                <thead>
+                  <tr>
+                    <th>순서</th>
+                    <th>강의명(챕터명)</th>
+                    <th>재생 시간</th>
+                    <th>첨부 파일</th>
+                    <th>영상 링크</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr th:each="ch : ${chapterList}">
+                    <td th:text="${ch.num} + '차시'"></td>
+                    <td th:text="${ch.name}"></td>
+                    <td th:text="${ch.lengthStr}"></td>
+                    <td th:text="${ch.doc != null ? ch.doc : '-'}"></td>
+                    <td>
+                      <a th:if="${ch.video != null}" 
+                         th:href="@{'https://youtu.be/' + ${ch.video}}" 
+                         target="_blank" class="text-primary">영상 보기</a>
+                      <span th:unless="${ch.video != null}">-</span>
+                    </td>
+                  </tr>
+                  <tr th:if="${#lists.isEmpty(chapterList)}">
+                    <td colspan="5" style="text-align:center; padding:30px;">등록된 커리큘럼이 없습니다.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <a th:href="@{/instructor/lecture/list}" class="btn btn-default btn-lg">목록으로</a>
+            <a th:href="@{/instructor/lecture/edit(lectId=${ldto.lectId})}" class="btn btn-warning btn-lg">정보 수정</a>
+            <a th:href="@{/instructor/chapter/chapterManage(lectId=${ldto.lectId})}" class="btn btn-success btn-lg">목록/영상 관리</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
