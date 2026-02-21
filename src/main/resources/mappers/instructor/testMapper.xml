@@ -110,4 +110,25 @@ WHERE TEST_Q_ID = #{qid}
     WHERE LECT_ID = #{lectId}
 </select>
 
+<!-- 강의 Id를 통해서 강사 Id 조회하기. -->
+<select id="selectInstId" resultType="string" parameterType="string">
+select inst_id
+from lecture
+where lect_id = #{lectId}
+</select>
+
+<!-- 번호 재정렬(삭제 등 하면 번호 꼬임 증상 발생) -->
+<update id="updateTestNum" parameterType="instTestViewDTO">
+    UPDATE TEST_QUESTION 
+    SET NUM = (
+        SELECT new_num 
+        FROM (
+            SELECT TEST_Q_ID, ROW_NUMBER() OVER (ORDER BY NUM ASC) as new_num 
+            FROM TEST_QUESTION 
+            WHERE TEST_ID = (SELECT TEST_ID FROM TEST WHERE LECT_ID = #{lectId})
+        ) t2 
+        WHERE t2.TEST_Q_ID = TEST_QUESTION.TEST_Q_ID
+    )
+    WHERE TEST_ID = (SELECT TEST_ID FROM TEST WHERE LECT_ID = #{lectId})
+</update>
 </mapper>

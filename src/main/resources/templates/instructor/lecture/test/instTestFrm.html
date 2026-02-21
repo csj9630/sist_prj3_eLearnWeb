@@ -8,7 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 <style type="text/css">
-    body { background-color: #f8faff; font-family: 'Pretendard', sans-serif; padding: 40px; }
+    body { background-color: #f8faff; font-family: 'Pretendard', sans-serif; padding: 0px; }
     .manage-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1400px; margin: 0 auto; align-items: start; }
     
     /* 공통 카드 스타일 */
@@ -48,6 +48,61 @@
     /* 개발용 필드 숨김/정리 */
     .dev-info { font-size: 11px; color: #cbd5e0; margin-top: 20px; border-top: 1px dashed #edf2f7; padding-top: 10px; }
     .dev-info input { border: none; background: transparent; color: #a0aec0; width: 50px; }
+
+CSS
+/* 하단 닫기 버튼 영역 */
+.footer-close {
+    position: fixed; /* 화면에 고정 */
+    bottom: 30px;
+    right: 40px;
+    z-index: 1000;
+}
+
+.btn-close-custom {
+    background-color: #6610f2; /* 보라색 테마 유지 */
+    color: white;
+    padding: 10px 35px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 12px rgba(102, 16, 242, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-close-custom:hover {
+    background-color: #520dc2;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 16, 242, 0.4);
+}#rightView {
+    position: relative; /* 자식 요소인 버튼의 기준점이 됩니다. */
+}
+
+.step2-footer-close {
+    position: absolute;
+    bottom: 25px; /* 카드의 하단 여백 */
+    right: 35px;  /* 카드의 우측 여백 */
+}
+
+.btn-close-custom {
+    background-color: #6610f2;
+    color: white;
+    padding: 8px 25px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 12px rgba(102, 16, 242, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-close-custom:hover {
+    background-color: #520dc2;
+    transform: translateY(-2px);
+}
+
 </style>
 
 <script type="text/javascript">
@@ -90,6 +145,15 @@
             $("#createTest").show(); 
             $("#btnUpdate").hide(); 
             $("#btnCancel").hide();
+        });
+        
+        $(function() {
+            $("#btnPageClose").click(function(){
+                
+                if(confirm("문제 관리 페이지를 나가시겠습니까?")) {
+                    location.href = "/instructor/dashboard";
+                }
+            });
         });
     });
 
@@ -262,10 +326,8 @@
 </script>
 </head>
 <body>
-<div id = "header">
-<th:block th:replace = "~{fragments/header :: header}"/>
-</div>
-    <div class="manage-container">
+<div th:replace="~{fragments/MyHeader :: header}"></div>
+    <div class="manage-container" style="margin-top:30px;">
         <div id="leftView" class="view-card">
             <span class="step-badge step1-badge">Step 1</span>
             <div class="view-title">
@@ -339,12 +401,14 @@
                     <input type="button" id="btnUpdate" value="수정 완료하기" class="btn-main btnUpdate" style="display: none;"> 
                     <button type="button" id="btnCancel" class="btn btn-link w-100 mt-2 text-decoration-none text-secondary" style="display: none;">작성 취소</button>
                 </div>
-
+				<div class="step2-footer-close">
+				    <button type="button" id="btnPageClose" class="btn-close-custom">닫기</button>
+				</div>
                 <input type="hidden" id="qid" name="qid">
                 <input type="hidden" id="id" name="id">
                 <div class="dev-info">
                     ID INFO | 
-                    강사: <input type="text" name="instId" id="instId" th:value="${param.instId}" readonly>
+                    강사: <input type="text" name="instId" id="instId" th:value="${instId}" readonly>
                     강의: <input type="text" name="lectId" id="lectId" th:value="${param.lectId}" readonly>
                 </div>
             </form>

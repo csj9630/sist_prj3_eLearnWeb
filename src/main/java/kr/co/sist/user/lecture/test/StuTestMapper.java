@@ -31,4 +31,7 @@ public interface StuTestMapper {
 	
 	// 내 시험이력 테이블에서 응시 기록 삭제
 	public void deleteMyTest(StuCheckTestDTO sctDTO) throws PersistenceException;
+	
+	// test_id값 찾기
+	public String selectTestId(String instId) throws PersistenceException;
 }
