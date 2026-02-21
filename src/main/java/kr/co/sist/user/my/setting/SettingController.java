@@ -146,8 +146,11 @@ public class SettingController {
         if (result == -1) {
             return "pw_mismatch";
         }
+        if (result == -2) {
+            return "pw_same";
+        }
 
-        return result == 1 ? "success" : "fail";
+        return result == 1 ? "verified" : "fail";
     }
 
     /**

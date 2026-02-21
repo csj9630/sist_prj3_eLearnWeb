@@ -173,7 +173,12 @@ public class SettingService {
                 return -1; // 현재 비밀번호 불일치
             }
 
-            // 2. 새 비밀번호 암호화 후 저장
+            // 2. 새 비밀번호가 현재 비밀번호와 동일한지 확인
+            if (currentPass.equals(newPass)) {
+                return -2; // 현재 비밀번호와 동일
+            }
+
+            // 3. 새 비밀번호 암호화 후 저장
             String encodedPass = bce.encode(newPass);
             result = sm.updatePass(userId, encodedPass);
 
