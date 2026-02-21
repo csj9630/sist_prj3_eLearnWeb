@@ -24,7 +24,7 @@ public class InstInterceptor implements HandlerInterceptor{
 		boolean flag = false;
 		
 		HttpSession session = request.getSession();
-		Object obj = session.getAttribute("instructorId");
+		Object obj = session.getAttribute("instId");
 		
 		//로그인 상태 확인
 		flag = obj != null;
