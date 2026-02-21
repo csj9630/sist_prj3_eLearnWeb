@@ -47,19 +47,6 @@ public class ChapterController {
 	@Value("${user.upload-doc-dir}") // application.properties에 설정된 경로 (예: C:/uploads/)
 	private String uploadDocDir;
 
-	/*
-	 * @GetMapping("/viewList") public String viewChapterList(@RequestParam String
-	 * lectId, Model model, HttpSession session) { // String lectId = "L1"; String
-	 * userId = (String) session.getAttribute("userId");
-	 * 
-	 * // 유저 아이디가 없거나 유저가 수강한 아이디가 아니면 거부 메시지만 리턴. if (userId == null ||
-	 * !common.isMyLecture(userId, lectId)) { model.addAttribute("msg",
-	 * "수강 중인 강의가 아닙니다!"); } else { // 수강 챕터 목록 만들어서 리턴. List<ChapterDomain> list =
-	 * cs.searchChapterList(lectId); model.addAttribute("chapterList", list);
-	 * }//else
-	 * 
-	 * return "user/lecture/chapter/chapterList"; }// method
-	 */
 	/**
 	 * 강의 수강한 학생의 수강 이력 포함된 챕터 리스트
 	 * 
@@ -72,12 +59,12 @@ public class ChapterController {
 	public String viewChapterProgress(@RequestParam String lectId, HttpSession session, Model model) {
 		String userId = (String) session.getAttribute("userId");
 
-		// 유저 아이디가 없거나 유저가 수강한 아이디가 아니면 바로 에러페이지로 거부 메시지 리턴.
-		if (userId == null || !common.isMyLecture(userId, lectId)) {
-			model.addAttribute("msg", "수강 중인 강의가 아닙니다!");
-
-			return "common/err/err";
-		} // if : 얼리 리턴
+//		// 유저 아이디가 없거나 유저가 수강한 아이디가 아니면 바로 에러페이지로 거부 메시지 리턴.
+//		if (userId == null || !common.isMyLecture(userId, lectId)) {
+//			model.addAttribute("msg", "수강 중인 강의가 아닙니다!");
+//
+//			return "common/err/err";
+//		} // if : 얼리 리턴
 
 		// 수강 챕터 목록 만들어서 리턴.
 		ChapterDTO cdto = new ChapterDTO(userId, lectId);

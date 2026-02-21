@@ -2,36 +2,147 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.co.sist.instructor.lecture.chapter.InstChapterMapper">
+<mapper namespace="kr.co.sist.instructor.lecture.InstLectureMapper">
 
-	<select id="selectChapterList" parameterType="String" resultType="instChapterDTO">
-        SELECT  CHPTR_ID, LECT_ID, NAME, NUM, LENGTH, REGDATE, DOC, VIDEO
-        FROM    CHAPTER
-        WHERE   LECT_ID = #{lectId}
-        ORDER BY NUM ASC
-    </select>
 
-    <select id="selectChapterDetail" parameterType="String" resultType="instChapterDTO">
-        SELECT  CHPTR_ID, LECT_ID, NAME, NUM, LENGTH, REGDATE, DOC, VIDEO
-        FROM    CHAPTER
-        WHERE   CHPTR_ID = #{chptrId}
-    </select>
-
-    <insert id="insertChapter" parameterType="instChapterDTO">
-        INSERT INTO CHAPTER (CHPTR_ID, LECT_ID, NAME, NUM, LENGTH, DOC, VIDEO, REGDATE)
-        VALUES ('CH_' || SEQ_CHAPTER_ID.NEXTVAL, #{lectId}, #{name}, #{num}, #{length}, 
-                #{doc, jdbcType=VARCHAR}, #{video, jdbcType=VARCHAR}, SYSDATE)
-    </insert>
-
-    <update id="updateChapter" parameterType="instChapterDTO">
-        UPDATE  CHAPTER
-        <set>
-            <if test="name != null">NAME = #{name},</if>
-            <if test="num != 0">NUM = #{num},</if>
-            <if test="length != 0">LENGTH = #{length},</if>
-            <if test="video != null">VIDEO = #{video},</if>
-            <if test="doc != null">DOC = #{doc},</if>
-        </set>
-        WHERE   CHPTR_ID = #{chptrId}
-    </update>
+	<!--
+	사용처 : 강사 강의 관리 - 강의리스트
+	입력값 : instId(강사id)
+	결과값 : List<InstLectureDomain>
+	-->
+	<select id="selectInstLectureList" parameterType="instLectureSearchDTO" resultType="instLectureDomain">
+		SELECT 
+		    L.THUMBNAIL,
+		    L.LECT_ID AS "lectId",
+		    L.INST_ID AS "instId",
+		    I.NAME AS "instName",
+		    L.NAME,
+		    L.CAT_ID AS "catId",
+		    C.NAME AS "catName",
+		    -- 평점 계산 (리뷰가 없을 경우 0)
+		    (SELECT NVL(ROUND(AVG(R.SCORE), 1), 0) FROM REVIEW R WHERE R.LECT_ID = L.LECT_ID) AS "reviewAvg",
+		    L.USERCOUNT,
+		    -- 질문 수 계산
+		    (SELECT COUNT(*) FROM QUESTION Q WHERE Q.LECT_ID = L.LECT_ID) AS "questCnt",
+		    -- 총 수입 (가격 * 수강생 수)
+		    (L.PRICE * L.USERCOUNT) AS "cash",
+		    L.AVAILABILITY,
+		    -- UI 요구사항: 승인 상태 및 거절 사유
+		    L.APPROVAL,
+		    <!--	CASE 
+		        WHEN L.APPROVAL = 1 THEN '승인'
+		        WHEN L.APPROVAL = 0 AND L.REJECT_REASON IS NOT NULL THEN '거절'
+		        ELSE '대기'
+		    END AS "approvalStatus",-->
+		    nvl(L.REJECT_REASON, '없음' ) AS "rejectReason"
+		    
+		FROM 
+		    LECTURE L 
+		JOIN 
+		    INSTRUCTOR I ON L.INST_ID = I.INST_ID
+		JOIN 
+		    CATEGORY C ON L.CAT_ID = C.CAT_ID
+		WHERE 
+		    L.INST_ID = #{instId}  -- 특정 강사의 강의만 조회
+		    <if test="keyword != null and keyword != ''">
+		        AND L.NAME LIKE '%' || #{keyword} || '%'
+		    </if>
+		    <if test="availability != null and availability != ''">
+       			 AND L.AVAILABILITY = #{availability}
+    		</if>
+    		<if test="approval != null and approval != ''">
+		        AND L.APPROVAL = #{approval}
+		    </if>
+		ORDER BY 
+		    L.REGDATE DESC
+	</select>
+	
+	<!--강사의 강의 등록-->
+	<insert id="insertLecture" parameterType="instLectureDTO">
+	    <selectKey keyProperty="lectId" resultType="string" order="BEFORE">
+	        SELECT 'L' || SEQ_LECTURE_ID.NEXTVAL FROM DUAL
+	    </selectKey>
+	    INSERT INTO LECTURE (
+	        LECT_ID, NAME, PRICE, SHORTINT, INTRO, 
+	        COUNT, LENGTH, AVAILABILITY, CAT_ID, 
+	        INST_ID, THUMBNAIL, USERCOUNT, REGDATE, 
+	        REGIP, APPROVAL
+	    ) VALUES (
+	        #{lectId}, 
+	        #{name}, #{price}, #{shortint}, #{intro, jdbcType=CLOB}, 
+	        0, 0, 0, #{catId}, #{instId}, #{thumbnail, jdbcType=VARCHAR}, 0, SYSDATE, #{regip}, 2
+	    )
+	</insert>
+	
+	<!--강의 등록 시 선택한 skill들의 리스트를 insert.-->
+	<!--시퀀스랑 union 같이 쓰니 에러 남.-->
+	<insert id="insertLectureSkills">
+INSERT INTO RELATIVE_SKILL (SKILL_ID, NAME, LECT_ID)
+    SELECT SEQ_RELATIVE_SKILL_ID.NEXTVAL, NAME, LECT_ID
+    FROM (
+        <foreach collection="skillIds" item="skillName" separator=" UNION ALL ">
+            SELECT #{skillName} as NAME, #{lectId} as LECT_ID FROM DUAL
+        </foreach>
+    )
+	</insert>
+<!--	강의 등록 시 선택한 skill들의 리스트를 insert.
+	<insert id="insertLectureSkills">
+	INSERT ALL
+	    <foreach collection="skillIds" item="skillName">
+	        INTO RELATIVE_SKILL (SKILL_ID, NAME, LECT_ID) 
+	        VALUES (SEQ_RELATIVE_SKILL_ID.NEXTVAL, #{skillName}, #{lectId})
+	    </foreach>
+	    SELECT * FROM DUAL
+	</insert>-->
+	
+	<!--강의 상태(공개,비공개) 변경-->
+	<update id="updateAvailability" parameterType="map">
+	    UPDATE LECTURE
+	    SET AVAILABILITY = #{availability}
+	    WHERE LECT_ID = #{lectId}
+	</update>
+	
+	<!--강의 상세 조회-->
+	<select id="selectInstLectureDetail" resultType="instLectureDTO">
+	SELECT  
+		L.LECT_ID         AS lectId,
+        L.NAME            AS name,
+        L.SHORTINT        AS shortint,
+        L.INTRO           AS intro,
+        L.CAT_ID          AS catId,
+        C.NAME            AS catName,   
+        L.THUMBNAIL       AS thumbnail,
+        L.PRICE           AS price,
+        L.INST_ID         AS instId,
+        L.REGIP           AS regip,
+        L.REJECT_REASON   AS rejectReason
+	FROM    LECTURE L
+    JOIN    CATEGORY C ON L.CAT_ID = C.CAT_ID  WHERE   L.LECT_ID = #{lectId}
+	</select>
+	
+	<!--강의 상세 시 스킬 조회-->
+	<select id="selectLectureSkills" resultType="String">
+	    SELECT  NAME
+	    FROM    RELATIVE_SKILL
+	    WHERE   LECT_ID = #{lectId}
+	</select>
+	
+	<!--강의 수정-->
+	<update id="updateLecture" parameterType="instLectureDTO">
+	    UPDATE LECTURE
+	    SET    NAME = #{name},
+	           SHORTINT = #{shortint},
+	           INTRO = #{intro},
+	           CAT_ID = #{catId},
+	           PRICE = #{price},
+	           <if test="thumbnail != null and thumbnail != ''">
+	           THUMBNAIL = #{thumbnail},
+	           </if>
+	           APPROVAL = 2, REGIP = #{regip}
+	    WHERE  LECT_ID = #{lectId}
+	</update>
+	
+	<delete id="deleteLectureSkills">
+	    DELETE FROM RELATIVE_SKILL WHERE LECT_ID = #{lectId}
+	</delete>
 </mapper>

@@ -20,7 +20,7 @@ public class InstChapterService {
 	@Autowired
     private FileService fileService;
 	
-	@Value("${user.upload-dir}") // 강의 자료 경로
+	@Value("${user.upload-doc-dir}") // 강의 자료 경로
 	private String uploadDocPath;
 	/**
 	 * 특정 강의의 전체 챕터 목록을 조회 (NUM 순)

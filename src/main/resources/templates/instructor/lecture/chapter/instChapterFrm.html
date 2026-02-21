@@ -1,345 +1,213 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>강사 연습문제 관리</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <title>강사 챕터 관리</title>
 
-<style type="text/css">
-    body { background-color: #f8faff; font-family: 'Pretendard', sans-serif; padding: 40px; }
-    .manage-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1400px; margin: 0 auto; align-items: start; }
-    
-    /* 공통 카드 스타일 */
-    .view-card { background: white; border-radius: 20px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); min-height: 950px; position: relative; }
-    .step-badge { display: inline-block; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; margin-bottom: 15px; }
-    .step1-badge { background-color: #e6fffa; color: #38b2ac; }
-    .step2-badge { background-color: #ebf4ff; color: #4299e1; }
-    .view-title { font-size: 1.4rem; font-weight: 800; color: #2d3748; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
-
-    /* 왼쪽: 문제 목록 스타일 */
-    .empty-view { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 400px; color: #a0aec0; text-align: center; }
-    .empty-icon { font-size: 4rem; margin-bottom: 20px; }
-    .table-container { max-height: 550px; overflow-y: auto; }
-    .table thead th { background-color: #f7fafc; color: #718096; font-weight: 600; border-top: none; }
-    .ajaxTestATeg { font-weight: bold; color: #4a5568 !important; }
-    
-    /* 오른쪽: 입력 폼 스타일 */
-    .form-group { margin-bottom: 25px; }
-    .form-label { font-weight: 700; color: #4a5568; margin-bottom: 10px; display: block; }
-    .input-custom { width: 100%; border: 2px solid #edf2f7; border-radius: 12px; padding: 12px 18px; transition: all 0.3s; }
-    .input-custom:focus { border-color: #4299e1; outline: none; box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1); }
-    
-    /* 보기 입력란 (A, B, C, D) */
-    .option-row { display: flex; align-items: center; gap: 15px; margin-bottom: 12px; background: #f8fafc; padding: 8px 15px; border-radius: 12px; border: 1px solid #edf2f7; }
-    .option-label { font-weight: 800; color: #a0aec0; width: 20px; }
-    .option-input { flex: 1; border: none; background: transparent; padding: 8px; font-weight: 500; }
-    .option-input:focus { outline: none; }
-    .radio-custom { width: 20px; height: 20px; cursor: pointer; accent-color: #4299e1; }
-
-    /* 하단 버튼 영역 */
-    .action-area { margin-top: 30px; }
-    .btn-main { width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; border: none; transition: transform 0.2s; }
-    .btn-main:active { transform: scale(0.98); }
-    #createTest { background-color: #2d3748; color: white; }
-    #btnUpdate { background-color: #4299e1; color: white; }
-    
-    /* 개발용 필드 숨김/정리 */
-    .dev-info { font-size: 11px; color: #cbd5e0; margin-top: 20px; border-top: 1px dashed #edf2f7; padding-top: 10px; }
-    .dev-info input { border: none; background: transparent; color: #a0aec0; width: 50px; }
-</style>
-
-<script type="text/javascript">
-    /* 기존 JavaScript 로직 유지 */
-    $(function() {
-        refreshTable();
-        
-        $(document).on("click", ".ajaxTestATeg", function() {
-            var qid = $(this).data("qid");
-            var num = $(this).data("num");
-            searchOneTest(qid, num);
-        });
-    
-        $("#createTest").click(function(){
-            insertOneTest();
-        });
-        
-        $(document).on("click", ".updateAjax", function() {
-            var qid = $(this).data("qid");
-            var num = $(this).data("num");
-            searchOneTest(qid, num);
-        });
-
-        $(document).on("click", ".deleteAjax", function() {
-            if (confirm("삭제하시겠습니까?")) {
-                deleteOneTest($(this).data("num"));
-            }
-        });
-
-        $(document).on("click", ".btnUpdate", function() {
-            if (confirm("수정하시겠습니까?")) {
-                updateTest($(this).data("num"));
-            }
-        });
-
-        $(".btn-success").click(function() {
-            var $rightForm = $("#rightForm");
-            $rightForm[0].reset();
-            $("#qid").val("");
-            $("#createTest").show(); 
-            $("#btnUpdate").hide(); 
-            $("#btnCancel").hide();
-        });
-    });
-
-    function drawTestTable(list, instId, lectId) {
-        var html = "";
-        if (!list || list.length === 0) {
-            // 이미지의 'Step 2 제작된 문제 목록 (0)' 상태 구현
-            $("#listCount").text("( 0 )");
-            html = `
-                <div class="empty-view">
-                    <div class="empty-icon">📄</div>
-                    <p><strong>등록된 문제가 없습니다.</strong><br>오른쪽에서 문제를 작성하고 추가해주세요.</p>
-                </div>`;
-            $("#testTableBody").parent().hide(); // 테이블 숨김
-            $("#emptyContainer").html(html).show(); // 안내 문구 표시
-            return;
-        }
-
-        $("#testTableBody").parent().show();
-        $("#emptyContainer").hide();
-        $("#listCount").text("( " + list.length + " )");
-
-        $.each(list, function(idx, item) {
-            html += '<tr>';
-            html += '    <td style="width:15%">';
-            html += '        <input type="hidden" class="h-instId" value="' + instId + '">';
-            html += '        <input type="hidden" class="h-lectId" value="' + lectId + '">';
-            html += '        <span class="ajaxTestATeg" data-qid="' + item.qid + '" data-num="' + item.num + '" ';
-            html += '        style="cursor: pointer; text-decoration: underline;">' + item.num + '번</span>';
-            html += '    </td>';
-            html += '    <td style="width:55%">' + (item.content.length > 30 ? item.content.substring(0,30)+'...' : item.content) + '</td>';
-            html += '    <td style="width:30%; text-align:right;">';
-            html += '        <button class="btn btn-sm btn-outline-primary updateAjax" data-qid="' + item.qid + '" data-num="' + item.num + '">수정</button>';
-            html += '        <button class="btn btn-sm btn-outline-danger deleteAjax" id="deleteTest-' + item.num + '" data-qid="' + item.qid + '" data-num="' + item.num + '">삭제</button>';
-            html += '    </td>';
-            html += '</tr>';
-        });
-        $("#testTableBody").html(html);
-    }
-
-    /* 나머지 AJAX 함수들 (searchOneTest, insertOneTest 등) 기존 코드 유지됨 */
-    function searchOneTest(qid, num) {
-        var instId = $("#instId").val();
-        var lectId = $("#lectId").val();
-        $.ajax({
-            url : "/instructor/lecture/test/instTestOneFrm",
-            dataType : "JSON",
-            data : {"qid" : qid, "instId" : instId, "lectId" : lectId},
-            success : function(jsonObj) {
-                $("#question").val(jsonObj.data.content);
-                $("#qid").val(jsonObj.data.qid);
-                $("#opt1").val(jsonObj.data.opt1);
-                $("#opt2").val(jsonObj.data.opt2);
-                $("#opt3").val(jsonObj.data.opt3);
-                $("#opt4").val(jsonObj.data.opt4);
-                $("#exp").val(jsonObj.data.exp);
-                $("input:radio[name='ans'][value='" + jsonObj.data.ans + "']").prop("checked", true);
-                $("#createTest").hide();
-                $("#btnUpdate, #btnCancel").show();
-                
-                $("#btnCancel").off("click").on("click", function() {
-                    $("#rightForm")[0].reset();
-                    $("#qid").val("");
-                    $("#createTest").show();
-                    $("#btnUpdate, #btnCancel").hide();
-                });
-            }
-        });
-    }
-
-    function insertOneTest() {
-    	if (!validateForm()) return;
-    	
-        var ajaxData = $("#rightForm").serialize();
-        $.ajax({
-            url : "/instructor/lecture/test/createTest",
-            type : "POST",
-            dataType : "JSON",
-            data : ajaxData,
-            success: function(jsonObj) {
-                if (jsonObj.flag) {
-                    alert("문제가 성공적으로 등록되었습니다.");
-                    $("#rightForm")[0].reset();
-                    refreshTable(); 
-                }
-            }
-        });
-    }
-
-    function deleteOneTest(num) {
-        var qid = $("#deleteTest-" + num).data("qid");
-        $.ajax({
-            url : "/instructor/lecture/test/removeTest",
-            type : "POST",
-            dataType : "JSON",
-            data : {"qid" : qid, "instId" : $("#instId").val(), "lectId" : $("#lectId").val()},
-            success : function() {
-                alert("삭제되었습니다.");
-                refreshTable();
-            }
-        });
-    }
-
-    function updateTest() {
-    	if (!validateForm()) return;
-        var ajaxData = {
-            "qid" : $("#qid").val(),
-            "instId" : $("#instId").val(),
-            "lectId" : $("#lectId").val(),
-            "content" : $("#question").val(),
-            "opt1" : $("#opt1").val(),
-            "opt2" : $("#opt2").val(),
-            "opt3" : $("#opt3").val(),
-            "opt4" : $("#opt4").val(),
-            "ans" : $("input[name='ans']:checked").val(),
-            "exp" : $("#exp").val()
-        };
-        $.ajax({
-            url : "/instructor/lecture/test/modifyTest",
-            type : "POST",
-            dataType : "JSON",
-            data : ajaxData,
-            success : function() {
-                alert("수정되었습니다.");
-                refreshTable();
-                $("#btnCancel").click();
-            }
-        });
-    }
-
-    function refreshTable() {
-        $.ajax({
-            url : "/instructor/lecture/test/instTestListJson",
-            type : "POST",
-            data : {"instId" : $("#instId").val(), "lectId" : $("#lectId").val()},
-            dataType : "JSON",
-            success : function(list) { drawTestTable(list, $("#instId").val(), $("#lectId").val()); }
-        });
-    }
-    
-    //유효성 검사
-    function validateForm() {
-        if ($("#question").val().trim() === "") {
-            alert("질문 내용을 입력해주세요.");
-            $("#question").focus();
-            return false;
-        }
-
-        for (var i = 1; i <= 4; i++) {
-            if ($("#opt" + i).val().trim() === "") {
-                alert("보기 " + i + " 내용을 입력해주세요.");
-                $("#opt" + i).focus();
-                return false;
-            }
-        }
-
-        if (!$("input[name='ans']:checked").val()) {
-            alert("정답을 선택해주세요.");
-            return false;
-        }
-
-        if ($("#exp").val().trim() === "") {
-            alert("해설 내용을 입력해주세요.");
-            $("#exp").focus();
-            return false;
-        }
-
-        return true; // 모든 검사 통과
-    }
-</script>
-</head>
-<body>
-<div id = "header">
-<th:block th:replace = "~{fragments/header :: header}"/>
-</div>
+    <th:block th:replace="~{fragments/cdn :: cdn}" />
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="/js/instructor/chapter/instChapterFrm.js"></script>
+    <style type="text/css">
+      body {
+        background-color: #f8faff;
+        font-family: "Pretendard", sans-serif;
+        padding: 40px;
+      }
+      .manage-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+        align-items: start;
+      }
+      .view-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      }
+      .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2b3445;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f2f5;
+      }
+      .form-label {
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 8px;
+      }
+      .input-custom {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+      .input-custom:focus {
+        border-color: #4361ee;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        outline: none;
+      }
+      .btn-main {
+        background: #4361ee;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-main:hover {
+        background: #3a53d0;
+        transform: translateY(-2px);
+      }
+      .chapter-list .list-group-item {
+        border: 1px solid #e2e8f0;
+        margin-bottom: 10px;
+        border-radius: 10px !important;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .chapter-list .list-group-item:hover {
+        background-color: #f8faff;
+        border-color: #4361ee;
+      }
+    </style>
+  </head>
+  <body>
     <div class="manage-container">
-    <div class="view-card">
-        <div class="form-header">
-            <span class="step-badge" style="background-color: #e3f2fd; color: #1976d2;">LIST</span>
-            <h2 class="title">강의 커리큘럼</h2>
-            <p class="subtitle">등록된 챕터를 클릭하여 수정할 수 있습니다.</p>
-        </div>
-        
-        <div id="chapterListArea" class="mt-4">
-            <div class="test-item-card p-3 mb-3 border rounded shadow-sm">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <span class="badge bg-primary mb-2">Chapter 01</span>
-                        <h5 class="mb-1">자바 기초 문법</h5>
-                        <p class="small text-muted mb-0">유튜브: https://youtu.be/...</p>
-                        <p class="small text-muted">자료: java_basic.pdf</p>
-                    </div>
-                    <div class="btn-group-vertical">
-                        <button class="btn btn-sm btn-outline-primary mb-1">수정</button>
-                        <button class="btn btn-sm btn-outline-danger">삭제</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="view-card">
-        <div class="form-header">
-            <span class="step-badge">EDIT</span>
-            <h2 class="title" id="formTitle">새 챕터 구성</h2>
+      <div class="view-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="section-title mb-0 border-0">챕터 목록</h3>
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-sm"
+            onclick="resetForm()"
+          >
+            + 새 챕터 추가
+          </button>
         </div>
 
-        <form id="chapterFrm" method="post" enctype="multipart/form-data">
-             <div class="form-group">
-                <label class="form-label">노출 순서 (Order)</label>
-                <input type="number" name="chapterOrder" id="chapterOrder" class="input-custom" placeholder="숫자만 입력 (예: 1)">
-            </div>
-            <div class="form-group">
-                <label class="form-label">챕터 제목</label>
-                <input type="text" name="title" id="title" class="input-custom" placeholder="챕터 명을 입력하세요">
-            </div>
+        <div class="list-group chapter-list" id="chapterListArea"></div>
+      </div>
 
-            <div class="form-group">
-                <label class="form-label">유튜브 강의 링크 (URL)</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-youtube text-danger"></i></span>
-                    <input type="text" name="ytLink" id="ytLink" class="input-custom border-start-0" placeholder="https://www.youtube.com/embed/...">
-                </div>
+      <div class="view-card">
+        <h3 class="section-title" id="formTitle">새 챕터 추가</h3>
+
+        <form id="chapterForm" enctype="multipart/form-data">
+          <input
+            type="hidden"
+            name="lectId"
+            id="lectId"
+            th:value="${param.lectId}"
+          />
+          <input type="hidden" name="chptrId" id="chptrId" />
+
+          <div class="form-group mb-3">
+            <label class="form-label">챕터명</label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              class="form-control input-custom"
+              placeholder="챕터명을 입력하세요"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+		    <label class="form-label">유튜브 링크 (Video URL)</label>
+		    <input type="text" name="video" id="video" class="form-control input-custom" placeholder="예: https://youtu.be/..." required />
+		    
+		    <div id="videoPreview" class="mt-2 d-none align-items-start p-2" style="background: #f8faff; border-radius: 10px; border: 1px solid #e2e8f0;">
+		        <img id="thumbImg" src="" alt="썸네일" style="width: 140px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+		        <div class="ms-3 mt-1">
+		            <span class="badge bg-danger mb-1">YouTube</span>
+		            <div id="videoTitleText" class="fw-bold text-dark mb-1" style="font-size: 0.95rem; word-break: keep-all;">제목을 불러오는 중...</div>
+		            <div id="videoDurationText" class="text-muted small fw-bold">길이 확인 중...</div>
+		        </div>
+		    </div>
+		    
+		    <div id="hiddenPlayerContainer" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;">
+		        <div id="hiddenPlayer"></div>
+		    </div>
+		</div>
+
+		<div class="form-group mb-3">
+		    <label class="form-label">영상 길이</label>
+		    <div class="input-group">
+		        <input
+		            type="number"
+		            name="length"
+		            id="length"
+		            class="form-control input-custom bg-light"
+		            placeholder="초 (자동 계산)"
+		            readonly
+		        />
+		        <span class="input-group-text" style="background-color: #f0f2f5; border: 2px solid #e2e8f0; border-left: none; border-right: none;">=</span>
+		        <input
+		            type="text"
+		            id="lengthStrView"
+		            class="form-control input-custom bg-light"
+		            placeholder="시/분/초 (자동 변환)"
+		            readonly
+		        />
+		    </div>
+		</div>
+
+          <div class="form-group mb-4">
+            <label class="form-label">강의 자료 첨부</label>
+            <input
+              type="file"
+              name="uploadFile"
+              id="uploadFile"
+              class="form-control input-custom"
+            />
+            <div
+              id="currentFile"
+              class="mt-2 small text-primary"
+              style="display: none"
+            ></div>
+          </div>
+
+          <div class="action-area mt-4">
+            <input
+              type="button"
+              id="btnAdd"
+              value="챕터 저장하기"
+              class="btn-main w-100"
+            />
+
+            <div id="editButtons" style="display: none">
+              <input
+                type="button"
+                id="btnUpdate"
+                value="수정 완료"
+                class="btn-main w-100 mb-2"
+              />
+              <input
+                type="button"
+                id="btnDelete"
+                value="챕터 삭제"
+                class="btn btn-danger w-100 mb-2"
+                style="border-radius: 10px; padding: 14px; font-weight: 600"
+              />
+              <button
+                type="button"
+                id="btnCancel"
+                class="btn btn-link w-100 text-secondary"
+                onclick="resetForm()"
+              >
+                작성 취소 (새로 등록)
+              </button>
             </div>
-
-            <div class="form-group">
-                <label class="form-label">강의 자료 업로드</label>
-                <input type="file" name="uploadFile" id="uploadFile" class="form-control input-custom">
-                <div id="currentFile" class="mt-1 small text-primary"></div> </div>
-
-            <div class="form-group">
-                <label class="form-label">챕터 상세 설명</label>
-                <textarea rows="4" name="description" id="description" class="input-custom" style="resize: none; background-color: #fffaf0;"></textarea>
-            </div>
-
-            <div class="action-area mt-4">
-                <input type="button" id="btnAdd" value="챕터 저장하기" class="btn-main w-100"> 
-                <div id="editButtons" style="display: none;">
-                    <input type="button" id="btnUpdate" value="수정 완료" class="btn-main w-100 mb-2"> 
-                    <button type="button" id="btnCancel" class="btn btn-link w-100 text-secondary">작성 취소</button>
-                </div>
-            </div>
-
-            <input type="hidden" name="chapId" id="chapId">
-            <input type="hidden" name="lectId" th:value="${param.lectId}">
+          </div>
         </form>
+      </div>
     </div>
-</div>
-    <div id = "footer">
-<th:block th:replace = "~{fragments/footer :: footer}"/>
-</div>
-</body>
+  </body>
 </html>
