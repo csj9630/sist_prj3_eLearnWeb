@@ -45,8 +45,21 @@ public class UserController {
         }
 
         sDTO.setRegip(request.getRemoteAddr());
-        boolean flag = us.addUser(sDTO);
-        model.addAttribute("memberResult", flag);
+
+        if (us.addUser(sDTO)) {
+            // 회원가입 성공 시 PRG 패턴 적용
+            return "redirect:/user/member/joinSuccessPage";
+        }
+
+        // 실패 시 결과 페이지 포워딩
+        model.addAttribute("memberResult", false);
+        return "user/member/joinProcess";
+    }
+
+    // 회원가입 완료 페이지 (PRG 패턴용 GET 매핑)
+    @GetMapping("/joinSuccessPage")
+    public String joinSuccessPage(Model model) {
+        model.addAttribute("memberResult", true);
         return "user/member/joinProcess";
     }
 

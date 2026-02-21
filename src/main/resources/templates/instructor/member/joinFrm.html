@@ -395,6 +395,28 @@
                 });
             });
 
+            /* ========== 이메일 중복 확인 ========== */
+            $('#btnChkEmail').click(function () {
+                const email = $('#email').val().trim();
+                const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+                if (!email) { alert('이메일을 입력해주세요.'); return; }
+                if (!emailPattern.test(email)) { alert('유효한 이메일 형식을 입력해주세요.'); return; }
+
+                $.ajax({
+                    url: '/instructor/member/overlapEmail',
+                    type: 'GET',
+                    data: { email: email },
+                    success: function (result) {
+                        if (result === 'available') {
+                            $('#emailCheckMsg').text('사용 가능한 이메일입니다.').removeClass('error').addClass('success');
+                        } else {
+                            $('#emailCheckMsg').text('이미 가입된 이메일입니다.').removeClass('success').addClass('error');
+                        }
+                    }
+                });
+            });
+
             /* ========== 폼 제출 유효성 검사 ========== */
             $('#joinForm').submit(function (e) {
                 const id = $('#id').val().trim();
@@ -449,6 +471,18 @@
                 if (!nameMsg || !$('#nameCheckMsg').hasClass('success')) {
                     alert('이름 중복확인을 해주세요.');
                     $('#btnChkName').focus();
+                    return false;
+                }
+                const emailMsg = $('#emailCheckMsg').text();
+                if (!emailMsg || !$('#emailCheckMsg').hasClass('success')) {
+                    alert('이메일 중복확인을 해주세요.');
+                    $('#btnChkEmail').focus();
+                    return false;
+                }
+                const phoneMsg = $('#phoneCheckMsg').text();
+                if (!phoneMsg || !$('#phoneCheckMsg').hasClass('success')) {
+                    alert('전화번호 중복확인을 해주세요.');
+                    $('#btnChkPhone').focus();
                     return false;
                 }
             });
@@ -517,7 +551,11 @@
                 <!-- 이메일 -->
                 <div class="form-group">
                     <label for="email">이메일 <span class="required">*</span></label>
-                    <input type="email" id="email" name="email" placeholder="이메일을 입력하세요">
+                    <div class="input-group">
+                        <input type="email" id="email" name="email" placeholder="이메일을 입력하세요">
+                        <button type="button" id="btnChkEmail" class="btn-dup-check">중복확인</button>
+                    </div>
+                    <div id="emailCheckMsg" class="check-msg"></div>
                 </div>
 
                 <!-- 전화번호 -->

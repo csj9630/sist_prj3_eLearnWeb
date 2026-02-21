@@ -29,5 +29,10 @@
     <select id="selectPhone" resultType="String" parameterType="String">
         SELECT PHONE FROM INSTRUCTOR WHERE PHONE = #{phone} AND ROWNUM &lt;= 1
     </select>
+
+    <!-- 이메일 중복 확인 -->
+    <select id="selectEmail" resultType="String" parameterType="String">
+        SELECT EMAIL FROM INSTRUCTOR WHERE EMAIL = #{email} AND ROWNUM &lt;= 1
+    </select>
     
 </mapper>

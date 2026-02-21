@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/user/my/setting")
 public class SettingController {
 
-    @org.springframework.beans.factory.annotation.Value("${user.upload-dir}")
+    @Value("${user.upload-profile-dir}")
     private String uploadDir;
 
     @Autowired
@@ -46,13 +47,6 @@ public class SettingController {
     }
 
     /**
-     * 이메일 인증 팝업 페이지
-     */
-    // ===========================
-    // 프로필 정보 수정
-    // ===========================
-
-    /**
      * 프로필 정보 통합 수정 (이미지, 닉네임, 자기소개)
      */
     @PostMapping("/updateProfile")
@@ -66,14 +60,12 @@ public class SettingController {
         String userId = (String) session.getAttribute("userId");
         String resultMsg = "success";
 
-        // ... (updateProfile method)
-
         // 1. 프로필 이미지 변경
         if (profileImage != null && !profileImage.isEmpty()) {
             try {
                 // 외부 경로 저장 (C:/upload/profile/{userId}/)
                 // 1. 사용자 ID별 폴더 생성
-                File saveDir = new File(uploadDir + "profile" + File.separator + userId);
+                File saveDir = new File(uploadDir + userId);
                 if (!saveDir.exists())
                     saveDir.mkdirs();
 

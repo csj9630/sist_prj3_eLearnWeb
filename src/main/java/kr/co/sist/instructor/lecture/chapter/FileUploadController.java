@@ -20,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class FileUploadController {
 
-    @Value("${user.upload-dir}")
+    @Value("${user.upload-doc-dir}")
     private String uploadDir;
 
     @GetMapping("/upload")
