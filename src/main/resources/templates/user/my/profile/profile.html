@@ -1,7 +1,21 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-    th:replace="~{user/my/profile/mypageMain :: layout(~{::content}, null, 'profile')}">
-<div th:fragment="content">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>프로필 - IntLearn</title>
+    <th:block th:replace="~{fragments/cdn :: cdn}" />
+</head>
+<body>
+    <!-- 공통 헤더 -->
+    <div th:replace="~{fragments/MyHeader :: header}"></div>
+
+    <!-- 마이페이지 컨테이너 -->
+    <div class="mypage-container">
+        <!-- 공통 사이드바 -->
+        <div th:replace="~{fragments/MySidebar :: sidebar('profile')}"></div>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <div class="mypage-content">
 
     <!-- 페이지 타이틀 (대시보드와 동일한 스타일) -->
     <h2 class="page-title">프로필 <span class="sub-title">나의 활동을 확인하세요</span></h2>
@@ -75,6 +89,7 @@
         </div>
     </div>
 
-</div>
-
+        </div>
+    </div>
+</body>
 </html>

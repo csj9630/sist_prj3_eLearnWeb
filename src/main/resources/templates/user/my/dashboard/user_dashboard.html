@@ -80,11 +80,10 @@
                             <p>수강 중인 강의가 없습니다.</p>
                         </div>
                         <th:block th:each="lect : ${recentList}">
-                            
-                            <a th:href="@{/lecture/chapter/viewProgressList(lectId=${lect.lectId})}" 
-                               class="course-card" 
-                               style="display: flex; flex-direction: column; text-decoration: none; color: inherit; cursor: pointer;">
-                            
+
+                            <a th:href="@{/lecture/chapter/viewProgressList(lectId=${lect.lectId})}" class="course-card"
+                                style="display: flex; flex-direction: column; text-decoration: none; color: inherit; cursor: pointer;">
+
                                 <div class="card-thumb">
                                     <img th:src="${lect.thumbnail != null ? lect.thumbnail : 'https://via.placeholder.com/260x145?text=No+Image'}"
                                         onerror="this.src='https://via.placeholder.com/260x145?text=Inflearn'"
@@ -105,10 +104,10 @@
                                             style="color:#00c471; font-weight:bold;">완강</span>
                                         <span th:unless="${lect.progRate == 100}">수강중</span>
                                     </div>
-                                     
+
                                 </div>
                             </a>
-                            </th:block>
+                        </th:block>
                     </div>
                 </div>
 
