@@ -39,7 +39,6 @@ public class AdminDashBoardController {
 		model.addAttribute("payList", payList);
 		//최다 수강 과목
 		model.addAttribute("userList", userList);
-		System.out.println(userList);
 		//헤더에 쓸 페이지명
 		model.addAttribute("pageTitle", "대시보드");
 		model.addAttribute("currentUri", req.getRequestURI());

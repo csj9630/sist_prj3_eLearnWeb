@@ -1,10 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>내 수익 조회 - 강사센터</title>
 <link rel="stylesheet" href="/css/user-mypage.css">
 <link rel="stylesheet" href="/css/instructor.css">
+<link rel="stylesheet" th:href="@{/instructor/dashboard/dashboard.css}" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -60,10 +61,18 @@ function searchRevenue() {
 }
 </script>
 </head>
-<body>
+<body class="instructor-dashboard">
 
-    <div th:replace="~{fragments/InstHeader :: header}"></div>
+    <div id="header">
+    	<th:block th:replace="~{fragments/instructorHeader :: instructorHeader}"></th:block>
+  	</div>
 
+	<div class="instructor-layout">
+    	<aside class="instructor-sidebar">
+      		<th:block th:replace="~{fragments/instructorSidebar :: instructorSidebar}"></th:block>
+    	</aside>
+    	
+   	<main class="instructor-content">
     <div class="mypage-container" style="display: block; width: 1000px; margin: 50px auto;">
         
         <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 25px;">내 수익 조회</h2>
@@ -159,8 +168,9 @@ function searchRevenue() {
                     </tr>
                 </tbody>
             </table>
-        </div>
-
+        	</div>
+		</div>
+		</main>
     </div>
 
 </body>
