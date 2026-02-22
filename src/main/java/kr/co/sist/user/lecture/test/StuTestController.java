@@ -45,7 +45,7 @@ public class StuTestController {
 		System.out.println("sctDTO : " + sctDTO);
 		ss.resetTestRecord(sctDTO);
 		System.out.println("삭제 완료");
-		return "redirect:/user/lecture/test/stuTestFrm?lectId=" + lectId + "&userId=" + sctDTO.getUserId();
+		return "redirect:user/lecture/test/stuTestFrm?lectId=" + lectId + "&userId=" + sctDTO.getUserId();
 	}// stuRemoveTestRecord
 	
 	// 시험 페이지 Frm
@@ -72,7 +72,7 @@ public class StuTestController {
 	        }
 	    }
 	    
-		return "/user/lecture/test/userTestFrm";
+		return "user/lecture/test/userTestFrm";
 	}// instTestFrm
 	
 
@@ -100,14 +100,14 @@ public class StuTestController {
 	@GetMapping("/stuScore")
 	public String stuScore(Model model, int lectId, HttpSession session) {
 
-		return "/user/lecture/test/stuTestFrm";
+		return "user/lecture/test/stuTestFrm";
 	}// stuScore
 
 	// 시험 답안 조회
 	@GetMapping("/stuAnswer")
 	public String stuAnswer(Model model, int test_id, String stu_id, HttpSession session) {
 
-		return "/user/lecture/test/stuTestFrm";
+		return "user/lecture/test/stuTestFrm";
 	}// stuAnswer
 
 }

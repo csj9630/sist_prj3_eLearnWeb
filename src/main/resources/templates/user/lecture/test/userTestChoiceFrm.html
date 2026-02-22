@@ -130,11 +130,12 @@
 		$("#checkAnswer").click(function(){
 			checkAnswer();
 		});
-
+		var lectIdurl = "$(#lectId)"; 
+		var url = "/lecture/chapter/viewProgressList";
         //닫기 버튼 기능
         $("#btnClose").click(function(){
-            if(confirm("페이지를 닫으시겠습니까?")) {
-                window.close();
+            if(confirm("문제 페이지로 돌아가시겠습니까?")) {
+            	location.href = url+"?lectId"+lectIdurl;
             }
         });
 	});//ready

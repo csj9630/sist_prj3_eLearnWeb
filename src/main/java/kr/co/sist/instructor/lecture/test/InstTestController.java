@@ -31,7 +31,7 @@ public class InstTestController {
 		model.addAttribute("testList", list);
 		model.addAttribute("instId", instId);
 		
-		return "/instructor/lecture/test/instTestFrm";
+		return "instructor/lecture/test/instTestFrm";
 	}//testFrm
 
 	//시험 목록 화면을 ajax로 보내줌
