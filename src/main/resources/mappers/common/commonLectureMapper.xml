@@ -14,6 +14,11 @@
 	<select id="selectAllSkills" resultType="skillDomain">
 	    SELECT  distinct name <!--, skill_id as skillId-->
 	    FROM   RELATIVE_SKILL
+		<where>
+	        <if test="lectId != null and lectId != ''">
+	            lect_id = #{lectId}
+	        </if>
+	    </where>
 	    ORDER BY name ASC
 	</select>
 	

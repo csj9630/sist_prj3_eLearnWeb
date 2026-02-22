@@ -1,7 +1,6 @@
 package kr.co.sist.user.lecture.chapter;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.slf4j.Logger;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ChapterService {
@@ -70,11 +70,12 @@ public class ChapterService {
 		return vdList;
 	}// method
 
-	// @Transactional // Service 메서드 안의 모든 쿼리가 성공 시 커밋, 하나라도 실패 시 rollBack;
+	 @Transactional // Service 메서드 안의 모든 쿼리가 성공 시 커밋, 하나라도 실패 시 rollBack;
 	public boolean saveVideoRecord(VideoDTO vdto) {
 		boolean flag = false;
 		try {
 			flag = cm.mergeRecordtoMyChapter(vdto) == 1;
+			flag = cm.updateChapterLength(vdto) == 1;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} // end catch
@@ -127,11 +128,14 @@ public class ChapterService {
 	}// method
     
     //모든 영상 상태가 시청완료인지 체크.
-    public boolean isExamReady(List<StuChapterDomain> list) {
-    	if (list == null || list.isEmpty()) return false;
+    public boolean isExamReady(String userId, String lectId) {
+    	
+     	ChapterDTO cdto = new ChapterDTO(userId, lectId);
         
-        // 모든 챕터의 state가 2인지 확인 (Java 8 스트림 활용)
-        return list.stream().allMatch(chapter -> "2".equals(chapter.getState()));
+     	//시청상태가 모두 2(완료)이면 0을 리턴한다.
+     	//영상 시청 상태가 완료(2)가 아닌 챕터 개수를 리턴
+     	//즉, 0이 나오면 모두 시청했다는 거다.
+     	return cm.selectChapterTestState(cdto)==0;
 	}// method
     
     //최신 시험 점수 가져옴.
@@ -139,5 +143,12 @@ public class ChapterService {
         // 최신 응시 기록이 없으면 MyBatis는 null을 반환합니다.
         return cm.selectLatestTestScore(userId, lectId);
     }
+    
+    //lectID로 강의명 리턴.
+    public String getLectureName(String lectId) {
+
+    	return cm.selectLectureName(lectId);
+    }
+    
 
 }// class

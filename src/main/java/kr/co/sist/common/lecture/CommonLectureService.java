@@ -17,9 +17,13 @@ public class CommonLectureService {
         return clm.selectAllCategories();
     }
 
-	//강의 스킬 리스트 목록을 가져온다. 아이디 없이 이름만 중복 제외하고 조회한다
+	//"모든"강의 스킬 리스트 목록을 가져온다. 아이디 없이 이름만 중복 제외하고 조회한다
     public List<SkillDomain> getAllSkills() {
-        return clm.selectAllSkills();
+        return clm.selectAllSkills(null);
+    }
+    //"특정" 강의 스킬 리스트 목록을 가져온다. 아이디 없이 이름만 중복 제외하고 조회한다
+    public List<SkillDomain> getAllSkills(String lectId) {
+    	return clm.selectAllSkills(lectId);
     }
     
     //학생id, 강의id를 받아서 학생이 강의 수강 중인지 체크한다.
