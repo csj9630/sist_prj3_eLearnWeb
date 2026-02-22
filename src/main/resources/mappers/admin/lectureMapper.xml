@@ -13,16 +13,20 @@ order by name
 
 <!-- 교육 과목 관리 페이지 검색 데이터 -->
 <select id="selectLectureByCategory" parameterType="lectSearchDTO" resultType="lectListDomain">
-select l.lect_id, l.thumbnail as thumbnail, l.name as lect_name, r.score as score, l.usercount as usercount,
-i.name as inst_name, (l.usercount*l.price) as total_profit , l.availability as availability
+select l.lect_id, l.thumbnail as thumbnail, l.name as lect_name,
+       NVL(r.score, 0) as score,
+       l.usercount as usercount,
+       i.name as inst_name,
+       (l.usercount*l.price) as total_profit,
+       l.availability as availability
 from lecture l
-join review r
-on l.lect_id=r.lect_id
+left join review r
+  on l.lect_id = r.lect_id
 join instructor i
-on i.inst_id=l.inst_id
+  on i.inst_id = l.inst_id
 join category c
-on c.cat_id=l.cat_id
-where l.approval=1
+  on c.cat_id = l.cat_id
+where l.approval = 1
 <if test="categoryName != null and categoryName != ''">
 and c.name = #{categoryName}
 </if>
@@ -86,7 +90,7 @@ join instructor i
 on i.inst_id=l.inst_id
 join category c
 on c.cat_id = l.cat_id
-where l.approval=0
+where l.approval=2
 <if test="categoryName != null and categoryName != ''">
 and c.name = #{categoryName}
 </if>

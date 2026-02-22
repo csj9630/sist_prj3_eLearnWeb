@@ -23,7 +23,7 @@ where l.inst_id = #{instId}
 <!-- 총 수강생 수 -->
 <select id="selectCountUser" parameterType="String" resultType="int">
 select
-	(select count(*)
+	coalesce(select count(*)
      from payment_detail2 pd2_sub
      join payment p_sub on pd2_sub.payrec_id = p_sub.payrec_id
      where pd2_sub.lect_id = l.lect_id
