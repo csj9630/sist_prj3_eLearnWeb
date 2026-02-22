@@ -87,10 +87,6 @@ public class ChapterController {
 		Integer latestScore = cs.getLatestScore(userId, lectId); // 최신 시험 점수
 		
 		
-		System.out.println("==========================");
-		System.out.println(list);
-		System.out.println(isExamReady);
-		
 		model.addAttribute("chapterProgress", list);
 		model.addAttribute("lectId", lectId);
 		model.addAttribute("lectName", lectName);
@@ -136,11 +132,7 @@ public class ChapterController {
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> saveRecord(@RequestBody VideoDTO vdto) {
 		Map<String, Object> result = new HashMap<>();
-		System.out.println("----받은 데이터------");
-		System.out.println(vdto);
-		// vdto.recalculate();
-		// System.out.println("----변환 데이터------");
-		// System.out.println(vdto);
+
 
 		// 서비스 호출
 		boolean isSaved = cs.saveVideoRecord(vdto);

@@ -66,9 +66,6 @@ public class InstLectureController {
 		model.addAttribute("sDTO", sDTO); // 검색어 유지를 위해 전달.
 		model.addAttribute("imgPath", imgPath);
 
-		System.out.println("==============================================");
-		System.out.println(sDTO);
-		System.out.println("==============================================");
 		return "instructor/lecture/instLectureList";
 	}// method
 
