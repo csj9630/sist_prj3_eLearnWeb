@@ -71,7 +71,7 @@ public class InstLectureController {
 
 
 	// 등록/수정 폼 이동 (lectId 유무로 판단)
-	// 현재 사용 안함.
+	// 현재 사용 안함
 	@GetMapping("/manage")
 	public String lectureForm(@RequestParam(required = false) String lectId, Model model, HttpSession session) {
 		if (lectId != null && !lectId.isEmpty()) {
