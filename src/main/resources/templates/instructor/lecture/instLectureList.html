@@ -270,13 +270,13 @@
                   <span
                     th:if="*{availability == 1}"
                     class="status-badge bg-open"
-                    >[공개중]</span
+                    >공개중</span
                   >
 
                   <span
                     th:unless="*{availability == 1}"
                     class="status-badge bg-close"
-                    >[비공개]</span
+                    >비공개</span
                   >
                 </td>
                 <td class="course-actions">
@@ -291,7 +291,7 @@
                     class="btn"
                     th:onclick="changeAvailability([[*{lectId}]], [[*{availability}]])"
                     style="font-size: 12px; padding: 5px 10px"
-                    th:text="*{availability == 1} ? '비공개하기' : '공개하기'"
+                    th:text="*{availability == 1} ? '비공개' : '공개'"
                     th:classappend="*{availability == 1} ? 'btn-danger' : 'btn--primary'"
                   >
                     공개 설정
