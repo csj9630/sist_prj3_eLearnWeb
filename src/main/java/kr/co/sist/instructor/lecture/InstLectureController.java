@@ -29,7 +29,7 @@ import kr.co.sist.user.lecture.LectureService;
 public class InstLectureController {
 	@Autowired
 	private InstLectureService ls;
-	
+
 	@Autowired
 	private InstChapterService cls;
 
@@ -54,8 +54,8 @@ public class InstLectureController {
 	@GetMapping("/list")
 	public String InstlectureList(InstLectureSearchDTO sDTO, HttpSession session, Model model, HttpServletRequest req) {
 
-		String instId = (String)session.getAttribute("instId");
-		//String instId = "inst5";
+		String instId = (String) session.getAttribute("instId");
+		// String instId = "inst5";
 		sDTO.setInstId(instId);
 
 		List<InstLectureDomain> list = ls.searchInstLectureList(sDTO);
@@ -66,10 +66,9 @@ public class InstLectureController {
 		model.addAttribute("sDTO", sDTO); // 검색어 유지를 위해 전달.
 		model.addAttribute("imgPath", imgPath);
 		model.addAttribute("currentUri", req.getRequestURI());
-		
+
 		return "instructor/lecture/instLectureList";
 	}// method
-
 
 	// 등록/수정 폼 이동 (lectId 유무로 판단)
 	// 현재 사용 안함
@@ -78,7 +77,7 @@ public class InstLectureController {
 		if (lectId != null && !lectId.isEmpty()) {
 			// 수정 모드: 기존 데이터 조회 (서비스에 상세조회 메서드 필요)
 			// InstLectureDTO detail = ls.getLectureDetail(lectId);
-			
+
 			model.addAttribute("isUpdate", true);
 		} else {
 			// 등록 모드
@@ -94,23 +93,24 @@ public class InstLectureController {
 		return "instructor/lecture/lectureForm";
 	}
 
-	//  실제 저장 처리 (Insert)
+	// 실제 저장 처리 (Insert)
 	@PostMapping("/save")
 	public String saveLecture(InstLectureDTO ldto, @RequestParam("thumbFile") MultipartFile thumbFile,
 			HttpServletRequest request, HttpSession session) {
 
 		// 1. 기본 정보 설정
-		String instId = "inst5"; // 실제로는 session.getAttribute("instId") 사용
+		// String instId = "inst5"; // 실제로는 session.getAttribute("instId") 사용
+		String instId = (String) session.getAttribute("instId");
+
 		ldto.setInstId(instId);
 		ldto.setRegip(request.getRemoteAddr());
 
-
 		// 2. 썸네일 파일 업로드 처리(null이면 기본 이름으로 설정)
-	    String newThumbnail = ls.uploadThumbnail(thumbFile);
+		String newThumbnail = ls.uploadThumbnail(thumbFile);
 		ldto.setThumbnail(newThumbnail);
-	
+
 		boolean isSuccess = false;
-		// 3. 서비스 호출 
+		// 3. 서비스 호출
 		if (ldto.getLectId() == null || ldto.getLectId().isEmpty()) {
 			isSuccess = ls.addLecture(ldto);
 		} else {
@@ -120,7 +120,7 @@ public class InstLectureController {
 		return "redirect:/instructor/lecture/list";
 	}// method
 
-	//강의 활성화 전환.
+	// 강의 활성화 전환.
 	@PostMapping("/updateAvailability")
 	@ResponseBody // AJAX 요청이므로 데이터만 응답
 	public String updateAvailability(@RequestParam("lectId") String lectId,
@@ -130,60 +130,60 @@ public class InstLectureController {
 
 		return result ? "success" : "fail";
 	}// method
-	
-	//강의 상세 보기
+
+	// 강의 상세 보기
 	@GetMapping("/detail")
 	public String lectureDetail(@RequestParam("lectId") String lectId, Model model) {
 		InstLectureDTO ldto = ls.getLectureDetail(lectId);
 		List<InstChapterDTO> chapterList = cls.searchChapterList(lectId);
-	    model.addAttribute("ldto", ldto);
-//	    model.addAttribute("isDetail", true); // 상세 보기용 플래그
-//	    
-	    if (ldto != null) {
+		model.addAttribute("ldto", ldto);
+		// model.addAttribute("isDetail", true); // 상세 보기용 플래그
+		//
+		if (ldto != null) {
 			model.addAttribute("ldto", ldto);
 			model.addAttribute("skills", ldto.getSkills()); // HTML에서 ${skills}로 반복문 사용
 		}
-	    model.addAttribute("chapterList", chapterList);
+		model.addAttribute("chapterList", chapterList);
 		model.addAttribute("imgPath", imgPath);
-		
-	    return "instructor/lecture/instlectureDetail"; // 복사해온 관리자와 동일한 폼으로 이동
+
+		return "instructor/lecture/instlectureDetail"; // 복사해온 관리자와 동일한 폼으로 이동
 	}
-	
+
 	// 수정 폼 열기
 	// 원래 상세보기와 수정을 같은 view에서 처리하려고 했지만 관리자 폼을 상세로 쓰기로 함.
 	@GetMapping("/edit")
 	public String editForm(@RequestParam String lectId, Model model) {
-	    InstLectureDTO ldto = ls.getLectureDetail(lectId);
-	    
-	    model.addAttribute("ldto", ldto);
-	    model.addAttribute("isDetail", false); // 수정 모드이므로 false
-	    model.addAttribute("categoryList", commonService.getAllCategories());
-	    model.addAttribute("existingSkills", commonService.getAllSkills());
+		InstLectureDTO ldto = ls.getLectureDetail(lectId);
+
+		model.addAttribute("ldto", ldto);
+		model.addAttribute("isDetail", false); // 수정 모드이므로 false
+		model.addAttribute("categoryList", commonService.getAllCategories());
+		model.addAttribute("existingSkills", commonService.getAllSkills());
 		model.addAttribute("imgPath", imgPath);
-	    
-	    return "instructor/lecture/lectureForm";
-	}
-	
-	//수정 처리하기
-	@PostMapping("/modify")
-	public String modifyLecture(InstLectureDTO ldto, @RequestParam("thumbFile") MultipartFile thumbFile, HttpServletRequest request) {
-	    
-		if(!thumbFile.isEmpty()) {
-			 //신규 파일이 업로드되었다면 처리
-			String newThumbnail = ls.uploadThumbnail(thumbFile);
-			ldto.setThumbnail(newThumbnail); // 신규 파일명으로 교체
-		}else {
-			//신규 파일이 없으면 아예 null로 해서 mybatis에서 제외하게 함.
-			ldto.setThumbnail(null);
-		}
-	   
-	    ldto.setRegip(request.getRemoteAddr());
-	    
-	    // 2. 서비스 호출
-	    ls.modifyLecture(ldto);
-	    
-	    return "redirect:/instructor/lecture/detail?lectId=" + ldto.getLectId();
+
+		return "instructor/lecture/lectureForm";
 	}
 
+	// 수정 처리하기
+	@PostMapping("/modify")
+	public String modifyLecture(InstLectureDTO ldto, @RequestParam("thumbFile") MultipartFile thumbFile,
+			HttpServletRequest request) {
+
+		if (!thumbFile.isEmpty()) {
+			// 신규 파일이 업로드되었다면 처리
+			String newThumbnail = ls.uploadThumbnail(thumbFile);
+			ldto.setThumbnail(newThumbnail); // 신규 파일명으로 교체
+		} else {
+			// 신규 파일이 없으면 아예 null로 해서 mybatis에서 제외하게 함.
+			ldto.setThumbnail(null);
+		}
+
+		ldto.setRegip(request.getRemoteAddr());
+
+		// 2. 서비스 호출
+		ls.modifyLecture(ldto);
+
+		return "redirect:/instructor/lecture/detail?lectId=" + ldto.getLectId();
+	}
 
 }// class
