@@ -63,7 +63,7 @@ public class UserReviewController {
 		model.addAttribute("reviewList", reviewList);
 		model.addAttribute("pagination", pagination);
 
-		return "/user/lecture/review/reviewList";
+		return "user/lecture/review/reviewList";
 	} // reviewList
 
 	@GetMapping("/reviewWriteFrm")
@@ -77,7 +77,7 @@ public class UserReviewController {
 		rDTO.setUser_id(userId);
 		// 임시
 
-		return "/user/lecture/review/reviewWriteFrm";
+		return "user/lecture/review/reviewWriteFrm";
 	} // writeForm
 
 	@PostMapping("/reviewWriteFrmProcess")
@@ -99,7 +99,7 @@ public class UserReviewController {
 		model.addAttribute("msg", resultMsg);
 		model.addAttribute("flag", flag);
 
-		return "/user/lecture/review/reviewWriteFrmProcess";
+		return "user/lecture/review/reviewWriteFrmProcess";
 	} // writeFormProcess
 
 	@GetMapping("/reviewDetail")
@@ -107,7 +107,7 @@ public class UserReviewController {
 		UserReviewDomain reviewDomain = rs.searchOneReview(reviewId);
 		model.addAttribute("reviewDomain", reviewDomain);
 
-		return "/user/lecture/review/reviewDetail";
+		return "user/lecture/review/reviewDetail";
 	} // reviewDetail
 
 	@PostMapping("/reviewModifyProcess")
@@ -125,7 +125,7 @@ public class UserReviewController {
 		boolean flag = rs.modifyReview(rDTO);
 		model.addAttribute("flag", flag);
 
-		return "/user/lecture/review/reviewModifyProcess";
+		return "user/lecture/review/reviewModifyProcess";
 	} // modifyReviewProcess
 
 	@PostMapping("/reviewRemoveProcess")
@@ -141,7 +141,7 @@ public class UserReviewController {
 		boolean flag = rs.removeReview(rDTO);
 		model.addAttribute("flag", flag);
 
-		return "/user/lecture/review/reviewRemoveProcess";
+		return "user/lecture/review/reviewRemoveProcess";
 	} // removeReviewProcess
 
 	// 🌟 [추가됨] 모달에 띄울 리뷰 정보를 JSON 형태로 반환하는 AJAX 전용 메서드

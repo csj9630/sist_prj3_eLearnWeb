@@ -55,7 +55,7 @@ public class InstTestController {
 	 * iDTO) { boolean flag = is.writeTest(iDTO); model.addAttribute("result",
 	 * flag);
 	 * 
-	 * return "/instructor/lecture/test/instTestResult"; }//createTest
+	 * return "instructor/lecture/test/instTestResult"; }//createTest
 	 */	// 시험문제 생성
 	@PostMapping("/createTest")
 	@ResponseBody
