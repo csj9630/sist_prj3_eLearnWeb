@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/instructor")
 public class InstructorDashBoardController {
-
+	
 	@Autowired
 	private InstructorDashBoardService idbs;
 	
@@ -26,6 +26,7 @@ public class InstructorDashBoardController {
 		int ScoreReview=idbs.getTotalScoreReview(instId);
 		int userCnt=idbs.getTotalCountUser(instId);
 		int instProfit=idbs.getTotalProfitInst(instId);
+		
 		List<InstructorDashBoardDomain> sellList=idbs.getSellLecture(instId);
 		
 		model.addAttribute("lectCnt", lectCnt);
