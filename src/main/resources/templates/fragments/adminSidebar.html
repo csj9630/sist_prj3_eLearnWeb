@@ -19,7 +19,7 @@ $(function(){
     	<a class="admin-sidebar-link" th:href="@{/admin/dashboard}" th:classappend="${currentUri == '/admin/dashboard'} ? 'is-active' : '' ">대시보드</a>
     </li>
     <li><a class="admin-sidebar-link" th:href="@{/admin/lecture/searchAllLect}" th:classappend="${currentUri == '/admin/lecture/searchAllLect'} ? 'is-active' : '' ">교육 과목 관리</a></li>
-    <li><a class="admin-sidebar-link" th:href="@{/admin/question/adminQuestionFrm}" th:classappend="${currentUri == '/admin/question/adminQuestionFrm'} ? 'is-active' : '' ">문의 관리</a></li>
+    <li><a class="admin-sidebar-link" th:href="@{/admin/question/questionList}" th:classappend="${currentUri == '/admin/question/questionList'} ? 'is-active' : '' ">문의 관리</a></li>
     <li><a class="admin-sidebar-link" th:href="@{/admin/member/userList}" th:classappend="${currentUri == '/admin/member/userList'} ? 'is-active' : '' ">회원 관리</a></li>
     <li><a class="admin-sidebar-link" th:href="@{/admin/member/instructorList}" th:classappend="${currentUri == '/admin/member/instructorList'} ? 'is-active' : '' ">강사 관리</a></li>
     <li><a class="admin-sidebar-link" th:href="@{/admin/announcement/announcementList}" th:classappend="${currentUri == '/admin/announcement/announcementList'} ? 'is-active' : '' ">공지사항 관리</a></li>

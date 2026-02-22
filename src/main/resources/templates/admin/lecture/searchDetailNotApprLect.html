@@ -163,7 +163,7 @@ $(function(){
                       <a th:href="@{/admin/lecture/file(chptrId=${ch.ch_id})}" th:text="${ch.ch_doc}"></a>
 					</td>
                     <td>
-                      <a th:href="${ch.ch_video}" th:text="${ch.ch_video}" target="_blank"></a>
+                      <a th:href="'https://youtube/'+${ch.ch_video}" th:text="${ch.ch_video}" target="_blank"></a>
                     </td>
                   </tr>
                 </tbody>
