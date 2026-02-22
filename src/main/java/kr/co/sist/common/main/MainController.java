@@ -21,9 +21,11 @@ public class MainController {
     public String main(HttpSession session, HttpServletRequest request, Model model) {
         List<CommonMainDomain> categories = cms.getCategoryList();
         List<CommonMainDomain> courses = cms.getCourseList();
+        List<CommonMainDomain> topCourses = cms.getTopCoursesByStudentCount(3);
 
         model.addAttribute("categories", categories);
         model.addAttribute("courses", courses);
+        model.addAttribute("topCourses", topCourses);
 
         return "common/main/mainPage";
     }
