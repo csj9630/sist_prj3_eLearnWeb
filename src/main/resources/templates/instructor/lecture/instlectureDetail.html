@@ -74,7 +74,7 @@
                                 <td th:text="${ch.name}" class="fw-bold" style="color: #333;"></td>
                                 <td th:text="${ch.lengthStr}"></td>
                                 <td>
-                                    <span th:if="${ch.doc != null}" class="text-truncate d-inline-block" style="max-width: 150px;" th:text="${ch.doc}"></span>
+                                    <span th:if="${ch.doc != null}" class="text-truncate d-inline-block" style="max-width: 150px;" th:text="${#strings.substringAfter(ch.doc, '_')}">강의 파일</span>
                                     <span th:unless="${ch.doc != null}" class="text-muted">-</span>
                                 </td>
                                 <td>

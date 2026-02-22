@@ -52,9 +52,9 @@
 				    <th:block th:if="${cp.doc != null and cp.doc != ''}">
 				        <a th:href="@{/lecture/chapter/download(chptrId=${cp.chptrId})}" 
 				           class="btn btn-sm btn-outline-secondary me-2" 
-				           title="강의 자료 다운로드"
-				           style="border-radius: 20px; padding: 6px 12px; font-size: 13px;">
-				            <i class="fas fa-file-download"></i> 자료
+				           th:title="|${cp.doc} 다운로드|"
+				           style="border-radius: 20px; padding: 6px 12px; font-size: 13px; width:150px; ">
+				            <i class="fas fa-file-download"></i> <span th:text="|${#strings.abbreviate(cp.doc, 13)}|">강의 자료</span>
 				        </a>
 				    </th:block>
 				
