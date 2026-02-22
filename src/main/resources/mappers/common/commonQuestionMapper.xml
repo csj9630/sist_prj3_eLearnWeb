@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.common.question.CommonQuestionMapper">
+	<!-- announcement 테이블에 게시글을 추가하는 작업 -->
+	<select id = "selectQuestionTotalCnt" parameterType = "commonQuestionRangeDTO" resultType = "int">
+		select count(*) cnt
+		from 
+		    question q
+		left outer join 
+		    users u on q.user_id = u.user_id
+		left outer join 
+		    lecture l on q.lect_id = l.lect_id
+		left outer join 
+		    instructor i on l.inst_id = i.inst_id
+		<where>
+			<if test = "keyword neq null and keyword neq ''">
+				instr(${fieldStr}, #{keyword}) != 0
+			</if>
+		</where>
+	</select>
+	
+	<select id = "selectRangeQuestion" parameterType = "commonQuestionRangeDTO" resultType = "commonQuestionDomain">
+		select	question_id, title, content, views, q_regdate, q_regip, ans, ansdate,
+				ansip, user_id, user_name, lect_id, lect_name, inst_id, inst_name
+		from   (select	q.question_id, q.title, q.content, q.views, q.regdate as q_regdate, q.regip as q_regip,
+					    q.ans, q.ansdate, q.ansip, q.user_id, u.name as user_name, q.lect_id, l.name as lect_name,
+					    l.inst_id, i.name as inst_name,
+						row_number() over(order by q.regdate desc) rnum
+				from	question q
+				left outer join 
+				    	users u on q.user_id = u.user_id
+				left outer join 
+				    	lecture l on q.lect_id = l.lect_id
+				left outer join 
+				    	instructor i on l.inst_id = i.inst_id
+		<where>
+			<if test = "keyword neq null and keyword neq ''">
+						instr(${fieldStr}, #{keyword}) != 0
+			</if>
+		</where>
+				)
+		where	rnum between #{startNum} and #{endNum}
+	</select>
+	
+	<!-- 글 번호를 받아서 해당하는 글 하나를 검색 -->
+	<select id = "selectQuestionDetail" parameterType = "String" resultType = "commonQuestionDomain">
+		select	question_id, title, content, views, q_regdate, q_regip, ans, ansdate,
+				ansip, user_id, user_name, lect_id, lect_name, inst_id, inst_name
+		from   (select	q.question_id, q.title, q.content, q.views, q.regdate as q_regdate, q.regip as q_regip,
+					    q.ans, q.ansdate, q.ansip, q.user_id, u.name as user_name, q.lect_id, l.name as lect_name,
+					    l.inst_id, i.name as inst_name,
+						row_number() over(order by q.regdate desc) rnum
+				from	question q
+				left outer join 
+				    	users u on q.user_id = u.user_id
+				left outer join 
+				    	lecture l on q.lect_id = l.lect_id
+				left outer join 
+				    	instructor i on l.inst_id = i.inst_id
+		    	)
+		where	question_id = #{question_id}
+	</select>
+	
+</mapper>

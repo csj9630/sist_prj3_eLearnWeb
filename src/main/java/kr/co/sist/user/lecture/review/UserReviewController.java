@@ -42,18 +42,15 @@ public class UserReviewController {
 		List<UserReviewDomain> reviewList = rs.searchReviewList(rDTO); // 게시글 내용
 		String pagination = rs.pagination2(rDTO); // 페이지네이션
 
-		// 🌟 [추가된 로직] 로그인한 사용자 ID 가져오기 (임시 세션 기준)
 		// session.setAttribute("user_id", "user2"); // (임시 코드)
 		// String userId = (String) session.getAttribute("user_id");
 		String userId = (String) session.getAttribute("userId");
 
-		// 🌟 [추가된 로직] 내 리뷰 조회
 		UserReviewDTO myReq = new UserReviewDTO();
 		myReq.setLect_id(rDTO.getLectId());
 		myReq.setUser_id(userId);
 		UserReviewDomain myReview = rs.searchMyReview(myReq);
 
-		// 🌟 [추가된 로직] Model에 내 리뷰 정보와 현재 접속자 ID 저장
 		model.addAttribute("myReview", myReview);
 		model.addAttribute("sessionUserId", userId);
 

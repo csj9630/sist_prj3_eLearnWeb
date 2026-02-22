@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<title>강사용 사이드바</title>
+<script type="text/javascript">
+$(function(){
+});
+</script>
+</head>
+<body>
+<th:block th:fragment="commonSidebar">
+  <link rel="stylesheet" th:href="@{/common/css/instructor-sidebar.css}" />
+    <nav class="common-sidebar-nav">
+      <ul class="common-sidebar-list">
+        <li><a class="common-sidebar-link" th:href="@{/common/announcement/announcementList}" th:classappend="${currentUri == '/common/announcement/announcementList' or currentUri == '/common/announcement/announcementDetail'} ? 'is-active' : ''">공지사항</a></li>
+        <li><a class="common-sidebar-link" th:href="@{/common/question/questionList}" th:classappend="${currentUri == '/common/question/questionList' or currentUri == '/common/question/questionDetail'} ? 'is-active' : '' ">고민있어요</a></li>
+      </ul>
+    </nav>
+</th:block>
+</body>
+</html>
