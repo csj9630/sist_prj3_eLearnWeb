@@ -53,7 +53,7 @@ select
   ) as total_revenue
 from lecture l
 join instructor i on l.inst_id = i.inst_id
-where i.inst_id = 'inst1'
+where i.inst_id = #{instId}
 </select>
 
 <!-- 강사 판매 강의 -->
