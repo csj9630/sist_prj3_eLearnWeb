@@ -112,7 +112,10 @@ $(function(){
                 <tr th:each="pay , i : ${payList}">
                   <td th:text="${i.count}"></td>
                   <td th:text="${pay.lect_name}"></td>
-                  <td th:text="${#numbers.formatInteger(pay.estimated_profit, 3, 'COMMA')}+'원'"></td>
+                  <td th:if="${pay.estimated_profit != 0}"
+                  th:text="${#numbers.formatInteger(pay.estimated_profit, 3, 'COMMA')}+'원'"></td>
+                  <td th:unless="${pay.estimated_profit != 0}"
+                  th:text="${pay.estimated_profit}+'원'"></td>
                   <td th:text="${pay.user_count}"></td>
                 </tr>
               </tbody>

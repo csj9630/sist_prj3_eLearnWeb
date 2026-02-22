@@ -16,12 +16,12 @@ $(function(){
 });
 
 function profitByInst(){
-	var instName=$(".panel-select").val();
+	var instId=$(".panel-select").val();
 	
 	$.ajax({
 		url:"/admin/payment/searchInstProfit",
 		type:"GET",
-		data:{instName: instName},
+		data:{instId: instId},
 		dataType:"json",
 		error:function(xhr){
 			alert(xhr.status);
@@ -31,7 +31,7 @@ function profitByInst(){
 			tbody.empty();
 			
 			if(!data || data.length === 0) {
-				tbody.append('<tr><td style="text-align: center;" colspan="4">데이터가 없습니다.</td></tr>');
+				tbody.append('<tr><td style="text-align: center;" colspan="5">데이터가 없습니다.</td></tr>');
 				return;
 			}
 			
@@ -39,9 +39,10 @@ function profitByInst(){
 				var row=`
                 <tr>
                   <td>${lect.time ? lect.time.substring(0,10) : ''}</td>
-                  <td>${lect.lect_name}</td>
+                  <td>${lect.inst_id}</td>
                   <td>${lect.inst_name}</td>
-                  <td>${lect.inst_profit}</td>
+                  <td>${lect.lect_name}</td>
+                  <td>${lect.inst_profit.toLocaleString("ko-kr")+'원'}</td>
                 </tr>
 			`;
 			tbody.append(row)
@@ -91,16 +92,18 @@ function profitByInst(){
               <thead>
                 <tr>
                   <th scope="col">날짜</th>
-                  <th scope="col">강의이름</th>
+                  <th scope="col">강사 ID</th>
                   <th scope="col">강사</th>
-                  <th scope="col">실제 수입</th>
+                  <th scope="col">강의이름</th>
+                  <th scope="col">수익</th>
                 </tr>
               </thead>
               <tbody id="paymentTableBody">
                 <tr th:each="lectProfit:${lectProfitList}">
                   <td th:text="${#dates.format(lectProfit.time, 'yyyy-MM-dd')}"></td>
-                  <td th:text="${lectProfit.lect_name}"></td>
+                  <td th:text="${lectProfit.inst_id}"></td>
                   <td th:text="${lectProfit.inst_name}"></td>
+                  <td th:text="${lectProfit.lect_name}"></td>
                   <td th:text="${#numbers.formatInteger(lectProfit.inst_profit, 3, 'COMMA')}+'원'"></td>
                 </tr>
               </tbody>

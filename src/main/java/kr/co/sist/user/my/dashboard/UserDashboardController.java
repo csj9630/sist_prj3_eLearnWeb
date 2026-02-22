@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,22 +23,27 @@ public class UserDashboardController {
     
     @Autowired
     private UserMyLectureService userMyLectureService;
+    
+  //강의 썸네일 이미지 저장 경로
+  	@Value("${file.lecture.img-path}")
+  	private String imgPath;
 
-    @GetMapping({"", "/index", "/user_dashboard"}) 
+    @GetMapping({"","/user_dashboard"}) 
     public String dashboard(HttpSession session, Model model) {
         // 1. 세션 체크 (테스트용. user1)
         String userId = (String) session.getAttribute("userId");
-        if (userId == null) {
-            userId = "user1";
-            session.setAttribute("userId", userId);
-        }//end if
+//        if (userId == null) {
+//            userId = "user1";
+//            session.setAttribute("userId", userId);
+//        }//end if
 
         //최근 학습 강의(2개)
         List<UserMyLectureDomain> list = userMyLectureService.searchMyLectureList(userId,null);
         //상위 2개만 자르기
         List<UserMyLectureDomain> recentList = list.stream().limit(2).collect(Collectors.toList());
         model.addAttribute("recentList", recentList);
-
+        model.addAttribute("imgPath", imgPath);
+        
         //주간 학습 현황 : T,F형태의 리스트
         List<Boolean> weeklyStatus = userDashboardService.getWeeklyStatus(userId);
         model.addAttribute("weeklyStatus", weeklyStatus);

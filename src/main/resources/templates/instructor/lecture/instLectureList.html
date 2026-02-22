@@ -12,8 +12,8 @@
     />
     <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
     <!-- cdn 전부 -->
-    <link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
-    <link rel="stylesheet" th:href="@{/admin/lecture/allLecture.css}" />
+    <link rel="stylesheet" th:href="@{/instructor/dashboard/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/instructor/lecture/allLecture.css}" />
     <!-- 다이얼로그 용 라이브러리 -->
     <link
       rel="stylesheet"
@@ -50,13 +50,13 @@
       }
       /* 승인대기 */
       .bg-wait {
-        background-color: #ffeeba;
-        color: #856404;
+        background-color: #616565;
+        color: #FFF;
       }
       /* 승인완료 */
       .bg-pass {
-        background-color: #d4edda;
-        color: #155724;
+        background-color: #5568FA;
+        color: #000;
       }
       /* 반려 */
       .bg-reject {
@@ -66,8 +66,8 @@
 
       /* 공개중 */
       .bg-open {
-        background-color: #b7f5f4;
-        color: black;
+        background-color: #5568FA;
+        color: #FFF;
       }
 
       /* 비공개중 */
@@ -124,21 +124,21 @@
       } //function
     </script>
   </head>
-  <body class="admin-dashboard">
+  <body class="instructor-dashboard">
     <div id="header">
       <th:block
         th:replace="~{fragments/instructorHeader :: instructorHeader}"
       ></th:block>
     </div>
 
-    <div class="admin-layout">
-      <aside class="admin-sidebar">
+    <div class="instructor-layout">
+      <aside class="instructor-sidebar">
         <th:block
           th:replace="~{fragments/instructorSidebar :: instructorSidebar}"
         ></th:block>
       </aside>
 
-      <main class="admin-main">
+      <main class="instructor-main">
         <header class="main-header">
           <h1>나의 강의 관리</h1>
           <p>등록한 강의의 승인 상태와 판매 현황을 확인할 수 있습니다.</p>
@@ -191,8 +191,8 @@
             <a
               th:href="@{/instructor/lecture/manage}"
               class="btn btn-success"
-              style="font-size: 17px; padding: 5px 10px; border: 1px solid #ccc"
-              >강의 추가</a
+              style="font-size: 17px; padding: 5px 10px; border: 1px solid #ccc; float: right; padding: 20px; margin-right: 50px" 
+              >신규 강의 등록</a
             >
           </div>
           <table class="course-table text-center">
@@ -207,7 +207,7 @@
                 <th>공개</th>
                 <th>관리</th>
                 <th>강의 상세</th>
-                <th>시험 관리</th>
+              
               </tr>
             </thead>
             <tbody>
@@ -308,20 +308,7 @@
                     >상세</a
                   >
                 </td>
-                <td class="course-actions">
-                  <!--시험 관리 버튼  -->
-
-                  <a
-                    th:href="@{/instructor/lecture/test/instTestFrm}"
-                    class="btn btn--ghost"
-                    style="
-                      font-size: 12px;
-                      padding: 5px 10px;
-                      border: 1px solid #ccc;
-                    "
-                    >시험 상세</a
-                  >
-                </td>
+                
               </tr>
             </tbody>
           </table>

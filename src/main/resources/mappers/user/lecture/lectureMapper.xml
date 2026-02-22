@@ -101,9 +101,11 @@
 	        l.intro, 
 	        l.count, 
 	        l.length,
-	        i.name as instName
+	        i.name as instName,
+	        c.name as catName
 	    FROM lecture l
 	    JOIN instructor i ON l.inst_id = i.inst_id
+	    JOIN category   c ON l.cat_id  = c.cat_id
 	    WHERE l.lect_id = #{lectId}
 	</select>
 	

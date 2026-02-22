@@ -55,7 +55,7 @@ public class ChapterController {
 	 * @param model
 	 * @return
 	 */
-	@GetMapping("/viewProgressList")
+	@GetMapping("/list")
 	public String viewChapterProgress(@RequestParam String lectId, HttpSession session, Model model) {
 		String userId = (String) session.getAttribute("userId");
 
@@ -66,14 +66,30 @@ public class ChapterController {
 //			return "common/err/err";
 //		} // if : 얼리 리턴
 
+		
+		String lectName = cs.getLectureName(lectId);
+		if(lectName == null || lectName =="") {
+			model.addAttribute("msg", "존재하지 않는 강의입니다!");
+			
+			return "common/err/err";
+		}
+		
 		// 수강 챕터 목록 만들어서 리턴.
 		ChapterDTO cdto = new ChapterDTO(userId, lectId);
 		List<StuChapterDomain> list = cs.searchChapterProgress(cdto); // 수강 이력 리스트
-		boolean isExamReady = cs.isExamReady(list); // 시험 버튼 활성화 여부
+		
+		//조회 챕터가 없거나, 강의 자체가 없으면 무조건 시험 거짓 리턴.
+		boolean isExamReady = false;
+		if(!(list == null || list.isEmpty() ||lectName == null || lectName =="")) {
+			isExamReady = cs.isExamReady(userId, lectId); // 시험 버튼 활성화 여부
+		}//if
+		
 		Integer latestScore = cs.getLatestScore(userId, lectId); // 최신 시험 점수
-
+		
+		
 		model.addAttribute("chapterProgress", list);
 		model.addAttribute("lectId", lectId);
+		model.addAttribute("lectName", lectName);
 		model.addAttribute("isExamReady", isExamReady);
 		model.addAttribute("examScore", latestScore);
 
@@ -95,6 +111,7 @@ public class ChapterController {
 		String userId = (String) session.getAttribute("userId");
 		ChapterDTO cdto = new ChapterDTO(userId, lectId);
 		List<VideoDomain> vdList = cs.getVideoInfoList(cdto);
+		String lectName = cs.getLectureName(lectId);
 
 		// 출석 체크. 실패 시 에러메시지 전달.
 		try {
@@ -104,7 +121,9 @@ public class ChapterController {
 		} // end catch
 
 		model.addAttribute("vdList", vdList); // 영상 정보 리스트을 전송.
-		model.addAttribute("startChptrId", chptrId); // 처음 재생할 번호 전송.
+		model.addAttribute("lectId", lectId);
+		model.addAttribute("lectName", lectName);
+		model.addAttribute("startChptrId", chptrId); // 처음 재생할 챕터ID 전송.
 
 		return "user/lecture/chapter/watchVideo2";
 	}// method
@@ -113,11 +132,7 @@ public class ChapterController {
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> saveRecord(@RequestBody VideoDTO vdto) {
 		Map<String, Object> result = new HashMap<>();
-		System.out.println("----받은 데이터------");
-		System.out.println(vdto);
-		// vdto.recalculate();
-		// System.out.println("----변환 데이터------");
-		// System.out.println(vdto);
+
 
 		// 서비스 호출
 		boolean isSaved = cs.saveVideoRecord(vdto);

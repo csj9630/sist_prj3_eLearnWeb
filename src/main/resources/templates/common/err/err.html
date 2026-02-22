@@ -27,10 +27,11 @@
   <body>
     <div id="wrap">
       <div id="header">
-        <th:block th:replace="~{fragments/header :: header}" />
+        <th:block th:replace="~{fragments/mainHeader :: header}" />
       </div>
       <div id="container">
 		<h5 th:text=${msg}>에러메시지</h5>
+		<a class="btn btn-primary" th:href="@{/main}" th:text="홈으로">홈으로</a>
       </div>
       <div id="footer">
         <th:block th:replace="~{fragments/footer :: footer}" />

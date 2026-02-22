@@ -15,6 +15,6 @@ import lombok.ToString;
 @ToString
 public class LectProfitDomain {
 	private Date time;
-	private String lect_name, inst_name;
+	private String lect_name, inst_name, inst_id;
 	private int inst_profit;
 }

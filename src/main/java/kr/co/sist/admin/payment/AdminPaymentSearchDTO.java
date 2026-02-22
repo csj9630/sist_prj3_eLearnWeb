@@ -12,5 +12,5 @@ import lombok.ToString;
 @Setter
 @ToString
 public class AdminPaymentSearchDTO {
-	private String instName;
+	private String instId;
 }

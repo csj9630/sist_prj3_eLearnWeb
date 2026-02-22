@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import kr.co.sist.user.lecture.board.LectureDomain;
 import kr.co.sist.user.lecture.board.LectureRangeDTO;
 import kr.co.sist.user.lecture.detail.LectureAllDetailDomain;
+import kr.co.sist.user.payment.PaymentService;
 
 @RequestMapping("user/lecture")
 @Controller
@@ -21,7 +22,8 @@ public class LectureController {
 	@Autowired
 	private LectureService ls;
 
-	
+	   @Autowired
+	    private PaymentService ps;
 	//강의 썸네일 이미지 저장 경로
 	@Value("${file.lecture.img-path}")
 	private String imgPath;
@@ -83,7 +85,9 @@ public class LectureController {
 	@GetMapping("/detail")
 	public String lectureDetail(@RequestParam String lectId, Model model) {
 	    LectureAllDetailDomain allDetail = ls.getLectureAllDetail(lectId);
+	    List<String> skillList = ls.getSkillList(lectId);
 	    model.addAttribute("allDetail", allDetail);
+	    model.addAttribute("skillList", skillList);
 	    model.addAttribute("imgPath", imgPath);
 	    return "user/lecture/lectureDetail";
 	}// method

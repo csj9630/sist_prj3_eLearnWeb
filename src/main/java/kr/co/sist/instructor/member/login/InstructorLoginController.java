@@ -40,7 +40,7 @@ public class InstructorLoginController {
         InstructorDomain iDomain = instructorLoginService.login(iDTO);
         if (iDomain != null) {
             session.setAttribute("instId", iDomain.getInstId());
-            return "redirect:/instructor/dashboard"; // 이동할 페이지 확인 필요
+            return "redirect:/main"; // 이동할 페이지 확인 필요
         }
         model.addAttribute("msg", "아이디/비밀번호를 확인하거나 승인 대기 중입니다.");
         return "common/member/loginFrm";

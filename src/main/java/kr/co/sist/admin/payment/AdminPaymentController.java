@@ -30,8 +30,6 @@ public class AdminPaymentController {
 		model.addAttribute("adminProfit", adminProfit);
 		//하단 수익 데이터
 		model.addAttribute("lectProfitList", lectProfitList);
-		//상단 제목
-		model.addAttribute("pageTitle", "수익 관리");
 		model.addAttribute("currentUri", req.getRequestURI());
 		
 		return "admin/payment/payment";
@@ -40,7 +38,6 @@ public class AdminPaymentController {
 	@GetMapping("/searchInstProfit")
 	@ResponseBody
 	public List<LectProfitDomain> searchInstProfit(Model model, AdminPaymentSearchDTO apsDTO) {
-		System.out.println(aps.getLectProfit(apsDTO));
 		return aps.getLectProfit(apsDTO);
 	}//searchInstProfit
 }
