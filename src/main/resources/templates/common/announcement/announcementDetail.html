@@ -22,7 +22,7 @@
       			<span th:text = "|업로드: ${#dates.format(announcementDomain.regdate, 'yyyy년 MM월 dd일')}|"></span>
    			</div>
    			<div class="annContent">
-   				<textarea th:text = "${announcementDomain.content}" readonly = "readonly"></textarea>
+   				<textarea th:utext = "${announcementDomain.content}" readonly = "readonly"></textarea>
    			</div>
   			<div class="listBtn">
 	   			<a href = "javascript:history.back()" class = "btn btn--list" id = "btnWrite">리스트</a>
