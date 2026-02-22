@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.co.sist.user.lecture.board.LectureDomain;
 import kr.co.sist.user.lecture.board.LectureRangeDTO;
+import kr.co.sist.user.lecture.chapter.ChapterService;
 import kr.co.sist.user.lecture.detail.LectureAllDetailDomain;
 import kr.co.sist.user.payment.PaymentService;
 
@@ -21,6 +22,9 @@ import kr.co.sist.user.payment.PaymentService;
 public class LectureController {
 	@Autowired
 	private LectureService ls;
+	
+	@Autowired
+	private ChapterService cs;
 
 	   @Autowired
 	    private PaymentService ps;
@@ -84,6 +88,15 @@ public class LectureController {
 	 */
 	@GetMapping("/detail")
 	public String lectureDetail(@RequestParam String lectId, Model model) {
+		
+		//강의명이 없으면 에러페이지로.
+		String lectName = cs.getLectureName(lectId);
+		if(lectName == null || lectName =="") {
+			model.addAttribute("msg", "[NULL-LECT]존재하지 않는 강의입니다!");
+			
+			return "common/err/err";
+		}
+		
 	    LectureAllDetailDomain allDetail = ls.getLectureAllDetail(lectId);
 	    List<String> skillList = ls.getSkillList(lectId);
 	    model.addAttribute("allDetail", allDetail);

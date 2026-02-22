@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import kr.co.sist.interceptor.AdminInterceptor;
 import kr.co.sist.interceptor.InstInterceptor;
+import kr.co.sist.interceptor.LectureAccessInterceptor;
 import kr.co.sist.interceptor.UserInterceptor;
 
 @Configuration
@@ -33,6 +34,11 @@ public class InterceptorConfig implements WebMvcConfigurer{
 	@Value("${admin.excludePath}")
 	private List<String> excludePathAdmin;
 	
+	@Value("${user.accessCheckPath}")
+	private List<String> accessCheckPath;
+	
+	
+	
 	@Autowired
 	private UserInterceptor userInterceptor;
 	
@@ -41,6 +47,9 @@ public class InterceptorConfig implements WebMvcConfigurer{
 	
 	@Autowired 
 	private AdminInterceptor adminInterceptor;
+	
+	@Autowired 
+	private LectureAccessInterceptor LectureAccessInterceptor;
 	
 	 
 	@Override
@@ -60,6 +69,11 @@ public class InterceptorConfig implements WebMvcConfigurer{
 		registry.addInterceptor(adminInterceptor)//인터셉터 등록
 		.addPathPatterns(addPathAdmin)//인터셉터터가 동작할 경로
 		.excludePathPatterns(excludePathAdmin);//인터셉터가 동작하지 않을 경로
+		
+		//수강 권한 체크 
+		registry.addInterceptor(LectureAccessInterceptor)//인터셉터 등록
+		.addPathPatterns(accessCheckPath)//인터셉터가 동작할 경로
+		;
 		 		
 	}
 	

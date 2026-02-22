@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -25,5 +26,12 @@ public class MainController {
         model.addAttribute("courses", courses);
 
         return "common/main/mainPage";
+    }
+    
+    // 인터셉터에서 넘겨준 주소로 에러페이지 띄운다.
+    @RequestMapping("/common/err") 
+    public String showErrorPage() {
+
+        return "common/err/err"; // 실제 HTML/JSP 파일 위치
     }
 }
