@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @RequestMapping("/instructor/payment")
@@ -59,7 +60,7 @@ public class PaymentController {
   	@GetMapping({"/inst_payment"}) 
   	public String searchMyPay(
   	        @RequestParam(value = "searchMonth", required = false) String searchMonth,
-  	        HttpSession session, Model model) {
+  	        HttpSession session, Model model, HttpServletRequest req) {
   	    
   	    String instId = (String) session.getAttribute("instId");
 //  	        if(instId == null) { instId = "inst1"; session.setAttribute("instId", instId); }
@@ -91,6 +92,7 @@ public class PaymentController {
   	    model.addAttribute("list", list);
   	    model.addAttribute("searchMonth", searchMonth); //드롭다운용 현재 날짜
   	    model.addAttribute("imgPath", imgPath);
+  	    model.addAttribute("currentUri", req.getRequestURI());
   	    
   	    return "instructor/payment/inst_payment";
   	}//searchMyPay

@@ -52,7 +52,7 @@ public class InstLectureController {
 	 * @return
 	 */
 	@GetMapping("/list")
-	public String InstlectureList(InstLectureSearchDTO sDTO, HttpSession session, Model model) {
+	public String InstlectureList(InstLectureSearchDTO sDTO, HttpSession session, Model model, HttpServletRequest req) {
 
 		String instId = (String)session.getAttribute("instId");
 		//String instId = "inst5";
@@ -65,7 +65,8 @@ public class InstLectureController {
 
 		model.addAttribute("sDTO", sDTO); // 검색어 유지를 위해 전달.
 		model.addAttribute("imgPath", imgPath);
-
+		model.addAttribute("currentUri", req.getRequestURI());
+		
 		return "instructor/lecture/instLectureList";
 	}// method
 
