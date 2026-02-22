@@ -7,18 +7,20 @@
     <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
 
     <style type="text/css">
-      #wrap {
-        margin: 0px auto;
-        width: 1200px;
-        height: 1000px;
-      }
+	#wrap {
+	    margin: 0px auto;
+	    width: 1200px;
+	    min-height: 100vh; /* 고정 height: 1000px; 삭제 -> 최소 화면 높이 보장 */
+	    padding-bottom: 100px; /* 푸터와 겹치지 않게 하단 여백 추가 */
+	  }
 
       #header {
         height: 150px;
       }
 
       #container {
-        height: 700px;
+     /*    height: 700px; */
+    	 min-height: 700px;
       }
 
       #footer {

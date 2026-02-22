@@ -19,7 +19,7 @@ body {
 
 /* 2. 헤더 및 여백 슬림화 */
 #header { min-height: 60px !important; }
-.container.mt-5 { margin-top: 1rem !important; }
+.container.mt-5 { margin-top: 1rem !important;  width: 100% !important; }
 
 /* 3. 상단 다크 카드 (전체 너비) */
 .container.mt-5 > .row {
