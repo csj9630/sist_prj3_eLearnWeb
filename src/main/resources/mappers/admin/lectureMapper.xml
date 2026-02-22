@@ -74,7 +74,7 @@ join instructor i
 on i.inst_id=l.inst_id
 join category c
 on c.cat_id = l.cat_id
-where l.approval=0
+where l.approval=2
 <if test="categoryName != null and categoryName != ''">
 and c.name = #{categoryName}
 </if>
@@ -135,7 +135,7 @@ order by ch.num
 update lecture
 set approval = 1
 where lect_id = #{lectureId}
-and approval = 0
+and approval = 2
 </update>
 
 <!-- 강의 거절 사유 -->
@@ -143,7 +143,7 @@ and approval = 0
 update lecture
 set reject_reason = #{reason}
 where lect_id = #{lectureId}
-and approval = 0
+and approval = 2
 </update>
 
 </mapper>
