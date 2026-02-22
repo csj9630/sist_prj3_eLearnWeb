@@ -1,5 +1,7 @@
 package kr.co.sist.instructor.dashboard;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,12 +26,14 @@ public class InstructorDashBoardController {
 		int ScoreReview=idbs.getTotalScoreReview(instId);
 		int userCnt=idbs.getTotalCountUser(instId);
 		int instProfit=idbs.getTotalProfitInst(instId);
-		 
+		List<InstructorDashBoardDomain> sellList=idbs.getSellLecture(instId);
+		
 		model.addAttribute("lectCnt", lectCnt);
 		model.addAttribute("ScoreReview", ScoreReview);
 		model.addAttribute("userCnt", userCnt);
 		model.addAttribute("instProfit", instProfit);
 		model.addAttribute("currentUri", req.getRequestURI());
+		model.addAttribute("sellList", sellList);
 		
 		model.addAttribute("pageTitle", "대시보드");
 		
