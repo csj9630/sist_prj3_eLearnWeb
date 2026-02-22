@@ -1,0 +1,129 @@
+/* 레이아웃 변수 */
+:root {
+  --sidebar-width: 240px;
+  --header-height: 50px;
+}
+
+/* 1. 사이드바: 왼쪽 기둥으로 완전 고정 */
+.admin-sidebar {
+  position: fixed !important;
+  top: var(--header-height) !important;
+  left: 0 !important;
+  width: var(--sidebar-width) !important;
+  height: 100vh !important;
+  z-index: 1001 !important;
+  background: #1f2328 !important; /* 배경색이 있어야 본문과 안 겹쳐 보임 */
+  overflow-y: auto;
+}
+
+/* 2. 헤더: 사이드바 제외하고 상단 고정 */
+.admin-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: var(--sidebar-width) !important; /* 사이드바 너비만큼 띄움 */
+  width: calc(100% - var(--sidebar-width)) !important;
+  height: var(--header-height) !important;
+  z-index: 1000 !important;
+  background: #fff;
+  border-bottom: 1px solid #ebe7e3;
+}
+
+/* 3. 본문 영역: 사이드바와 헤더 공간 확보 */
+.admin-main {
+  margin-left: var(--sidebar-width) !important;
+  padding-top: var(--header-height) !important;
+  min-height: 100vh;
+  background: #f6f4f1;
+}
+
+#wrap {
+  padding: 32px !important;
+}
+
+/* 4. 카테고리 뱃지 스타일 */
+.bg-primary-soft {
+    background-color: #e9f0ff !important;
+    color: #1f6feb !important;
+}
+
+/* 2. 본문 영역: 사이드바 너비만큼 왼쪽 마진 확보 */
+.admin-layout {
+  margin-left: var(--sidebar-width) !important;
+  min-height: 100vh;
+  background-color: #f6f4f1;
+}
+
+/* 3. 헤더: 본문과 같이 사이드바 옆으로 밀기 */
+.header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: var(--header-height);
+  background: #fff;
+  border-bottom: 1px solid #ebe7e3;
+  z-index: 1000;
+}
+* 4. 본문 영역 (#wrap): 헤더와 사이드바 공간 확보 */
+#wrap {
+  margin-left: var(--sidebar-width) !important;
+  margin-top: var(--header-height) !important;
+  padding: 32px !important;
+  min-height: calc(100vh - var(--header-height)) !important;
+  width: calc(100% - var(--sidebar-width)) !important;
+  box-sizing: border-box !important;
+}
+
+/* 5. 본문 내 컨테이너 스타일 (notApprLecture.css 감성 이식) */
+.container {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+  background: #ffffff !important;
+  padding: 40px !important;
+  border-radius: 18px !important;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08) !important;
+}
+
+/* 6. 테이블 및 제목 폰트 조정 (최종 화면 일치용) */
+h2, h3 {
+  font-family: "Noto Sans KR", sans-serif;
+  color: #1f2328;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+/* 1. 테이블 기본 구조 고정 */
+.table {
+  table-layout: fixed !important; /* 너비를 고정하여 텍스트 길이에 영향받지 않음 */
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid #ebe7e3 !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+/* 2. 각 열의 정렬 및 텍스트 처리 */
+.table thead th, 
+.table tbody td {
+  padding: 16px !important;
+  vertical-align: middle !important;
+  border-bottom: 1px solid #ebe7e3 !important;
+  word-break: break-all !important; /* 긴 제목 대응 */
+  white-space: nowrap !important;   /* 기본적으로 줄바꿈 방지 */
+  overflow: hidden !important;
+  text-overflow: ellipsis !important; /* 넘치는 글자 ... 처리 */
+}
+
+/* 3. 항목별 상세 정렬 (중요) */
+.table th:nth-child(1), .table td:nth-child(1) { width: 80px; text-align: center; }  /* 차시 */
+.table th:nth-child(2), .table td:nth-child(2) { text-align: left; white-space: normal; } /* 강의 제목 (내용이 길 수 있으므로 좌측정렬/줄바꿈허용) */
+.table th:nth-child(3), .table td:nth-child(3) { width: 120px; text-align: center; } /* 강의 시간 */
+.table th:nth-child(4), .table td:nth-child(4) { width: 180px; text-align: left; }   /* 강의 자료 */
+.table th:nth-child(5), .table td:nth-child(5) { width: 100px; text-align: center; } /* 영상 버튼 */
+
+/* 헤더 배경색 강조 */
+.table thead th {
+  background: #fcfaf8 !important;
+  color: #6e6a67 !important;
+  font-weight: 700 !important;
+}

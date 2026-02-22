@@ -66,13 +66,30 @@ public class ChapterController {
 //			return "common/err/err";
 //		} // if : 얼리 리턴
 
+		
+		String lectName = cs.getLectureName(lectId);
+		if(lectName == null || lectName =="") {
+			model.addAttribute("msg", "존재하지 않는 강의입니다!");
+			
+			return "common/err/err";
+		}
+		
 		// 수강 챕터 목록 만들어서 리턴.
 		ChapterDTO cdto = new ChapterDTO(userId, lectId);
 		List<StuChapterDomain> list = cs.searchChapterProgress(cdto); // 수강 이력 리스트
-		boolean isExamReady = cs.isExamReady(userId, lectId); // 시험 버튼 활성화 여부
-		Integer latestScore = cs.getLatestScore(userId, lectId); // 최신 시험 점수
-		String lectName = cs.getLectureName(lectId);
 		
+		//조회 챕터가 없거나, 강의 자체가 없으면 무조건 시험 거짓 리턴.
+		boolean isExamReady = false;
+		if(!(list == null || list.isEmpty() ||lectName == null || lectName =="")) {
+			isExamReady = cs.isExamReady(userId, lectId); // 시험 버튼 활성화 여부
+		}//if
+		
+		Integer latestScore = cs.getLatestScore(userId, lectId); // 최신 시험 점수
+		
+		
+		System.out.println("==========================");
+		System.out.println(list);
+		System.out.println(isExamReady);
 		
 		model.addAttribute("chapterProgress", list);
 		model.addAttribute("lectId", lectId);

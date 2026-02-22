@@ -1,0 +1,73 @@
+/* 1. 기본 레이아웃 및 폰트 */
+html, body {
+    height: 100% !important;
+    margin: 0;
+    background-color: #F9FAFB !important;
+    font-family: 'Pretendard', sans-serif !important;
+}
+
+body {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+#wrap {
+    flex: 1 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* 2. 헤더 및 여백 슬림화 */
+#header { min-height: 60px !important; }
+.container.mt-5 { margin-top: 1rem !important; }
+
+/* 3. 상단 다크 카드 (전체 너비) */
+.container.mt-5 > .row {
+    background: #1a1d23 !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 30px 10% !important;
+    border-radius: 0 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+/* 4. 썸네일 이미지 제한 */
+.col-md-4 img {
+    max-height: 220px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+/* 5. 버튼 디자인 (절반 크기 대응) */
+.btn-primary {
+    background-color: #10B981 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #059669 !important;
+    transform: translateY(-2px);
+}
+
+/* 6. 하단 탭 및 테이블 (중앙 정렬) */
+.nav-tabs, .tab-content {
+    max-width: 1200px;
+    margin: 40px auto 0 !important;
+    padding: 0 20px;
+}
+
+.nav-tabs .nav-link.active {
+    color: #10B981 !important;
+    border-bottom: 3px solid #10B981 !important;
+}
+
+/* 7. 푸터 바닥 고정 */
+#footer {
+    flex-shrink: 0 !important;
+    width: 100% !important;
+    background: #fff;
+    border-top: 1px solid #E5E7EB;
+}

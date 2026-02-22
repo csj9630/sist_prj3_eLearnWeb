@@ -1,136 +1,104 @@
-<!doctype html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>강의 상세 내역</title>
-    
+    <title>강의 상세</title>
     <link rel="stylesheet" th:href="@{/instructor/dashboard/dashboard.css}" />
     <link rel="stylesheet" th:href="@{/instructor/lecture/notApprLecture.css}" />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/instructor/lecture/instlectureDetail.css}">
+    <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+</head>
 
-    <style>
-      /* 강사용 하단 액션 버튼 스타일 (CSS 파일에 없는 부분만 추가) */
-      .action-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 40px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
-      }
-      .btn-lg { padding: 10px 25px; font-size: 1.1rem; border-radius: 8px; font-weight: 600; text-decoration: none; }
-      .btn-default { background: #f8f9fa; color: #333; border: 1px solid #ddd; }
-      .btn-warning { background: #ffc107; color: #000; border: none; }
-      .btn-success { background: #198754; color: #fff; border: none; }
-      
-      /* 기존 CSS와 충돌 방지 및 레이아웃 보정 */
-      .admin-layout { padding: 20px; display: block; }
-    </style>
-  </head>
-  
-  <body class="admin-dashboard">
-    <div class="admin-layout">
-      <main class="main-content">
-        <section class="course-page">
-          <header class="course-header">
-            <h1>강의 상세 내역</h1>
-          </header>
+<body class="admin-dashboard">
+    <aside class="admin-sidebar">
+        <th:block th:replace="~{fragments/instructorSidebar :: instructorSidebar}"></th:block>
+    </aside>
 
-          <div class="course-section">
-            <h3 class="section-title">기본 정보</h3>
-            <div class="info-grid">
-              <div class="info-item">
-                <span class="info-label">썸네일</span>
-                <div class="info-value">
-                  <img th:src="@{'/upload/' + ${ldto.thumbnail}}" alt="썸네일" style="max-width: 250px; border-radius: 12px;" />
-                </div>
-              </div>
+    <div class="admin-main">
+        <header class="header">
+            <th:block th:replace="~{fragments/instructorHeader :: instructorHeader}"></th:block>
+        </header>
 
-              <div class="info-item">
-                <span class="info-label">카테고리</span>
-                <span class="info-value" th:text="${ldto.catName}"></span>
-              </div>
+        <main id="wrap" class="admin-content">
+            <div class="course-page" th:object="${ldto}">
+                <section class="course-header">
+                    <div class="d-flex gap-4">
+                        <div class="thumb-box" style="flex: 0 0 300px;">
+                            <img  th:src="|${imgPath}*{thumbnail}|"
+	
+ 								onerror="this.src = '/common/images/default.png'"
+                                 class="img-fluid rounded-4 shadow-sm" style="width: 100%; height: 180px; object-fit: cover;">
+                        </div>
+                        <div class="info-box">
+                            <span class="badge bg-primary-soft text-primary mb-2" th:text="*{catName}">카테고리</span>
+                            <h1 class="mb-2" th:text="*{name}" style="font-size: 24px; font-weight: 700;">강의명</h1>
+                            <p class="text-muted" th:text="*{shortint}">강의 소개</p>
+                            <div class="mt-3">
+                                <span class="fw-bold me-3">가격: <span th:text="*{price == 0 ? '무료' : #numbers.formatInteger(price, 3, 'COMMA') + '원'}"></span></span>
+                                <span class="fw-bold">총 챕터: <span th:text="|${chapterList.size()}챕터|"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="my-5" style="border-color: #ebe7e3;">
+
+                <section class="curriculum-list">
+                    <h3 class="mb-4" style="font-size: 18px; font-weight: 700;">커리큘럼 상세</h3>
+                    <table class="table curriculum-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">챕터</th>
+                                <th style="width: 45%;">강의 제목</th>
+                                <th style="width: 15%;">강의 시간</th>
+                                <th style="width: 20%;">강의 자료</th>
+                                <th style="width: 10%;">영상</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="ch : ${chapterList}">
+                                <td th:text="|${ch.num}강|" class="text-center"></td>
+                                <td th:text="${ch.name}" class="fw-medium"></td>
+                                <td th:text="${ch.lengthStr}" class="text-center"></td>
+                                <td>
+                                    <span th:if="${ch.doc != null}" class="text-truncate d-inline-block" style="max-width: 150px;">
+                                        <i class="bi bi-file-earmark-text me-1"></i><span th:text="${ch.doc}"></span>
+                                    </span>
+                                    <span th:unless="${ch.doc != null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-center">
+                                    <a th:if="${ch.video != null}" th:href="@{'https://youtu.be/' + ${ch.video}}" target="_blank" class="btn btn-sm btn-outline-danger">
+                                        영상보기
+                                    </a>
+                                    <span th:unless="${ch.video != null}">-</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <div class="d-flex justify-content-end gap-2 mt-5">
+                    <a th:href="@{/instructor/lecture/list}" class="btn btn-dark">목록으로</a>
+                    <a th:href="@{/instructor/lecture/edit(lectId=*{lectId})}" class="btn btn-primary">강의 수정</a>
+               	  	<a th:href="@{/instructor/chapter/manage(lectId=*{lectId})}" class="btn btn-primary">챕터 관리</a>
+                    <!-- <a th:href="@{/instructor/lecture/test/instTestFrm}" class="btn btn-primary" >시험 관리</a> -->
+                    <form th:action="@{/instructor/lecture/test/instTestFrm}" method="POST" style="display:inline;">
+					    <input type="hidden" name="lectId" th:value="${ldto.lectId}">
+					    <button type="submit" class="btn btn-primary">
+					        시험 관리
+					    </button>
+					</form>
               
-              <div class="info-item">
-                <span class="info-label">강의명</span>
-                <span class="info-value fw-bold" th:text="${ldto.name}"></span>
-              </div>
-
-              <div class="info-item">
-                <span class="info-label">강의 가격</span>
-                <span class="info-value" th:text="${#numbers.formatInteger(ldto.price, 0, 'COMMA')} + ' 원'"></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="course-section mt-4">
-            <h3 class="section-title">상세 소개</h3>
-            <div class="info-grid">
-              <div class="info-item">
-                <span class="info-label">한줄 소개</span>
-                <span class="info-value" th:text="${ldto.shortint}"></span>
-              </div>
-              
-              <div class="info-item">
-                <span class="info-label">관련 스킬</span>
-                <div class="info-value">
-                  <span class="skill-tag" th:each="skill : ${skills}" th:text="${skill}" 
-                        style="background:#eef2f8; padding:4px 12px; border-radius:15px; margin-right:5px; font-size:13px; color:#1f6feb;"></span>
                 </div>
-              </div>
-
-              <div class="info-item content-area">
-                <span class="info-label">상세 내용</span>
-                <div class="info-value" th:utext="${ldto.intro}" style="background:#fcfcfc; padding:15px; border-radius:10px; border:1px solid #eee;"></div>
-              </div>
             </div>
-          </div>
-
-          <div class="course-section mt-4">
-            <h3 class="section-title">커리큘럼 목록</h3>
-            <div class="table-container">
-              <table class="curriculum-table">
-                <thead>
-                  <tr>
-                    <th>순서</th>
-                    <th>강의명(챕터명)</th>
-                    <th>재생 시간</th>
-                    <th>첨부 파일</th>
-                    <th>영상 링크</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr th:each="ch : ${chapterList}">
-                    <td th:text="${ch.num} + '차시'"></td>
-                    <td th:text="${ch.name}"></td>
-                    <td th:text="${ch.lengthStr}"></td>
-                    <td th:text="${ch.doc != null ? ch.doc : '-'}"></td>
-                    <td>
-                      <a th:if="${ch.video != null}" 
-                         th:href="@{'https://youtu.be/' + ${ch.video}}" 
-                         target="_blank" class="text-primary">영상 보기</a>
-                      <span th:unless="${ch.video != null}">-</span>
-                    </td>
-                  </tr>
-                  <tr th:if="${#lists.isEmpty(chapterList)}">
-                    <td colspan="5" style="text-align:center; padding:30px;">등록된 커리큘럼이 없습니다.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="action-buttons">
-            <a th:href="@{/instructor/lecture/list}" class="btn btn-default btn-lg">목록으로</a>
-            <a th:href="@{/instructor/lecture/edit(lectId=${ldto.lectId})}" class="btn btn-warning btn-lg">정보 수정</a>
-            <a th:href="@{/instructor/chapter/chapterManage(lectId=${ldto.lectId})}" class="btn btn-success btn-lg">목록/영상 관리</a>
-          </div>
-        </section>
-      </main>
+        </main>
     </div>
-  </body>
+
+    <script>
+        $(function() {
+       //     lucide.createIcons();
+        });
+    </script>
+</body>
 </html>

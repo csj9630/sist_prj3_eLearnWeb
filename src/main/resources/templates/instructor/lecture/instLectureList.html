@@ -50,12 +50,12 @@
       }
       /* 승인대기 */
       .bg-wait {
-        background-color: #ffeeba;
+        background-color: #616565;
         color: #856404;
       }
       /* 승인완료 */
       .bg-pass {
-        background-color: #d4edda;
+        background-color: #b7f5f4;
         color: #155724;
       }
       /* 반려 */
@@ -207,7 +207,7 @@
                 <th>공개</th>
                 <th>관리</th>
                 <th>강의 상세</th>
-                <th>시험 관리</th>
+              
               </tr>
             </thead>
             <tbody>
@@ -308,20 +308,7 @@
                     >상세</a
                   >
                 </td>
-                <td class="course-actions">
-                  <!--시험 관리 버튼  -->
-
-                  <a
-                    th:href="@{/instructor/lecture/test/instTestFrm}"
-                    class="btn btn--ghost"
-                    style="
-                      font-size: 12px;
-                      padding: 5px 10px;
-                      border: 1px solid #ccc;
-                    "
-                    >시험 상세</a
-                  >
-                </td>
+                
               </tr>
             </tbody>
           </table>

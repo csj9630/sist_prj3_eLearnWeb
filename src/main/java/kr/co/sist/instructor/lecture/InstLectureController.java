@@ -74,6 +74,7 @@ public class InstLectureController {
 
 
 	// 등록/수정 폼 이동 (lectId 유무로 판단)
+	// 현재 사용 안함.
 	@GetMapping("/manage")
 	public String lectureForm(@RequestParam(required = false) String lectId, Model model, HttpSession session) {
 		if (lectId != null && !lectId.isEmpty()) {
@@ -88,6 +89,7 @@ public class InstLectureController {
 		}
 
 		// 카테고리 목록 조회
+		model.addAttribute("imgPath", imgPath);
 		model.addAttribute("categoryList", commonService.getAllCategories());
 		model.addAttribute("existingSkills", commonService.getAllSkills());
 
@@ -146,10 +148,11 @@ public class InstLectureController {
 	    model.addAttribute("chapterList", chapterList);
 		model.addAttribute("imgPath", imgPath);
 		
-	    return "instructor/lecture/instlectureDetail"; // 기존 등록 폼 재사용
+	    return "instructor/lecture/instlectureDetail"; // 복사해온 관리자와 동일한 폼으로 이동
 	}
 	
 	// 수정 폼 열기
+	// 원래 상세보기와 수정을 같은 view에서 처리하려고 했지만 관리자 폼을 상세로 쓰기로 함.
 	@GetMapping("/edit")
 	public String editForm(@RequestParam String lectId, Model model) {
 	    InstLectureDTO ldto = ls.getLectureDetail(lectId);
@@ -158,6 +161,7 @@ public class InstLectureController {
 	    model.addAttribute("isDetail", false); // 수정 모드이므로 false
 	    model.addAttribute("categoryList", commonService.getAllCategories());
 	    model.addAttribute("existingSkills", commonService.getAllSkills());
+		model.addAttribute("imgPath", imgPath);
 	    
 	    return "instructor/lecture/lectureForm";
 	}
@@ -166,12 +170,15 @@ public class InstLectureController {
 	@PostMapping("/modify")
 	public String modifyLecture(InstLectureDTO ldto, @RequestParam("thumbFile") MultipartFile thumbFile, HttpServletRequest request) {
 	    
-	    // 1. 신규 파일이 업로드되었다면 처리
-	    String newThumbnail = ls.uploadThumbnail(thumbFile);
-	    if (newThumbnail != null) {
-	        ldto.setThumbnail(newThumbnail); // 신규 파일명으로 교체
-	    }
-	    
+		if(!thumbFile.isEmpty()) {
+			 //신규 파일이 업로드되었다면 처리
+			String newThumbnail = ls.uploadThumbnail(thumbFile);
+			ldto.setThumbnail(newThumbnail); // 신규 파일명으로 교체
+		}else {
+			//신규 파일이 없으면 아예 null로 해서 mybatis에서 제외하게 함.
+			ldto.setThumbnail(null);
+		}
+	   
 	    ldto.setRegip(request.getRemoteAddr());
 	    
 	    // 2. 서비스 호출

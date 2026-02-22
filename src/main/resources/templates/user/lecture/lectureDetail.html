@@ -2,8 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <title>Insert title here</title>
-
+    <title th:text="${allDetail.detail.name}">강의 상세정보</title>
+    <link rel="stylesheet" th:href="@{/css/user/lectureDetail.css}" />
     <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
 
     <style type="text/css">
@@ -34,11 +34,37 @@
     <!--JS 실습 파트-->
     <script type="text/javascript">
       $(function () {}); //document.ready
+      /**
+      * 장바구니 담기 AJAX (기본 알림창 방식)
+      */
+     function addToCart(lectId) {
+         $.ajax({
+             url: '/user/payment/ajaxAddToCart',
+             type: 'POST',
+             data: { lectId: lectId },
+             success: function (res) {
+                 if (res === 'success') {
+                     if (confirm('장바구니에 담겼습니다! 🛒\n장바구니 페이지로 이동하시겠습니까?')) {
+                         location.href = '/user/payment/searchMyCart';
+                     }
+                 } else if (res === 'duplicate') {
+                     alert('이미 장바구니에 담긴 강의입니다.');
+                 } else if (res === 'login_required') {
+                     if (confirm('로그인이 필요한 서비스입니다.\n로그인 페이지로 이동할까요?')) {
+                         location.href = '/common/member/loginFrm';
+                     }
+                 }
+             },
+             error: function () {
+                 alert('오류가 발생했습니다. 다시 시도해주세요.');
+             }
+         });
+     }
     </script>
   </head>
   <body>
     <div id="header">
-      <th:block th:replace="~{fragments/header :: header}" />
+      <th:block th:replace="~{fragments/MyHeader :: header}" />
     </div>
     <div id="wrap">
       <div class="container mt-5">
@@ -46,25 +72,57 @@
           <div class="col-md-4">
             <img
               th:src="|${imgPath}*{thumbnail}|"
+              onerror="this.src = '/common/images/default.png'"
               class="img-fluid"
               alt="강의 썸네일"
             />
           </div>
           <div class="col-md-8">
-            <h2 th:text="*{name}">강의 제목</h2>
-            <p class="lead" th:text="*{shortint}">짧은 소개글</p>
-            <div class="mb-3">
-              <span class="badge bg-primary" th:text="|*{count}개의 강의|"
-                >0강</span
-              >
-              <span class="badge bg-info" th:text="|총 *{length}분|">0분</span>
-              <span
-                class="ms-3 fw-bold"
-                th:text="|*{#numbers.formatInteger(price, 3, 'COMMA')}원|"
-                >가격</span
-              >
+            <div
+              class="badge bg-emerald-100 text-emerald-700 px-3 py-2 rounded-pill mb-3"
+              style="
+                background-color: #ecfdf5;
+                color: #059669;
+                font-weight: 700;
+              "
+            >
+              <i data-lucide="tag" class="w-3 h-3 d-inline-block me-1"></i>
+              <span th:text="*{catName}">카테고리명</span>
             </div>
-            <button class="btn btn-success btn-lg">수강 신청하기</button>
+
+            <h2 th:text="*{name}">강의명</h2>
+            <p class="text-muted mb-4" th:text="*{shortint}">강의 한 줄 소개</p>
+
+            <div class="skill-tags mb-4">
+              <span
+                th:each="skill : ${skillList}"
+                th:text="${skill}"
+                class="badge border me-2 py-2 px-3 text-secondary"
+                style="border-radius: 8px; font-weight: 500; background: #fff"
+              >
+                Java
+              </span>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+              <h3
+                class="text-primary mb-0"
+                th:text="*{price == 0 ? '무료' : #numbers.formatInteger(price, 3, 'COMMA') + '원'}"
+              >
+                가격
+              </h3>
+            </div>
+
+			<div class="mt-4 d-flex justify-content-start">
+    <button type="button" 
+            th:onclick="addToCart([[${allDetail.detail.lectId}]])"
+            class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2"
+            style="width: 50%; height: 54px; font-weight: 800;">
+        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+        <span>장바구니 담기</span>
+    </button>
+</div>
+
           </div>
         </div>
 

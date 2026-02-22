@@ -130,15 +130,18 @@ INSERT INTO RELATIVE_SKILL (SKILL_ID, NAME, LECT_ID)
 	<!--강의 수정-->
 	<update id="updateLecture" parameterType="instLectureDTO">
 	    UPDATE LECTURE
-	    SET    NAME = #{name},
-	           SHORTINT = #{shortint},
-	           INTRO = #{intro},
-	           CAT_ID = #{catId},
-	           PRICE = #{price},
-	           <if test="thumbnail != null and thumbnail != ''">
-	           THUMBNAIL = #{thumbnail},
-	           </if>
-	           APPROVAL = 2, REGIP = #{regip}
+			<set>
+			        NAME = #{name},
+			        SHORTINT = #{shortint},
+			        INTRO = #{intro},
+			        CAT_ID = #{catId},
+			        PRICE = #{price},
+			        <if test="thumbnail != null and thumbnail != ''">
+			            THUMBNAIL = #{thumbnail},
+			        </if>
+			        APPROVAL = 2, 
+			        REGIP = #{regip}
+			 </set>
 	    WHERE  LECT_ID = #{lectId}
 	</update>
 	

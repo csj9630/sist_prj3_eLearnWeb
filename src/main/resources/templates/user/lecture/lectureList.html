@@ -2,57 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
-    <title>Insert title here</title>
+    <title>강의 목록</title>
 
     <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
-
-    <style type="text/css">
-      #wrap {
-        margin: 0px auto;
-        width: 1200px;
-        height: 1000px;
-      }
-
-      #header {
-        height: 150px;
-      }
-
-      #container {
-        height: 700px;
-      }
-
-      #footer {
-        height: 150px;
-      }
-
-      .thumb {
-        width: 80%;
-        border-radius: 5px;
-      }
-
-      .course-card {
-        transition: transform 0.2s ease-in-out;
-        cursor: pointer;
-      }
-
-      .course-card:hover {
-        transform: translateY(-5px); /* 호버 시 살짝 들리는 효과 */
-      }
-
-      .thumb-img {
-        aspect-ratio: 16/10; /* 썸네일 비율 고정 */
-        object-fit: cover;
-        border-radius: 8px;
-      }
-
-      .text-truncate {
-        display: -webkit-box;
-        -webkit-line-clamp: 2; /* 제목 두 줄 넘어가면 말줄임 */
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        white-space: normal;
-      }
-    </style>
+	<link rel="stylesheet" th:href="@{/css/user/lectureList.css}">
+    
 
     <!--JS 실습 파트-->
     <script type="text/javascript">
@@ -61,7 +15,7 @@
   </head>
   <body>
     <div id="header">
-      <th:block th:replace="~{fragments/header :: header}" />
+      <th:block th:replace="~{fragments/MyHeader :: header}" />
     </div>
     <div id="wrap">
       <div id="container" class="container">

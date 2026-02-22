@@ -57,6 +57,7 @@
             height: 300,
             lang: "ko-KR",
             placeholder: "강의 내용을 입력하세요."
+        
           });
 
           // 상세 보기일 경우 Summernote 비활성화
@@ -241,12 +242,15 @@
           <div th:if="${ldto?.thumbnail != null}" style="margin-bottom: 10px">
             <img
               th:src="|${imgPath}${ldto.thumbnail}|"
+              onerror="this.src = '/common/images/default.png'"
               style="
                 max-width: 200px;
                 border-radius: 4px;
                 display: block;
                 margin-bottom: 5px;
               "
+
+
             />
             <p>파일명: <span th:text="${ldto.thumbnail}"></span></p>
           </div>
