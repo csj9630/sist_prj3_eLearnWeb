@@ -72,9 +72,6 @@ public class AdminLectureController {
 		model.addAttribute("categoryList", category);
 		model.addAttribute("lectByCategory", lectureByCategory);
 		model.addAttribute("profileUploadPath", profileUploadPath);
-
-		//헤더에 사용할 페이지명
-		model.addAttribute("pageTitle", "교육 과목 관리");
 		model.addAttribute("currentUri", req.getRequestURI());
 		return "admin/lecture/searchAllLect";
 	}
@@ -148,8 +145,6 @@ public class AdminLectureController {
 		model.addAttribute("alsDTO", alsDTO);
 		model.addAttribute("notApprLectList", notApprLectureList);
 		model.addAttribute("categoryList", category);
-		//헤더에 사용할 페이지명
-		model.addAttribute("pageTitle", "강의 관리");
 		model.addAttribute("currentUri", req.getRequestURI());
 		model.addAttribute("profileUploadPath", profileUploadPath);
 		
