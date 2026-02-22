@@ -25,7 +25,7 @@ public class InstructorDashBoardController {
 		int ScoreReview=idbs.getTotalScoreReview(instId);
 		int userCnt=idbs.getTotalCountUser(instId);
 		int instProfit=idbs.getTotalProfitInst(instId);
-		
+		 
 		model.addAttribute("lectCnt", lectCnt);
 		model.addAttribute("ScoreReview", ScoreReview);
 		model.addAttribute("userCnt", userCnt);
