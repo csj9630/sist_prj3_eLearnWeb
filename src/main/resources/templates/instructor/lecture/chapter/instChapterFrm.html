@@ -90,6 +90,11 @@
           >
             + 새 챕터 추가
           </button>
+          <a th:href="@{/instructor/lecture/detail(lectId=${lectId})}" 
+		       class="btn btn-sm btn-outline-secondary" 
+		       style="border-radius: 8px; padding: 6px 15px; font-weight: 500; font-size: 0.85rem;">
+		      <i class="fas fa-arrow-left me-1"></i> 강의 상세로
+		    </a>
         </div>
 
         <div class="list-group chapter-list" id="chapterListArea"></div>
@@ -97,6 +102,7 @@
 
       <div class="view-card">
         <h3 class="section-title" id="formTitle">새 챕터 추가</h3>
+        
 
         <form id="chapterForm" enctype="multipart/form-data">
           <input
