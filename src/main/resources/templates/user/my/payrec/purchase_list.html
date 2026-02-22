@@ -44,9 +44,11 @@
 			            <th:block th:each="pay : ${purchaseList}">
 			                <tr>
 			                    <td class="td-thumb">
-			                        <img th:src="${pay.lectThumbnail}" 
-			                             onerror="this.src='https://via.placeholder.com/120x75?text=Inflearn'"
-			                             alt="강의 썸네일">
+			                        <img
+									 th:src="|${imgPath}${pay.lectThumbnail}|"
+									 alt="썸네일"
+									 onerror="this.src = '/common/images/default.png'"
+									 />
 			                    </td>
 			                    <td class="td-name" th:text="${pay.lectName}">강의 제목</td>
 			                    <td th:text="${pay.instName}">강사명</td>
