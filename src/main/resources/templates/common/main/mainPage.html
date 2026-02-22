@@ -149,10 +149,10 @@
                 <div class="swiper-wrapper">
 
                     <!-- No Top Course Data -->
-                    <div class="swiper-slide relative bg-slate-900" th:if="${#lists.isEmpty(topCourses)}">
-                        <div class="max-w-screen-xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
-                            <div class="max-w-2xl">
-                                <span
+                <div class="swiper-slide relative bg-slate-900" th:if="${#lists.isEmpty(topCourses)}">
+                    <div class="max-w-screen-xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
+                        <div class="max-w-2xl">
+                            <span
                                     class="bg-emerald-500 text-white text-[11px] font-bold px-2 py-1 rounded mb-4 inline-block tracking-wide">EVENT</span>
                                 <h1 class="text-3xl md:text-5xl text-white font-bold mb-4 leading-tight">
                                     수강생 TOP 3가 준비 중입니다
@@ -219,11 +219,11 @@
                             class="absolute bottom-0 right-20 w-96 h-96 bg-pink-500 rounded-full opacity-20 blur-[100px] pointer-events-none">
                         </div>
                     </div>
-                    <div class="swiper-pagination"></div>
-                    <!-- Navigation Arrows (Hidden on mobile) -->
-                    <div class="swiper-button-next hidden md:block"></div>
-                    <div class="swiper-button-prev hidden md:block"></div>
                 </div>
+                <div class="swiper-pagination"></div>
+                <!-- Navigation Arrows (Hidden on mobile) -->
+                <div class="swiper-button-next hidden md:block"></div>
+                <div class="swiper-button-prev hidden md:block"></div>
             </div>
         </div>
 
@@ -710,25 +710,26 @@
             const sortToggle = document.getElementById('sort-toggle-btn');
             const sortMenu = document.getElementById('sort-menu');
             const sortLabel = document.getElementById('sort-label');
-
-            sortToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                sortMenu.classList.toggle('hidden');
-            });
-
-            document.querySelectorAll('.sort-option').forEach(opt => {
-                opt.addEventListener('click', () => {
-                    sortLabel.textContent = opt.textContent;
-                    // Highlight selected sort option
-                    document.querySelectorAll('.sort-option').forEach(o => {
-                        o.classList.remove('text-gray-900', 'font-bold');
-                        o.classList.add('text-gray-600');
-                    });
-                    opt.classList.add('text-gray-900', 'font-bold');
-                    opt.classList.remove('text-gray-600');
-                    sortMenu.classList.add('hidden');
+            if (sortToggle && sortMenu && sortLabel) {
+                sortToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    sortMenu.classList.toggle('hidden');
                 });
-            });
+
+                document.querySelectorAll('.sort-option').forEach(opt => {
+                    opt.addEventListener('click', () => {
+                        sortLabel.textContent = opt.textContent;
+                        // Highlight selected sort option
+                        document.querySelectorAll('.sort-option').forEach(o => {
+                            o.classList.remove('text-gray-900', 'font-bold');
+                            o.classList.add('text-gray-600');
+                        });
+                        opt.classList.add('text-gray-900', 'font-bold');
+                        opt.classList.remove('text-gray-600');
+                        sortMenu.classList.add('hidden');
+                    });
+                });
+            }
 
             // Close sort menu when clicking outside
             document.addEventListener('click', () => {
