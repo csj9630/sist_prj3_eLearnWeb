@@ -291,7 +291,7 @@
                     class="btn"
                     th:onclick="changeAvailability([[*{lectId}]], [[*{availability}]])"
                     style="font-size: 12px; padding: 5px 10px"
-                    th:text="*{availability == 1} ? '비공개하기' : '공개하기'"
+                    th:text="*{availability == 1} ? '비공개' : '공개'"
                     th:classappend="*{availability == 1} ? 'btn-danger' : 'btn--primary'"
                   >
                     공개 설정
