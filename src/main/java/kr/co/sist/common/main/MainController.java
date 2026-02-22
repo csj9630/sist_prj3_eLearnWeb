@@ -17,7 +17,7 @@ public class MainController {
     @Autowired
     private CommonMainService cms;
 
-    @GetMapping("/main")
+    @GetMapping("/")
     public String main(HttpSession session, HttpServletRequest request, Model model) {
         List<CommonMainDomain> categories = cms.getCategoryList();
         List<CommonMainDomain> courses = cms.getCourseList();
