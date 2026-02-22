@@ -22,7 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <style>
-        /* 기본 폰트 및 스타일 */
+        /* 기본 폰트 */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
@@ -74,7 +74,7 @@
             animation: fadeIn 0.3s ease-out forwards;
         }
 
-        /* ===== 토스트 알림 ===== */
+        /* ===== Toast ===== */
         #toast-container {
             position: fixed;
             bottom: 24px;
@@ -148,24 +148,25 @@
             <div class="swiper mySwiper h-[320px] md:h-[380px]">
                 <div class="swiper-wrapper">
 
-                    <!-- Slide 1 -->
-                    <div class="swiper-slide relative bg-slate-900">
-                        <!-- max-w-screen-xl mx-auto 로 콘텐츠 중앙 정렬 -->
+                    <!-- No Top Course Data -->
+                    <div class="swiper-slide relative bg-slate-900" th:if="${#lists.isEmpty(topCourses)}">
                         <div class="max-w-screen-xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
                             <div class="max-w-2xl">
                                 <span
                                     class="bg-emerald-500 text-white text-[11px] font-bold px-2 py-1 rounded mb-4 inline-block tracking-wide">EVENT</span>
                                 <h1 class="text-3xl md:text-5xl text-white font-bold mb-4 leading-tight">
-                                    2026년,<br>당신의 성장을 응원합니다.
+                                    수강생 TOP 3가 준비 중입니다
                                 </h1>
                                 <p class="text-gray-300 mb-8 text-base md:text-lg">
-                                    최고의 강사진과 함께하는 실전 중심의 커리큘럼.<br>
+                                    최고의 강사진과 함께하는 실전 중심 커리큘럼.<br>
                                     지금 시작하면 수강료 최대 30% 할인 혜택까지!
                                 </p>
-                                <button
-                                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded transition-colors text-sm md:text-base">
-                                    강의 보러가기
-                                </button>
+                                <a href="/user/lecture/lectureList">
+                                    <button
+                                        class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded transition-colors text-sm md:text-base">
+                                        강의 보러가기
+                                    </button>
+                                </a>
                             </div>
                         </div>
                         <div
@@ -173,94 +174,70 @@
                         </div>
                     </div>
 
-                    <!-- Slide 2 -->
-                    <div class="swiper-slide relative bg-[#1e1b4b]"> <!-- Indigo-950 -->
-                        <div class="max-w-screen-xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
+                    <!-- Hero Slides: Top3 by student count -->
+                    <div class="swiper-slide relative" th:each="course, stat : ${topCourses}"
+                        th:classappend="${stat.index == 0 ? 'bg-slate-900' : (stat.index == 1 ? 'bg-[#1e1b4b]' : 'bg-gray-800')}">
+                        <div
+                            class="max-w-screen-xl mx-auto px-4 h-full flex flex-col md:flex-row md:items-center md:justify-between relative z-10 gap-6">
                             <div class="max-w-2xl">
-                                <span
-                                    class="bg-yellow-400 text-indigo-900 text-[11px] font-bold px-2 py-1 rounded mb-4 inline-block tracking-wide">NEW
-                                    CLASS</span>
-                                <h1 class="text-3xl md:text-5xl text-white font-bold mb-4 leading-tight">
-                                    GPT-5와 함께하는<br>AI 앱 개발 마스터
+                                <span class="text-[11px] font-bold px-2 py-1 rounded mb-4 inline-block tracking-wide"
+                                    th:classappend="${stat.index == 0 ? 'bg-emerald-500 text-white' : (stat.index == 1 ? 'bg-yellow-400 text-indigo-900' : 'bg-blue-500 text-white')}"
+                                    th:text="${'TOP ' + (stat.index + 1)}">
+                                </span>
+                                <h1 class="text-3xl md:text-5xl text-white font-bold mb-4 leading-tight"
+                                    th:text="${course.title}">
                                 </h1>
-                                <p class="text-indigo-200 mb-8 text-base md:text-lg">
-                                    프롬프트 엔지니어링부터 API 연동까지.<br>
-                                    나만의 AI 서비스를 직접 만들어보세요.
+                                <p class="text-gray-300 mb-8 text-base md:text-lg" th:text="${course.shortint}">
                                 </p>
-                                <button
-                                    class="bg-white hover:bg-gray-100 text-indigo-900 font-bold py-3 px-8 rounded transition-colors text-sm md:text-base">
-                                    자세히 보기
-                                </button>
+                                <a th:href="|/user/lecture/detail?lectId=${course.lectId}|">
+                                    <button class="font-bold py-3 px-8 rounded transition-colors text-sm md:text-base"
+                                        th:classappend="${stat.index == 0 ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : (stat.index == 1 ? 'bg-white hover:bg-gray-100 text-indigo-900' : 'bg-blue-600 hover:bg-blue-700 text-white')}">
+                                        강의 보기
+                                    </button>
+                                </a>
+                                <p class="text-sm text-gray-100 mt-3">
+                                    강사: <span th:text="${course.instructor}"></span> |
+                                    수강생: <span th:text="${course.usercount}"></span>명
+                                </p>
+                            </div>
+                            <div class="w-full md:w-80 lg:w-96">
+                                <div
+                                    class="relative overflow-hidden rounded-3xl border border-white/20 bg-white/5 shadow-2xl h-[180px] md:h-[210px]">
+                                    <img class="w-full h-full object-cover" th:src="${course.thumbnail}"
+                                        th:alt="${course.title + ' thumbnail'}"
+                                        onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden')">
+                                    <div class="absolute inset-0 hidden items-center justify-center bg-white/10">
+                                        <i data-lucide="image" class="w-12 h-12 text-white/70"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div
+                        <div th:if="${stat.index == 0}"
+                            class="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500 rounded-full opacity-10 translate-x-1/4 -translate-y-1/4 blur-3xl pointer-events-none">
+                        </div>
+                        <div th:if="${stat.index == 1}"
                             class="absolute bottom-0 right-20 w-96 h-96 bg-pink-500 rounded-full opacity-20 blur-[100px] pointer-events-none">
                         </div>
                     </div>
-
-                    <!-- Slide 3 -->
-                    <div class="swiper-slide relative bg-gray-800">
-                        <div class="max-w-screen-xl mx-auto px-4 h-full flex flex-col justify-center relative z-10">
-                            <div class="max-w-2xl">
-                                <span
-                                    class="bg-blue-500 text-white text-[11px] font-bold px-2 py-1 rounded mb-4 inline-block tracking-wide">CAREER</span>
-                                <h1 class="text-3xl md:text-5xl text-white font-bold mb-4 leading-tight">
-                                    비전공자를 위한<br>IT 취업 가이드북
-                                </h1>
-                                <p class="text-gray-400 mb-8 text-base md:text-lg">
-                                    현직자 100명이 말하는 리얼한 취업 성공기.<br>
-                                    지금 가입하고 무료로 받아보세요.
-                                </p>
-                                <button
-                                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded transition-colors text-sm md:text-base">
-                                    가이드북 받기
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
+                    <div class="swiper-pagination"></div>
+                    <!-- Navigation Arrows (Hidden on mobile) -->
+                    <div class="swiper-button-next hidden md:block"></div>
+                    <div class="swiper-button-prev hidden md:block"></div>
                 </div>
-                <div class="swiper-pagination"></div>
-                <!-- Navigation Arrows (Hidden on mobile) -->
-                <div class="swiper-button-next hidden md:block"></div>
-                <div class="swiper-button-prev hidden md:block"></div>
             </div>
         </div>
 
-        <!-- Main Content: max-w-screen-xl 적용으로 넓은 레이아웃 -->
+        <!-- Main Content -->
         <div class="max-w-screen-xl mx-auto px-4 py-12">
 
-            <!-- Category Filter (한줄 아이콘 레이아웃) + 정렬 드롭다운 -->
+            <!-- Category Filter (chips + sort dropdown) -->
             <div class="relative py-4 mb-6 border-b border-gray-200">
-                <!-- 카테고리 버튼 영역 -->
+                <!-- Category tabs generated by script -->
                 <div id="category-container" class="flex items-center justify-center gap-1 overflow-x-auto">
                     <!-- Javascript will populate this -->
                 </div>
-
-                <!-- 정렬 드롭다운 (우상단) -->
-                <div class="absolute top-3 right-0" style="z-index:10;">
-                    <div id="sort-dropdown" class="relative">
-                        <button id="sort-toggle-btn"
-                            class="flex items-center gap-1 text-sm text-gray-600 font-medium hover:text-gray-900 transition-colors cursor-pointer px-2 py-1">
-                            <span id="sort-label">추천순</span>
-                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                        </button>
-                        <div id="sort-menu"
-                            class="hidden absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 min-w-[100px]">
-                            <button
-                                class="sort-option w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-900 font-bold"
-                                data-sort="recommend">추천순</button>
-                            <button
-                                class="sort-option w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-600"
-                                data-sort="latest">최신순</button>
-                            <button
-                                class="sort-option w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-gray-600"
-                                data-sort="rating">평점순</button>
-                        </div>
-                    </div>
-                </div>
             </div>
-            <!-- course-count는 숨기되 JS 오류 방지용으로 유지 -->
+            <!-- course-count (used by JS) -->
             <span id="course-count" class="hidden">0</span>
 
             <!-- Course Grid -->
@@ -287,17 +264,17 @@
                     <i data-lucide="search" class="text-gray-400 w-8 h-8"></i>
                 </div>
                 <p class="text-gray-900 font-bold mb-1">검색 결과가 없습니다.</p>
-                <p class="text-gray-500 text-sm mb-6">다른 키워드로 검색해보거나 필터를 변경해보세요.</p>
+                <p class="text-gray-500 text-sm mb-6">원하는 조건으로 다시 검색해 보세요.</p>
                 <button id="reset-search-btn"
                     class="text-white bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-lg font-bold text-sm transition-colors">
-                    전체 강의 보기
+                    초기화
                 </button>
             </div>
         </div>
 
     </main>
 
-    <!-- 토스트 알림 컨테이너 -->
+    <!-- Toast / Scroll Top controls -->
     <div id="toast-container"></div>
     <button id="scroll-top-btn"
         class="fixed bottom-8 right-8 z-50 hidden w-12 h-12 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center">
@@ -314,8 +291,7 @@
                         <span class="text-xl font-bold text-gray-900">IntLearn</span>
                     </a>
                     <p class="leading-relaxed mb-4">
-                        우리는 모두의 성장을 믿습니다.<br>
-                        지식의 공유를 통해 더 나은 세상을 만들어갑니다.
+                        실력 있는 강사진과 실무형 커리큘럼을 제공합니다.
                     </p>
                     <div class="flex gap-4 mt-6">
                         <a href="#" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><i
@@ -327,43 +303,42 @@
                     </div>
                 </div>
                 <div>
-                    <h5 class="font-bold text-gray-900 mb-6 text-base">인런 소개</h5>
+                    <h5 class="font-bold text-gray-900 mb-6 text-base">카테고리</h5>
                     <ul class="space-y-3">
-                        <li><a href="#" class="hover:text-emerald-600 transition-colors">인런 문화</a></li>
-                        <li><a href="#" class="hover:text-emerald-600 transition-colors">채용 공고</a></li>
-                        <li><a href="#" class="hover:text-emerald-600 transition-colors">파트너 안내</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">개발</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">데이터베이스</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">클라우드</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h5 class="font-bold text-gray-900 mb-6 text-base">고객 지원</h5>
+                    <h5 class="font-bold text-gray-900 mb-6 text-base">지원</h5>
                     <ul class="space-y-3">
-                        <li><a href="#" class="hover:text-emerald-600 transition-colors">자주 묻는 질문</a></li>
-                        <li><a href="#" class="hover:text-emerald-600 transition-colors">수강신청 문의</a></li>
-                        <li><a href="#" class="hover:text-emerald-600 transition-colors">기업 교육 문의</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">공지사항</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">문의하기</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">이용가이드</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h5 class="font-bold text-gray-900 mb-6 text-base">크리에이터</h5>
+                    <h5 class="font-bold text-gray-900 mb-6 text-base">정책</h5>
                     <ul class="space-y-3">
-                        <li><a href="#" class="hover:text-emerald-600 transition-colors">지식공유자 지원</a></li>
-                        <li><a href="#" class="hover:text-emerald-600 transition-colors">강사 가이드</a></li>
-                        <li><a href="#" class="hover:text-emerald-600 transition-colors">스튜디오 대관</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">이용약관</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">결제 정책</a></li>
+                        <li><a href="#" class="hover:text-emerald-600 transition-colors">개인정보 처리방침</a></li>
                     </ul>
                 </div>
             </div>
             <div class="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p>© 2026 IntLearn Inc. All Rights Reserved.</p>
                 <div class="flex gap-6">
-                    <a href="#" class="hover:text-gray-900 transition-colors">이용약관</a>
-                    <a href="#" class="font-bold text-gray-900 hover:text-emerald-600 transition-colors">개인정보처리방침</a>
+                    <a href="#" class="hover:text-gray-900 transition-colors">고객센터</a>
+                    <a href="#" class="font-bold text-gray-900 hover:text-emerald-600 transition-colors">이용안내</a>
                 </div>
             </div>
-        </div>
     </footer>
 
     <!-- JavaScript Logic -->
     <script th:inline="javascript">
-        // --- Data (서버에서 주입) ---
+        // --- Data (from server) ---
         const CATEGORIES = [{ id: 'all', name: '전체' }];
         /*[# th:each="cat : ${categories}"]*/
         CATEGORIES.push({ id: [[${ cat.catId }]], name: [[${ cat.catName }]] });
@@ -421,18 +396,18 @@
         };
 
         // --- Render Functions ---
-        /* 카테고리별 Lucide 아이콘 매핑 */
+        // --- Lucide category icons ---
         const CATEGORY_ICONS = {
             '전체': 'layout-grid',
+            '개발': 'code-2',
+            '백엔드': 'server',
+            '프론트엔드': 'palette',
             '데이터베이스': 'database',
-            '교양': 'book-open',
-            '웹 프로그래밍': 'globe',
-            '인공지능': 'bot',
-            '모바일 앱': 'smartphone',
-            '게임 개발': 'gamepad-2',
-            '보안': 'shield-check',
-            '데이터 분석': 'pie-chart',
             '클라우드': 'cloud',
+            '모바일': 'smartphone',
+            '게임': 'gamepad-2',
+            '보안': 'shield-check',
+            '데이터 분석': 'bar-chart',
             '디자인': 'figma'
         };
 
@@ -442,14 +417,14 @@
                 const btn = document.createElement('button');
                 const isActive = state.activeCategory === cat.id;
 
-                /* 한줄 배치용 컴팩트 스타일 */
+                // Category button style
                 const baseClasses = "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 select-none whitespace-nowrap min-w-[72px]";
                 const activeClasses = "text-emerald-600 font-bold border-b-2 border-emerald-600";
                 const inactiveClasses = "text-gray-500 hover:text-gray-900";
 
                 btn.className = `${baseClasses} ${isActive ? activeClasses : inactiveClasses}`;
 
-                /* 아이콘 + 텍스트 구조 */
+                // Icon fallback mapping
                 const iconName = CATEGORY_ICONS[cat.name] || 'layers';
                 btn.innerHTML = `<i data-lucide="${iconName}" class="w-5 h-5 mb-0.5"></i><span>${cat.name}</span>`;
 
@@ -510,10 +485,10 @@
                 noResults.classList.add('hidden');
 
                 visibleData.forEach(course => {
-                    const priceText = course.price === 0 ? '무료' : `₩${formatPrice(course.price)}`;
+                    const priceText = course.price === 0 ? '무료' : `${formatPrice(course.price)}`;
                     const priceColor = course.price === 0 ? 'text-emerald-600' : 'text-gray-900';
                     const categoryName = CATEGORIES.find(c => c.id === course.category)?.name || '';
-                    // 썸네일 이미지가 있으면 img 태그, 없으면 기본 아이콘 표시
+                    // Thumbnail fallback: show placeholder when image missing
                     const thumbHTML = course.thumbnail && course.thumbnail !== '/common/images/lecture_thumbs/'
                         ? `<img src="${course.thumbnail}" alt="${course.title}" class="w-full h-full object-cover" onerror="this.parentNode.innerHTML='<i data-lucide=\'book-open\' class=\'text-gray-900 opacity-20 w-20 h-20\'></i>'; lucide.createIcons();">`
                         : `<i data-lucide="book-open" class="text-gray-900 opacity-20 w-20 h-20"></i>`;
@@ -545,7 +520,7 @@
                                         <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
                                             <span class="px-2 py-0.5 bg-gray-100 rounded font-bold text-gray-700">${categoryName}</span>
                                             <span>수강생 ${course.usercount}명</span>
-                                        </div>
+                                     </div>
                                     </div>
 
                                     <p class="text-sm text-gray-600 leading-relaxed">
@@ -566,10 +541,10 @@
                 });
 
                 document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => { //이벤트리스너 추가
-                        e.preventDefault();//장바구니클릭시 이동막기 
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
                         e.stopPropagation();
-                        // data-id 속성에서 강의 ID 가져와서 AJAX 장바구니 담기 호출
+                        // AJAX add-to-cart with data-id
                         const lectId = btn.getAttribute('data-id');
                         addToCart(lectId);
                     });
@@ -651,8 +626,8 @@
         };
 
         /**
-         * 토스트 알림 표시 함수
-         * @param {string} message - 표시할 메시지
+         * Show toast popup
+         * @param {string} message
          * @param {string} type - 'success' | 'warn' | 'error'
          */
         const showToast = (message, type = 'success') => {
@@ -660,12 +635,12 @@
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
 
-            // 타입별 아이콘
-            const icons = { success: '✓', warn: '!', error: '✕' };
+            // Toast icons
+            const icons = { success: '✔', warn: '!', error: '⚠' };
             toast.innerHTML = `<span style="font-size:16px;font-weight:bold;">${icons[type] || '!'}</span><span>${message}</span>`;
             container.appendChild(toast);
 
-            // 2.5초 후 제거
+            // Hide toast after 2.5 seconds
             setTimeout(() => {
                 toast.style.animation = 'slideOutRight 0.3s ease-in forwards';
                 setTimeout(() => toast.remove(), 300);
@@ -673,7 +648,7 @@
         };
 
         /**
-         * AJAX 장바구니 담기
+         * AJAX 요청
          * @param {string} lectId - 강의 ID
          */
         const addToCart = (lectId) => {
@@ -683,7 +658,6 @@
                 data: { lectId: lectId },
                 success: function (res) {
                     if (res === 'success') {
-                        // 배지 카운트 증가 및 애니메이션
                         state.cartCount++;
                         cartBadge.textContent = state.cartCount;
                         cartBadge.classList.remove('hidden');
@@ -691,21 +665,19 @@
                         cartBadge.classList.add('scale-125');
                         setTimeout(() => cartBadge.classList.remove('scale-125'), 200);
 
-                        showToast('장바구니에 담겼습니다! 🛒', 'success');
-
-                    } else if (res === 'duplicate') {
-                        // 이미 장바구니에 담긴 강의
-                        showToast('이미 장바구니에 담긴 강의입니다.', 'warn');
-
+                        showToast('강의가 장바구니에 담겼습니다.', 'success');
+                    } else if (res === 'already_in_cart') {
+                        showToast('이미 담긴 강의입니다.', 'warn');
                     } else if (res === 'login_required') {
-                        // 로그인 필요
-                        if (confirm('로그인이 필요한 서비스입니다.\n로그인 페이지로 이동할까요?')) {
-                            location.href = '/common/member/loginFrm';
+                        if (confirm('로그인이 필요합니다.\n로그인 페이지로 이동할까요?')) {
+                            window.location.href = '/user/login';
                         }
+                    } else {
+                        showToast('요청 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', 'error');
                     }
                 },
                 error: function () {
-                    showToast('오류가 발생했습니다. 다시 시도해주세요.', 'error');
+                    showToast('요청 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', 'error');
                 }
             });
         };
@@ -734,7 +706,7 @@
             renderCourses();
             setupIntersectionObserver();
 
-            /* 정렬 드롭다운 이벤트 */
+            /* Sort dropdown events */
             const sortToggle = document.getElementById('sort-toggle-btn');
             const sortMenu = document.getElementById('sort-menu');
             const sortLabel = document.getElementById('sort-label');
@@ -747,7 +719,7 @@
             document.querySelectorAll('.sort-option').forEach(opt => {
                 opt.addEventListener('click', () => {
                     sortLabel.textContent = opt.textContent;
-                    /* 선택된 항목 스타일 변경 */
+                    // Highlight selected sort option
                     document.querySelectorAll('.sort-option').forEach(o => {
                         o.classList.remove('text-gray-900', 'font-bold');
                         o.classList.add('text-gray-600');
@@ -758,7 +730,7 @@
                 });
             });
 
-            /* 외부 클릭 시 드롭다운 닫기 */
+            // Close sort menu when clicking outside
             document.addEventListener('click', () => {
                 sortMenu.classList.add('hidden');
             });
@@ -773,7 +745,7 @@
             });
             lucide.createIcons();
 
-            // Scroll to Top 버튼
+            // Scroll to top button toggle
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 300) {
                     scrollTopBtn.classList.remove('hidden');
