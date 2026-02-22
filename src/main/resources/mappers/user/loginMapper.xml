@@ -9,7 +9,7 @@
 <select id="selectOneUserInfo" parameterType="String" resultType="UserDomain">
 select USER_ID as id, NAME, EMAIL, PASSWORD, PHONE, INTRO, PROFILE as img, BIRTH, ACTIVATION
 from USERS
-where USER_ID=#{id}
+where USER_ID=#{id} and ACTIVATION=1
 </select>
 
 </mapper>
