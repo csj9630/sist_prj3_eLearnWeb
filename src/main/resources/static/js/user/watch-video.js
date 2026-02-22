@@ -111,7 +111,7 @@
         videoData = jsonArr[currentIndex]; //index로 videoJson을 전역 저장.
         maxTime = videoData.actualTime || 0; //DB값 로드 :실제 시청시간, 없으면 0
         updateRowHighlight(currentIndex); //목록에서 현재 영상 하이라이트.
-		if(confirm("시청이 완료된 강의입니다. 처음부터 시청하시겠습니까?")){
+		if(videoData.state == 2  && confirm("시청이 완료된 강의입니다. 처음부터 시청하시겠습니까?")){
 				videoData.progTime=0;
 			}
 			document.title = videoData.title; //브라우저 제목 변경
