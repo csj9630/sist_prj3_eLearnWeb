@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<th:block th:replace = "~{//fragments/cdn :: cdn}"/>
+<th:block th:replace = "~{fragments/cdn :: cdn}"/>
 <style type = "text/css">
 #wrap {margin: 0px auto; width: 1000px; height: 1200px;}
 #header {height: 150px;}
@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	<form th:action = "@{/lecture/review/reviewList}" id = "reviewSearchFrm">
 	<select name = "field" id = "field" style = "height: 30px">
 	<option value = "1" th:selected = "${param.field ne null and param.field[0] eq '1'}">내용</option>
-	<option value = "2" th:selected = "${param.field ne null and param.field[0] eq '2'}">작성자</option>
+	<option value = "2" th:selected = "${param.field ne null and param.field[0] eq '2'}">평점</option>
 	</select>
 	<input type = "text" name = "keyword" id = "keyword" th:value = "${param.keyword}" style = "height: 30px;"/>
 	<input type = "hidden" name = "currentPage" id = "currentPage" th:value = "${param.currentPage eq null ? 1 : param.currentPage}"/>

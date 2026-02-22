@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- 다이얼로그 용 라이브러리 -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+<script type="text/javascript">
+$(function() {
+	
+	$("#btnSearch").click(function() {
+		searchReview();
+	}); // click
+	
+	$("#keyword").keyup(function(evt) {
+		if(evt.which == 13) {
+			searchReview();
+		} // end if
+	}); // keyup
+}); // ready
+
+function searchReview() {
+	if($("#keyword").val().trim() != null) {
+		$("#questionSearchFrm").submit();
+	} // end if
+} // searchReview
+</script>
+<head>
+    <meta charset="UTF-8">
+    <title>공지사항</title>
+    <link rel="stylesheet" href="/common/css/common-sidebar.css">
+    <link rel="stylesheet" href="/common/question/question.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/CommonHeader :: header}"></div>
+
+    <div class="common-container">
+        <div th:replace="~{fragments/CommonSidebar :: commonSidebar}"></div>
+
+        <div class="common-content">
+            		<!-- 옵션 선택바 -->
+	        <div class="question-toolbar" style = "display: flex;">
+	          <!--
+	          <form th:action = "@{/admin/announcement/announcementList}" id = "announcementSearchFrm">
+	          -->
+	          <form th:action = "@{{url}(url = '/common/question/questionList', field = ${param.lectId}, keyword = ${param.keyword}, currentPage = ${param.currentPage})}" id = "questionSearchFrm">
+	          <div class="question-filter">
+	          	<select name = "field" id = "field">
+				<option value = "1" th:selected = "${param.field ne null and param.field[0] eq '1'}">제목</option>
+				<option value = "2" th:selected = "${param.field ne null and param.field[0] eq '2'}">내용</option>
+				</select>
+				<input type = "text" name = "keyword" id = "keyword" th:value = "${param.keyword != null ? param.keyword : ''}" style = "width: 650px; height: 36px;"/>
+				<input type = "hidden" name = "currentPage" id = "currentPage" th:value = "${param.currentPage == null ? 1 : param.currentPage}"/>
+				<input type = "text" style = "display: none"/>
+				<input type = "button" value = "검색" id = "btnSearch" class = "btn btn--primary"/>
+			  </div>
+	          </form>
+	        </div>
+			<div class = "question-table-wrap">
+				<th:block th:if = "${questionList.empty}"  class="empty-state">
+				<tr>
+					<td colspan = "4" style = "text-align: center;">게시글이 없습니다.</td>
+				</tr>
+				</th:block>
+				<div class="question-row" th:each = "questionDomain, i : ${questionList}" th:object = "${questionDomain}">
+					<div class="question-title" style = "font-weight: bold"><a th:href = "@{{url}(url = '/common/question/questionDetail', qId = *{question_id}, currentPage = ${param.currentPage})}"><span th:text = "*{title}">제목</span></a></div>
+					<div class="question-content" th:text = "*{content}" style = "margin-bottom: 50px;">내용</div>
+					<div style = "display: flex;">
+						<span th:text = "*{user_name}" style = "margin-right: 5px;">이름</span>
+						<span th:text = "*{#dates.format(q_regdate, 'yyyy년 MM월 dd일')}" style = "margin-right: 5px;">작성일</span>
+						<span th:text = "*{lect_name}" style = "margin-right: 5px;">강의</span>
+					</div>
+					<div class = "partingLine" style = "height: 2px; background-color: #E0E0E0;"></div>
+				</div>
+				<div id = "pagination" style = "text-align: center; display: center;">
+					<div th:utext = "${pagination}"></div>
+				</div>
+			</div>
+			
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.admin.review.AdminReviewMapper">
+	<!-- review 테이블에 게시글을 추가하는 작업 -->
+	<select id = "selectReviewTotalCnt" parameterType = "adminReviewRangeDTO" resultType = "int">
+		select	count(*) cnt
+		from	review r
+        left outer join 
+				users u on r.user_id = u.user_id
+		left outer join
+				lecture l on r.lect_id = l.lect_id
+		<where>
+			<if test = "keyword neq null and keyword neq ''">
+				and instr(${fieldStr}, #{keyword}) != 0
+			</if>
+		</where>
+	</select>
+	
+	<select id = "selectRangeReview" parameterType = "adminReviewRangeDTO" resultType = "adminReviewDomain">
+		select  review_id, score, content, regdate, regip, lect_id, user_id, user_name, lecture_name
+		from    (
+		        select  r.review_id, r.score, r.content, r.regdate, r.regip, r.lect_id, r.user_id,
+		                u.name as user_name, l.name as lecture_name,
+		                row_number() over(order by r.regdate desc) as rnum
+		        from    review r
+		        left outer join
+						users u on r.user_id = u.user_id
+				left outer join
+						lecture l on r.lect_id = l.lect_id
+		<where>
+			<if test = "keyword neq null and keyword neq ''">
+						and instr(${fieldStr}, #{keyword}) != 0
+			</if>
+		</where>
+				)
+		where	rnum between #{startNum} and #{endNum}
+	</select>
+	
+	<!-- 글 번호를 받아서 해당하는 글 하나를 검색 (관리자) -->
+	<select id = "selectReviewDetailAdmin" parameterType = "String" resultType = "adminReviewDomain">
+		select	r.review_id, r.score, r.content, r.regdate, r.regip, r.lect_id, r.user_id, u.name as user_name, l.name as lecture_name
+		from	review r
+        left outer join 
+				users u on r.user_id = u.user_id
+		left outer join
+				lecture l on r.lect_id = l.lect_id
+		where	r.review_id = #{reviewId}
+	</select>
+	
+	<!-- 글 번호와 아이디를 받아 관리자임을 확인 후 공지사항 삭제 -->
+	<delete id = "deleteReview" parameterType = "adminReviewDTO">
+		delete from	review
+		where		review_id = #{review_id}
+	</delete>
+</mapper>
