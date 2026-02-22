@@ -48,7 +48,8 @@
         <a href="/user/my/dashboard/user_dashboard" class="profile-btn" title="마이페이지">
         <img th:if="${session.userImg != null}" 
              th:src="${session.userImg}" 
-             class="profile-img" alt="프로필">
+             class="profile-img" alt="프로필"
+             onerror="this.src = '/common/images/default.png'">
         <i th:unless="${session.userImg != null}" class="fas fa-user-circle"></i>
         </a>
         
