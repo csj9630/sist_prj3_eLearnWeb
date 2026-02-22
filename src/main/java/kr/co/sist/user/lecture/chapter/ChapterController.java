@@ -58,18 +58,10 @@ public class ChapterController {
 	@GetMapping("/list")
 	public String viewChapterProgress(@RequestParam String lectId, HttpSession session, Model model) {
 		String userId = (String) session.getAttribute("userId");
-
-//		// 유저 아이디가 없거나 유저가 수강한 아이디가 아니면 바로 에러페이지로 거부 메시지 리턴.
-//		if (userId == null || !common.isMyLecture(userId, lectId)) {
-//			model.addAttribute("msg", "수강 중인 강의가 아닙니다!");
-//
-//			return "common/err/err";
-//		} // if : 얼리 리턴
-
 		
 		String lectName = cs.getLectureName(lectId);
 		if(lectName == null || lectName =="") {
-			model.addAttribute("msg", "존재하지 않는 강의입니다!");
+			model.addAttribute("msg", "[NULL-LECT]존재하지 않는 강의입니다!");
 			
 			return "common/err/err";
 		}

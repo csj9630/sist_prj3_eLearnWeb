@@ -15,13 +15,14 @@ import lombok.ToString;
 @Setter
 @ToString
 public class SettingDomain {
-    
-    private String id;        // 아이디
-    private String name;      // 닉네임
-    private String img;       // 프로필 이미지 경로
-    private String intro;     // 자기소개
-    private String email;     // 이메일
-    private String phone;     // 휴대폰 번호
-    private String password;  // 비밀번호 (마스킹 처리용)
+
+    private String id; // 아이디
+    private String name; // 닉네임
+    private String img; // 프로필 이미지 경로
+    private String intro; // 자기소개
+    private String email; // 이메일
+    private String phone; // 휴대폰 번호
+    private String password; // 비밀번호 (마스킹 처리용)
+    private int reviewCount; // 리뷰 개수
 }
 // class

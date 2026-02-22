@@ -6,8 +6,8 @@
     
     <!-- 설정 상세 조회 -->
     <select id="selectSettingInfo" resultType="kr.co.sist.user.my.setting.SettingDomain">
-        SELECT  USER_ID as id, NAME, PROFILE as img, EMAIL, PHONE, PASSWORD, INTRO
-        FROM    users
+        SELECT  USER_ID as id, NAME, PROFILE as img, EMAIL, PHONE, PASSWORD, INTRO,(SELECT COUNT(*) FROM review r WHERE r.user_id = u.user_id) as reviewCount
+        FROM    users u
         WHERE   user_id = #{userId}
     </select>
     
