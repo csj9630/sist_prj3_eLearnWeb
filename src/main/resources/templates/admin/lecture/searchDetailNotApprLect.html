@@ -126,7 +126,7 @@ $(function(){
                     <th scope="row">승인</th>
                     <td th:text="${lecture.approval == 1 ? '승인' : '대기'}" id="appr">승인</td>
                   	<th scope="row">소개</th>
-                    <td th:text="${lecture.intro}">소개 텍스트</td>
+               		<td th:text="${#strings.abbreviate(#strings.replace(lecture.intro.replaceAll('<[^>]*>', ''), ' ', ' '), 12)}">소개글</td>
                   </tr>
                 </tbody>
               </table>
@@ -157,13 +157,17 @@ $(function(){
                 <tbody>
                   <tr th:each="ch : ${chapter}">
                     <td th:text="${ch.ch_name}"></td>
-                    <td th:text="${ch.ch_length}+'분'"></td>
-                    <td th:text="${ch.ch_regdate}"></td>
-                    <td>
+                    <td th:text="${ch.ch_lengthStr}"></td>
+<!--                     <td th:text="${ch.ch_length}+'분'"></td> -->
+               		<td th:text="${ch.ch_regdate}"></td> 
+                    <!-- <td>
                       <a th:href="@{/admin/lecture/file(chptrId=${ch.ch_id})}" th:text="${ch.ch_doc}"></a>
+					</td> -->
+       				<td>
+					     <a th:href="@{/admin/lecture/file(chptrId=${ch.ch_id})}" th:text="${#strings.substringAfter(ch.ch_doc, '_')}"></a>
 					</td>
                     <td>
-                      <a th:href="'https://youtube/'+${ch.ch_video}" th:text="${ch.ch_video}" target="_blank"></a>
+                      <a th:href="'https://www.youtube.com/watch?v='+${ch.ch_video}"  target="_blank">영상 링크</a>
                     </td>
                   </tr>
                 </tbody>
