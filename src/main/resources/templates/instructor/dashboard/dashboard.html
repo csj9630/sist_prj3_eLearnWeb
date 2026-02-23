@@ -30,6 +30,7 @@
         <article class="stat-card">
           <div class="stat-header">
             <h2 class="stat-label">총 강의 수</h2>
+            <a th:href="@{/instructor/lecture/list}"><span class="more-link">더보기</span></a>
           </div>
           <div class="stat-value" th:text="${lectCnt} + '개'"></div>
         </article>
@@ -51,9 +52,43 @@
         <article class="stat-card">
           <div class="stat-header">
             <h2 class="stat-label">강의 총 수익</h2>
+            <a th:href="@{/instructor/payment/inst_payment}"><span class="more-link">더보기</span></a>
           </div>
           <div class="stat-value" th:text="${#numbers.formatInteger(instProfit, 3, 'COMMA')} + '원'"></div>
         </article>
+      </section>
+
+      <section class="dashboard-panel">
+        <div class="panel-header">
+          <div>
+            <h2>강의 수익</h2>
+          </div>
+        </div>
+        <div class="panel-body panel-body--highlight">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>날짜</th>
+                  <th>이름</th>
+                  <th>수익</th>
+                  <th>수강생 수</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="sell : ${sellList}">
+                  <td th:text="${#dates.format(sell.pay_date, 'yyyy-MM-dd')}"></td>
+                  <td th:text="${sell.lect_name}"></td>
+                  <td th:if="${sell.total_revenue != 0}"
+                      th:text="${#numbers.formatInteger(sell.total_revenue, 3, 'COMMA')} + '원'"></td>
+                  <td th:unless="${sell.total_revenue != 0}"
+                      th:text="${sell.total_revenue} + '원'"></td>
+                  <td th:text="${sell.user_count}"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
     </main>
   </div>

@@ -45,9 +45,16 @@ public class InstructorController {
         }
 
         if (instructorService.addInstructor(iDTO)) {
-            return "instructor/member/joinSuccess";
+            // PRG 패턴: 성공 시 리다이렉트를 통해 새로고침 중복 전송 방지
+            return "redirect:/instructor/member/joinSuccessPage";
         }
         return "instructor/member/joinFrm";
+    }
+
+    // 강사 가입 완료 페이지 (PRG 패턴 GET 요청 변환)
+    @GetMapping("/joinSuccessPage")
+    public String joinSuccessPage() {
+        return "instructor/member/joinSuccess";
     }
 
     @GetMapping("/overlapId")
@@ -72,6 +79,15 @@ public class InstructorController {
     @ResponseBody
     public String overlapPhone(String phone) {
         return instructorService.chkPhone(phone);
+    }
+
+    /**
+     * 이메일 중복 확인 (AJAX)
+     */
+    @GetMapping("/overlapEmail")
+    @ResponseBody
+    public String overlapEmail(String email) {
+        return instructorService.chkEmail(email);
     }
 
 }

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 @RequestMapping("/admin/member")
 public class AdminMemberController {
@@ -33,7 +35,8 @@ public class AdminMemberController {
     public String userList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            Model model) {
+            Model model,
+            HttpServletRequest req) {
 
         int currentPage = normalizePage(page);
         int pageSize = normalizePageSize(size);
@@ -56,7 +59,7 @@ public class AdminMemberController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-
+        model.addAttribute("currentUri", req.getRequestURI());
         return "admin/member/userList_adminDashboard";
     }
 
@@ -77,7 +80,8 @@ public class AdminMemberController {
     public String instructorList(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            Model model) {
+            Model model,
+            HttpServletRequest req) {
 
         int currentPage = normalizePage(page);
         int pageSize = normalizePageSize(size);
@@ -100,7 +104,7 @@ public class AdminMemberController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-
+        model.addAttribute("currentUri", req.getRequestURI());
         return "admin/member/instructorList_adminDashboard";
     }
 

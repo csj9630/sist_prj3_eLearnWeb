@@ -1,0 +1,96 @@
+/* 인프런 스타일 학습 진도 페이지 전용 */
+:root {
+    --inflearn-green: #00c471;
+    --text-main: #1b1c1d;
+    --text-sub: #495057;
+    --border-color: #eff2f6;
+}
+
+.progress-container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+/* 강의 헤더 */
+.course-header { margin-bottom: 35px; }
+.course-header h2 { font-size: 26px; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
+.course-info-summary { color: var(--text-sub); font-size: 14px; }
+
+/* 챕터 리스트 카드 */
+.chapter-list-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+
+.chapter-item {
+    display: flex;
+    align-items: center;
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s ease;
+}
+.chapter-item:hover { background-color: #fcfdfe; }
+.chapter-item:last-child { border-bottom: none; }
+
+/* 상태 및 아이콘 */
+.chapter-status { width: 45px; font-size: 20px; color: #dee2e6; }
+.chapter-status.completed { color: var(--inflearn-green); }
+
+.chapter-main { flex-grow: 1; padding-right: 20px; }
+.chapter-title {
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--text-main);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 8px;
+}
+.chapter-title:hover { color: var(--inflearn-green); }
+
+/* 프로그레스 바 */
+.progress-wrapper { display: flex; align-items: center; gap: 12px; }
+.custom-progress { flex-grow: 1; height: 7px; background-color: #eef1f4; border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; background-color: var(--inflearn-green); transition: width 0.5s ease; }
+.progress-percent { font-size: 13px; font-weight: 700; color: var(--inflearn-green); min-width: 35px; }
+
+.chapter-time { font-size: 13px; color: #868e96; margin-top: 5px; }
+
+/* 하단 시험 섹션 */
+.exam-card {
+    margin-top: 30px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+.exam-info h4 { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+.exam-status-msg { font-size: 14px; color: var(--text-sub); }
+.score-badge {
+    display: inline-block;
+    background: #e7f9f0;
+    color: var(--inflearn-green);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    margin-left: 8px;
+}
+
+.btn-exam {
+    background-color: var(--inflearn-green);
+    color: white;
+    padding: 14px 35px;
+    border-radius: 8px;
+    font-weight: 700;
+    border: none;
+    transition: all 0.3s;
+}
+.btn-exam:disabled { background-color: #cbd5e0; color: #fff; cursor: not-allowed; }
+.btn-exam:not(:disabled):hover { background-color: #00ac63; transform: translateY(-2px); }

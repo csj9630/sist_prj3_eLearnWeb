@@ -27,10 +27,10 @@ a:hover{color: #808080; text-decoration: none;}
 <script type="text/javascript">
 $(function() {
 	if(`[[${flag}]]`) {
-		alert("글 변경 성공");
-		location.href = "/admin/announcement/announcementList?currentPage=[[${param.currentPage}]]";
+		alert("공지사항이 삭제되었습니다.");
+		location.href = "/admin/announcement/announcementList?currentPage=[[${param.currentPage[0]}]]";
 	} else {
-		alert("글 변경 실패");
+		alert("공지사항 삭제에 실패했습니다.");
 		history.back();
 	} // end if ~ else
 }); // ready

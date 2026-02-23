@@ -1,5 +1,7 @@
 package kr.co.sist.instructor.dashboard;
 
+import java.util.Date;
+
 import org.apache.ibatis.type.Alias;
 
 import lombok.Getter;
@@ -12,6 +14,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class InstructorDashBoardDomain {
-	private String lect_id, lect_name;
-	private int estimated_profit, user_count;
+	private String lect_name;
+	private int total_revenue, user_count;
+	private Date pay_date;
 }

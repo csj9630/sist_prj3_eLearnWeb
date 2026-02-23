@@ -23,9 +23,13 @@ public class InstTestController {
 	// 시험문제 페이지 보기 ( 모든 시험 문제 조회 )
 	@PostMapping("/instTestFrm")
 	public String instTestFrm(Model model, InstTestViewDTO itvDTO, HttpSession session) {
-		List<InstTestDomain> list = is.searchTest(itvDTO);
+		String instId = "";
+		instId = is.searchInstId(itvDTO.getLectId());
+		itvDTO.setInstId(instId);
 		
+		List<InstTestDomain> list = is.searchTest(itvDTO);
 		model.addAttribute("testList", list);
+		model.addAttribute("instId", instId);
 		
 		return "/instructor/lecture/test/instTestFrm";
 	}//testFrm

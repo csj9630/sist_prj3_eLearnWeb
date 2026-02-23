@@ -61,6 +61,10 @@ $(function(){
 			}
 		});
 	});
+	
+	$("#btnClose").click(function(){
+		window.history.back();
+	})
 });
 </script>
 </head>
@@ -107,19 +111,22 @@ $(function(){
                     <th scope="row">강사</th>
                     <td th:text="${lecture.inst_name}">강사명</td>
                     <th scope="row">등록일</th>
-                    <td colspan="3" th:text="${#dates.format(lecture.regDate, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${#dates.format(lecture.regDate, 'yyyy-MM-dd')}"></td>
                   </tr>
                   <tr>
                     <th scope="row">가격</th>
-                    <td th:text="${#numbers.formatInteger(lecture.price, 3, 'COMMA')+'원'}"></td>
+                    <td th:if="${lecture.price != 0}"
+                    th:text="${#numbers.formatInteger(lecture.price, 3, 'COMMA')+'원'}"></td>
+                    <td th:unless="${lecture.price != 0}"
+                    th:text="${lecture.price+'원'}"></td>
                     <th scope="row">수강생</th>
-                    <td colspan="3" th:text="${lecture.user_count}"></td>
+                    <td th:text="${lecture.user_count}"></td>
                   </tr>
                   <tr>
                     <th scope="row">승인</th>
                     <td th:text="${lecture.approval == 1 ? '승인' : '대기'}" id="appr">승인</td>
                   	<th scope="row">소개</th>
-                    <td colspan="3" th:text="${lecture.intro}">소개 텍스트</td>
+                    <td th:text="${lecture.intro}">소개 텍스트</td>
                   </tr>
                 </tbody>
               </table>
@@ -150,22 +157,23 @@ $(function(){
                 <tbody>
                   <tr th:each="ch : ${chapter}">
                     <td th:text="${ch.ch_name}"></td>
-                    <td th:text="${ch.ch_length}+':00'"></td>
+                    <td th:text="${ch.ch_length}+'분'"></td>
                     <td th:text="${ch.ch_regdate}"></td>
-                    <td th:text="${ch.ch_doc}"></td>
                     <td>
-                      <a th:href="${ch.ch_video}" th:text="${ch.ch_video}" target="_blank"></a>
+                      <a th:href="@{/admin/lecture/file(chptrId=${ch.ch_id})}" th:text="${ch.ch_doc}"></a>
+					</td>
+                    <td>
+                      <a th:href="'https://youtube/'+${ch.ch_video}" th:text="${ch.ch_video}" target="_blank"></a>
                     </td>
                   </tr>
-                  <!-- <tr th:if="${chapterList == null or #lists.isEmpty(chapterList)}">
-                    <td colspan="4">등록된 커리큘럼이 없습니다.</td>
-                  </tr> -->
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-
+        <div class="close-wrap">
+  			<button type="button" id="btnClose" class="btn btn--ghost">닫기</button>
+		</div>
       </section>
     </main>
   </div>

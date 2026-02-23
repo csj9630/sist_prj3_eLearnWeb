@@ -25,9 +25,7 @@ public class AdminPaymentService {
 	}
 	
 	public List<LectProfitDomain> getLectProfit(AdminPaymentSearchDTO apsDTO) throws PersistenceException {
-		List<LectProfitDomain> lectProfitList;
-		
-		lectProfitList=apm.selectLectProfit(apsDTO);
+		List<LectProfitDomain> lectProfitList=apm.selectLectProfit(apsDTO);
 		return lectProfitList;
 	}//getLectProfit
 }

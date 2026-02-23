@@ -14,6 +14,18 @@
 	<select id="selectAllSkills" resultType="skillDomain">
 	    SELECT  distinct name <!--, skill_id as skillId-->
 	    FROM   RELATIVE_SKILL
+		<where>
+	        <if test="lectId != null and lectId != ''">
+	            lect_id = #{lectId}
+	        </if>
+	    </where>
 	    ORDER BY name ASC
+	</select>
+	
+	<!--myLecture에서 학생이 해당 강의를 수강하는지 개수를 체크한다. -->
+	<select id="selectMyLectureCount" resultType="int">
+	    SELECT  COUNT(*)
+	    FROM   MY_LECTURE
+	    WHERE USER_ID=#{userId} AND LECT_ID=#{lectId}
 	</select>
 </mapper>

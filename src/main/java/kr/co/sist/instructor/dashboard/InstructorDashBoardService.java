@@ -1,5 +1,7 @@
 package kr.co.sist.instructor.dashboard;
 
+import java.util.List;
+
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,4 +31,8 @@ public class InstructorDashBoardService {
 		int profitInst=idbm.selectInstProfit(instId);
 		return profitInst;
 	}//getTotalCountInst
+	
+	public List<InstructorDashBoardDomain> getSellLecture(String instId) throws PersistenceException {
+		return idbm.selectInstLecture(instId);
+	}//getSellLecture
 }

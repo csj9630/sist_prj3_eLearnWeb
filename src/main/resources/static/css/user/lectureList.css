@@ -1,0 +1,132 @@
+/* 전체 배경 및 폰트 */
+body { background-color: #F9FAFB !important; font-family: 'Pretendard', sans-serif !important; }
+
+/* [검색 영역] 메인 페이지의 둥글고 깨끗한 디자인 */
+form[action*="lectureList"] {
+    max-width: 100% !important; /* 800px 제한을 풀고 전체 너비 사용 */
+    width: 100%;
+    margin: 40px 0 !important; /* 중앙 정렬용 auto 대신 좌우 여백 0 */
+    background: #fff;
+    padding: 15px 25px; /* 내부 여백을 조금 더 넉넉하게 */
+    border-radius: 20px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: flex-end; /* 하단 정렬 유지 */
+    gap: 15px;
+    border: 1px solid #E5E7EB;
+}
+form[action*="lectureList"] input, form[action*="lectureList"] select {
+    border: none !important;
+    background: #F3F4F6 !important;
+    border-radius: 12px !important;
+    padding: 12px 20px !important;
+    font-weight: 500;
+}
+form[action*="lectureList"] button {
+    background: #10B981 !important; /* 메인 에메랄드 */
+    border-radius: 12px !important;
+    padding: 0 30px !important;
+    font-weight: 700 !important;
+    font-size : 12px;
+    border: none !important;
+    color: #fff !important;
+    
+    flex: 0 0 auto; /* 버튼은 자기 크기 유지 */
+    height: 48px; /* 입력 필드와 높이 맞춤 */
+}
+
+/* [강의 카드] 메인 페이지의 부드러운 호버 효과 */
+.course-card {
+    border: 1px solid #F3F4F6 !important;
+    border-radius: 20px !important;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: #fff;
+}
+.course-card:hover {
+    transform: translateY(-10px) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+    border-color: #10B981 !important;
+}
+.thumb-img {
+    width: 100% !important;      /* 부모 너비에 맞춤 */
+    height: 200px !important;    /* 🌟 높이를 고정하여 튀어나오는 것 방지 */
+    object-fit: cover !important; /* 🌟 비율을 유지하면서 영역을 가득 채움 (중요) */
+    border-radius: 12px 12px 0 0 !important; /* 상단 모서리만 둥글게 */
+    transition: transform 0.5s ease !important;
+    display: block !important;
+}
+
+/* 카드 내 썸네일 컨테이너가 있다면 크기 강제 */
+.course-card .thumb-wrapper {
+    overflow: hidden !important; /* 호버 시 이미지가 커져도 카드 밖으로 안 나가게 */
+    height: 200px !important;
+}
+
+.course-card:hover .thumb-img { transform: scale(1.05); }
+
+/* [텍스트 스타일] */
+.card-title { font-weight: 700 !important; color: #111827 !important; }
+.text-primary { color: #10B981 !important; font-weight: 800 !important; }
+
+/* [페이지네이션] 에메랄드 강조 */
+#pagination a, #pagination span {
+    border-radius: 8px !important;
+    border: 1px solid #E5E7EB !important;
+    color: #374151 !important;
+    margin: 0 3px;
+}
+#pagination .active, #pagination b {
+    background: #10B981 !important;
+    color: #fff !important;
+    border-color: #10B981 !important;
+}
+
+/* 상세 페이지 레이아웃 최적화 */
+#wrap { max-width: 1100px !important; margin: 0 auto !important; background: transparent !important; }
+
+/* 상단 정보 영역을 화이트 카드로 */
+.container.mt-5 > .row {
+    background: #fff;
+    padding: 30px;
+    border-radius: 24px;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* 이미지 모서리 둥글게 */
+.col-md-4 img { border-radius: 16px !important; }
+
+/* 탭 메뉴 디자인 (에메랄드 포인트) */
+.nav-tabs { border-bottom: 2px solid #F3F4F6 !important; }
+.nav-tabs .nav-link {
+    border: none !important;
+    font-weight: 700 !important;
+    color: #6B7280 !important;
+    padding: 15px 25px !important;
+}
+.nav-tabs .nav-link.active {
+    color: #10B981 !important;
+    border-bottom: 3px solid #10B981 !important;
+    background: transparent !important;
+}
+
+/* 커리큘럼 테이블 */
+.table { border: none !important; }
+.table thead th {
+    background: #F9FAFB !important;
+    color: #4B5563 !important;
+    border-bottom: 2px solid #F3F4F6 !important;
+    padding: 15px !important;
+}
+.table tbody td { padding: 15px !important; border-bottom: 1px solid #F9FAFB !important; }
+
+/* 버튼 디자인 (메인 에메랄드) */
+.btn-primary {
+    background: #10B981 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    padding: 12px 24px !important;
+}
+.btn-primary:hover { background: #059669 !important; transform: scale(1.02); }

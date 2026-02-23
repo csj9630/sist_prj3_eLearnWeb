@@ -9,13 +9,20 @@
 
 <style type="text/css">
     body {
-        background-color: #f8f9fa;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    display: flex; /* body 전체를 flex로 설정 */
+    flex-direction: column; /* 헤더와 본문을 세로로 나열 */
+    height: 100vh; /* 화면 전체 높이 고정 */
     }
+    .content-wrapper {
+   display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1; /* 헤더를 제외한 남은 공간을 모두 차지 */
+    padding: 20px;
+}
    .main-card {
     background: white;
     /* 기존 800px -> 화면 너비의 75%로 확대 */
@@ -190,7 +197,10 @@
 </script>
 </head>
 <body>
+<div th:replace="~{fragments/MyHeader :: header}"></div>
+<div class="content-wrapper">
     <div class="main-card">
+    
         <div class="header-title">연습문제 페이지</div>
 
         <div class="button-group">
@@ -208,9 +218,13 @@
     </div>
 
     <div class="temp-inputs">
-        L_ID: <input type="text" value="L1" name="lectId" id="lectId" size="2">
-        U_ID: <input type="text" name="userId" value="user1" id="userId" size="5">
-        T_ID: <input type="text" name="testId" value="T1" id="testId" size="2">
+        I_ID: <input type="text" name="lectId" th:value="${lectId}"id="lectId" size="2">
+        U_ID: <input type="text" name="userId" th:value="${userId}" id="userId" size="5">
+        T_ID: <input type="text" name="testId" th:value="${testId}" id="testId" size="2">
     </div>
+    </div>
+    <div id = "footer">
+<th:block th:replace = "~{fragments/footer :: footer}"/>
+</div>
 </body>
 </html>

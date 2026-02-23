@@ -14,13 +14,15 @@
     <style>
         /* data-table 6열 레이아웃 오버라이드 (dashboard.css의 4열 고정 너비 해제) */
         .data-table {
-            table-layout: auto;
+            table-layout: fixed;
+            width: 100%;
         }
 
         .data-table th,
         .data-table td {
             overflow: visible;
             white-space: normal;
+            word-break: break-word;
         }
 
         .status {
@@ -190,12 +192,6 @@
                 </header>
 
                 <div class="course-toolbar">
-                    <div class="course-filter">
-                        <a class="page-link active" href="userList_adminDashboard.html"
-                            th:href="@{/admin/member/userList}">회원</a>
-                        <a class="page-link" href="instructorList_adminDashboard.html"
-                            th:href="@{/admin/member/instructorList}">강사</a>
-                    </div>
                     <div style="margin-left:auto; color:#6e6a67; font-size:13px;">
                         총 <span th:text="${totalCount}">0</span>건
                     </div>
@@ -203,6 +199,14 @@
 
                 <div class="table-wrap">
                     <table class="data-table">
+                        <colgroup>
+                            <col style="width: 15%;">
+                            <col style="width: 12%;">
+                            <col style="width: 25%;">
+                            <col style="width: 22%;">
+                            <col style="width: 13%;">
+                            <col style="width: 13%;">
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th>회원 ID</th>

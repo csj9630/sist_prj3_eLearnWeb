@@ -1,6 +1,7 @@
 package kr.co.sist.user.lecture;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kr.co.sist.common.lecture.CommonLectureService;
+import kr.co.sist.common.lecture.SkillDomain;
 import kr.co.sist.user.lecture.board.LectureDomain;
 import kr.co.sist.user.lecture.board.LectureRangeDTO;
 import kr.co.sist.user.lecture.chapter.ChapterService;
@@ -93,6 +95,15 @@ public class LectureService {
 		}
 	    return map;
 	}//method
+	
+	//해당 강의의 스킬 리스트 조회
+	public List<String> getSkillList(String lectId){
+		List<String> list = new ArrayList<String>();
+		for (SkillDomain sd : commonService.getAllSkills( lectId)) {
+			list.add(sd.getName());
+		}
+		return list;
+	}
 	
 //-------------------------------------페이지네이션 Method---------------------------------------------
 	/**
@@ -210,7 +221,7 @@ public class LectureService {
 		
 		
 		prevMark.append("<li class='page-item disabled'>");
-		prevMark.append("<a class='page-link'>Previous</a>");
+		prevMark.append("<a class='page-link'>PREV</a>");
 		prevMark.append("</li>");
 		
 		//◀️ 이전 버튼
@@ -246,7 +257,7 @@ public class LectureService {
 		}//end while
 		
 		//7. ▶️ 뒤에 페이지가 더 있는 경우(다음버튼)
-		nextMark.append("<li class='page-item page-link'>Next</li>");
+		nextMark.append("<li class='page-item page-link'>NEXT</li>");
 		
 		if( rangeDTO.getTotalPage() > endPage) { // 뒤에 페이지가 더 있음.
 			movePage= endPage+1;

@@ -114,7 +114,8 @@ where l.lect_id = #{lectureId}
 
 <!-- 강의 관리 상세 페이지-챕터 정보 -->
 <select id="selectLectureChapter" parameterType="String" resultType="lectChapterDomain">
-select ch.num as ch_num,
+select ch.chptr_id as ch_id,
+       ch.num as ch_num,
        ch.name as ch_name,
        ch.length as ch_length,
        ch.regdate as ch_regdate,

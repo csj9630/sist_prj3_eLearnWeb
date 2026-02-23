@@ -64,7 +64,8 @@ public class InstructorService {
     public String chkName(String name) {
         String data = null;
         try {
-            data = instructorMemberMapper.selectName(name);
+            String encryptedName = cryptoUtil.encrypt(name);
+            data = instructorMemberMapper.selectName(encryptedName);
         } catch (PersistenceException pe) {
             log.error("강사 이름 중복확인 실패", pe);
         }
@@ -80,6 +81,20 @@ public class InstructorService {
             data = instructorMemberMapper.selectPhone(phone);
         } catch (PersistenceException pe) {
             log.error("강사 전화번호 중복확인 실패", pe);
+        }
+        return (data == null) ? "available" : "duplicate";
+    }
+
+    /**
+     * 이메일 중복 확인
+     */
+    public String chkEmail(String email) {
+        String data = null;
+        try {
+            String encryptedEmail = cryptoUtil.encrypt(email);
+            data = instructorMemberMapper.selectEmail(encryptedEmail);
+        } catch (PersistenceException pe) {
+            log.error("강사 이메일 중복확인 실패", pe);
         }
         return (data == null) ? "available" : "duplicate";
     }

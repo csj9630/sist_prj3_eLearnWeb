@@ -1,6 +1,5 @@
 package kr.co.sist.user.lecture.chapter;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,58 +25,76 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 
 import jakarta.servlet.http.HttpSession;
+import kr.co.sist.common.file.FileService;
+import kr.co.sist.common.lecture.CommonLectureService;
 
 @RequestMapping("/lecture/chapter")
 @Controller
 public class ChapterController {
-	//*****************//
-	//임시 로그인 세션 정보는 CSJTempController에 있다.
-	//*****************//
+	// *****************//
+	// 임시 로그인 세션 정보는 CSJTempController에 있다.
+	// *****************//
 
 	@Autowired
 	private ChapterService cs;
-	
+
+	@Autowired
+	private CommonLectureService common;
+
+	@Autowired
+	private FileService fileService;
+
 	@Value("${user.upload-doc-dir}") // application.properties에 설정된 경로 (예: C:/uploads/)
-    private String uploadDocDir;
-
-	@GetMapping("/viewList")
-	public String viewChapterList(Model model) {
-		String lectId = "L1";
-		List<ChapterDomain> list = cs.searchChapterList(lectId);
-
-		model.addAttribute("chapterList", list);
-
-		return "user/lecture/chapter/chapterList";
-	}// method
+	private String uploadDocDir;
 
 	/**
 	 * 강의 수강한 학생의 수강 이력 포함된 챕터 리스트
+	 * 
 	 * @param lectId
 	 * @param session
 	 * @param model
 	 * @return
 	 */
-	@GetMapping("/viewProgressList")
-	public String viewChapterProgress( @RequestParam String lectId, HttpSession session,Model model) {
+	@GetMapping("/list")
+	public String viewChapterProgress(@RequestParam String lectId, HttpSession session, Model model) {
 		String userId = (String) session.getAttribute("userId");
+
+//		// 유저 아이디가 없거나 유저가 수강한 아이디가 아니면 바로 에러페이지로 거부 메시지 리턴.
+//		if (userId == null || !common.isMyLecture(userId, lectId)) {
+//			model.addAttribute("msg", "수강 중인 강의가 아닙니다!");
+//
+//			return "common/err/err";
+//		} // if : 얼리 리턴
+
+		
+		String lectName = cs.getLectureName(lectId);
+		if(lectName == null || lectName =="") {
+			model.addAttribute("msg", "존재하지 않는 강의입니다!");
+			
+			return "common/err/err";
+		}
+		
+		// 수강 챕터 목록 만들어서 리턴.
 		ChapterDTO cdto = new ChapterDTO(userId, lectId);
-		List<StuChapterDomain> list = cs.searchChapterProgress(cdto); //수강 이력 리스트
-		boolean isExamReady = cs.isExamReady(list); //시험 버튼 활성화 여부
+		List<StuChapterDomain> list = cs.searchChapterProgress(cdto); // 수강 이력 리스트
+		
+		//조회 챕터가 없거나, 강의 자체가 없으면 무조건 시험 거짓 리턴.
+		boolean isExamReady = false;
+		if(!(list == null || list.isEmpty() ||lectName == null || lectName =="")) {
+			isExamReady = cs.isExamReady(userId, lectId); // 시험 버튼 활성화 여부
+		}//if
+		
 		Integer latestScore = cs.getLatestScore(userId, lectId); // 최신 시험 점수
 		
-
+		
 		model.addAttribute("chapterProgress", list);
 		model.addAttribute("lectId", lectId);
+		model.addAttribute("lectName", lectName);
 		model.addAttribute("isExamReady", isExamReady);
-//		model.addAttribute("isExamReady", true);
 		model.addAttribute("examScore", latestScore);
 
-		
 		return "user/lecture/chapter/chapterProgressList";
 	}// method
-
-	
-	
 
 	/**
 	 * 강의 영상에 보여줄 lecture 별 chapter video 리스트.
@@ -89,11 +106,12 @@ public class ChapterController {
 	 * @return video dto list
 	 */
 	@GetMapping("/video")
-	public String getVideoList(@RequestParam(required = false, defaultValue = "1") String chptrId, @RequestParam String lectId,
-			HttpSession session, Model model) {
+	public String getVideoList(@RequestParam(required = false, defaultValue = "1") String chptrId,
+			@RequestParam String lectId, HttpSession session, Model model) {
 		String userId = (String) session.getAttribute("userId");
 		ChapterDTO cdto = new ChapterDTO(userId, lectId);
 		List<VideoDomain> vdList = cs.getVideoInfoList(cdto);
+		String lectName = cs.getLectureName(lectId);
 
 		// 출석 체크. 실패 시 에러메시지 전달.
 		try {
@@ -101,11 +119,11 @@ public class ChapterController {
 		} catch (RuntimeException e) {
 			model.addAttribute("errorMsg", e.getMessage());
 		} // end catch
-		
-
 
 		model.addAttribute("vdList", vdList); // 영상 정보 리스트을 전송.
-		model.addAttribute("startChptrId", chptrId); // 처음 재생할 번호 전송.
+		model.addAttribute("lectId", lectId);
+		model.addAttribute("lectName", lectName);
+		model.addAttribute("startChptrId", chptrId); // 처음 재생할 챕터ID 전송.
 
 		return "user/lecture/chapter/watchVideo2";
 	}// method
@@ -114,11 +132,7 @@ public class ChapterController {
 	@ResponseBody
 	public ResponseEntity<Map<String, Object>> saveRecord(@RequestBody VideoDTO vdto) {
 		Map<String, Object> result = new HashMap<>();
-		System.out.println("----받은 데이터------");
-		System.out.println(vdto);
-		// vdto.recalculate();
-		// System.out.println("----변환 데이터------");
-		// System.out.println(vdto);
+
 
 		// 서비스 호출
 		boolean isSaved = cs.saveVideoRecord(vdto);
@@ -132,66 +146,59 @@ public class ChapterController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
 		}
 	}// method
-	
-	
-	
+
 	/**
-	 * 파일 다운로드 전 파일 존재 여부 체크.
+	 * Ajax - 파일 다운로드 전 파일 존재 여부 체크.
+	 * 
 	 * @param chptrId
 	 * @return
 	 */
 	@GetMapping("/checkFile")
 	@ResponseBody // JSON 데이터를 반환하기 위해 필요
 	public Map<String, Boolean> checkFile(@RequestParam("chptrId") String chptrId) {
-	    Map<String, Boolean> response = new HashMap<>();
-	    try {
-	        FileDomain fileDomain = cs.getFileInfo(chptrId);
-	        Path filePath = Paths.get(uploadDocDir).resolve(fileDomain.getDoc()).normalize();
-	        File file = filePath.toFile();
-	        
-	        // 파일이 존재하고 읽기 가능한지 확인
-	        response.put("exists", file.exists() && file.isFile());
-	    } catch (Exception e) {
-	        response.put("exists", false);
-	    }
-	    return response;
-	}
-	
+		Map<String, Boolean> response = new HashMap<>();
+		try {
+			FileDomain fileDomain = cs.getFileInfo(chptrId);
+			String fileName = fileDomain.getDoc();
+
+			// 파일 서비스에서 파일 존재 체크.
+			boolean exists = fileService.checkFileExists(fileName, uploadDocDir);
+
+			// 파일이 존재하고 읽기 가능한지 확인
+			response.put("exists", exists);
+		} catch (Exception e) {
+			response.put("exists", false);
+		}
+		return response;
+		
+	}//method
+
 	/**
-	 * 파일 다운로드
+	 * 파일 다운로드, 기본적으로 위의 파일 존재 체크를 먼저 하고 실행한다.
+	 * 
 	 * @param chptrId
 	 * @return
 	 */
 	@GetMapping("/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam("chptrId") String chptrId) {
-        try {
-            // 1. Service를 통해 DB 조회
-            FileDomain fileDomain = cs.getFileInfo(chptrId);
-            String fileName = fileDomain.getDoc();
+	public ResponseEntity<Resource> downloadFile(@RequestParam("chptrId") String chptrId) {
+		// 요청 결과는 기본 실패
+		ResponseEntity<Resource> result = ResponseEntity.internalServerError().build();
 
-            // 2. 물리적 경로 설정
-            Path filePath = Paths.get(uploadDocDir).resolve(fileName).normalize();
-            Resource resource = new UrlResource(filePath.toUri());
+		try {
+			// DB 파일명을 조회
+			FileDomain fileDomain = cs.getFileInfo(chptrId);
 
-            if (!resource.exists()) {
-                return ResponseEntity.notFound().build();
-            }
+			// 조회된 게 없으면 null을 직접 넣어서 에러 없게 하기..
+			String fileName = (fileDomain != null) ? fileDomain.getDoc() : null;
 
-            // 3. 파일명 인코딩 및 헤더 설정
-            String encodedFileName = UriUtils.encode(fileName, StandardCharsets.UTF_8);
-            
-            return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFileName + "\"")
-                .header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")
-                .body(resource);
+			// 파일 서비스(파일명,파일경로)로 다운로드하고 결과 저장
+			result = fileService.downloadFile(fileDomain.getDoc(), uploadDocDir);
 
-        } catch (RuntimeException e) {
-            // Service에서 던진 예외 처리
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+		} // catch
+
+		return result;
+	}// method
 
 }// class

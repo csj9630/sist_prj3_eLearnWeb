@@ -13,12 +13,15 @@ $(function(){
   <link rel="stylesheet" th:href="@{/common/css/instructor-sidebar.css}" />
     <nav class="inst-sidebar-nav">
       <ul class="inst-sidebar-list">
-        <li><a class="inst-sidebar-link" th:href="@{/instructor/dashboard}">대시보드</a></li>
-        <li><a class="inst-sidebar-link" th:href="@{/instructor/dashboard}">강의 관리</a></li>
-        <li><a class="inst-sidebar-link" th:href="@{/instructor/dashboard}">1:1 문의 관리</a></li>
-        <li><a class="inst-sidebar-link" th:href="@{/admin/dashboard}">임시 관리자</a></li>
+        <li><a class="inst-sidebar-link" th:href="@{/instructor/dashboard}" th:classappend="${currentUri == '/instructor/dashboard'} ? 'is-active' : '' ">대시보드</a></li>
+        <li><a class="inst-sidebar-link" th:href="@{/instructor/lecture/list}" th:classappend="${currentUri == '/instructor/lecture/list'} ? 'is-active' : '' ">강의 관리</a></li>
+        <li><a class="inst-sidebar-link" th:href="@{/instructor/question/questionList}" th:classappend="${currentUri == '/instructor/question/questionList'} ? 'is-active' : '' ">1:1 문의 관리</a></li>
+        <li><a class="inst-sidebar-link" th:href="@{/instructor/question/questionList}" th:classappend="${currentUri == '/instructor/question/questionList'} ? 'is-active' : '' ">리뷰 관리</a></li>
+        <li><a class="inst-sidebar-link" th:href="@{/instructor/payment/inst_payment}" th:classappend="${currentUri == '/instructor/payment/inst_payment'} ? 'is-active' : '' ">수익 관리</a></li>
       </ul>
     </nav>
 </th:block>
 </body>
 </html>
+
+

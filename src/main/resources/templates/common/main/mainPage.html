@@ -514,12 +514,12 @@
                     const priceColor = course.price === 0 ? 'text-emerald-600' : 'text-gray-900';
                     const categoryName = CATEGORIES.find(c => c.id === course.category)?.name || '';
                     // 썸네일 이미지가 있으면 img 태그, 없으면 기본 아이콘 표시
-                    const thumbHTML = course.thumbnail && course.thumbnail !== '/common/images/lecture_thumb_njwVersion/'
+                    const thumbHTML = course.thumbnail && course.thumbnail !== '/common/images/lecture_thumbs/'
                         ? `<img src="${course.thumbnail}" alt="${course.title}" class="w-full h-full object-cover" onerror="this.parentNode.innerHTML='<i data-lucide=\'book-open\' class=\'text-gray-900 opacity-20 w-20 h-20\'></i>'; lucide.createIcons();">`
                         : `<i data-lucide="book-open" class="text-gray-900 opacity-20 w-20 h-20"></i>`;
 
                     const cardHTML = `
-                        <div class="relative group hover:z-50 h-full">
+                        <a href="/user/lecture/detail?lectId=${course.id}" class="relative group hover:z-50 h-full block cursor-pointer">
                             <div class="h-full bg-white rounded-xl overflow-hidden border border-gray-100 flex flex-col">
                                 <div class="h-[160px] w-full bg-gray-100 flex items-center justify-center relative overflow-hidden">
                                     ${thumbHTML}
@@ -560,13 +560,14 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     `;
                     courseGrid.insertAdjacentHTML('beforeend', cardHTML);
                 });
 
                 document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
+                    btn.addEventListener('click', (e) => { //이벤트리스너 추가
+                        e.preventDefault();//장바구니클릭시 이동막기 
                         e.stopPropagation();
                         // data-id 속성에서 강의 ID 가져와서 AJAX 장바구니 담기 호출
                         const lectId = btn.getAttribute('data-id');

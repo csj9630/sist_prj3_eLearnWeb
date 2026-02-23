@@ -13,16 +13,21 @@ where inst_id=#{instId}
 
 <!-- 평점 -->
 <select id="selectScoreReview" parameterType="String" resultType="int">
-select score
+select COALESCE(AVG(r.score), 0)
 from review r
 join lecture l
-on r.lect_id=l.lect_id
-where inst_id=#{instId}
+  on r.lect_id = l.lect_id
+where l.inst_id = #{instId}
 </select>
 
 <!-- 총 수강생 수 -->
 <select id="selectCountUser" parameterType="String" resultType="int">
-select count(*)
+select
+	(select count(*)
+     from payment_detail2 pd2_sub
+     join payment p_sub on pd2_sub.payrec_id = p_sub.payrec_id
+     where pd2_sub.lect_id = l.lect_id
+     and p_sub.state = 1) as user_count
 from users u
 join my_cart mc
 on u.user_id=mc.user_id
@@ -35,11 +40,46 @@ where i.inst_id=#{instId}
 
 <!-- 강의 총 수익 -->
 <select id="selectInstProfit" parameterType="String" resultType="int">
-select sum(price * usercount)as all_profit
+select
+  COALESCE(
+    l.price * (
+      select count(*)
+      from payment_detail2 pd2
+      join payment p2 on pd2.payrec_id = p2.payrec_id
+      where pd2.lect_id = l.lect_id
+        and p2.state = 1
+    ),
+    0
+  ) as total_revenue
 from lecture l
-join instructor i
-on l.inst_id=i.inst_id
-where i.inst_id=#{instId}
+join instructor i on l.inst_id = i.inst_id
+where i.inst_id = 'inst1'
+</select>
+
+<!-- 강사 판매 강의 -->
+<select id="selectInstLecture" parameterType="String" resultType="instDashboardDomain">
+select
+    p.time as pay_date,
+    l.lect_id,
+    l.name as lect_name,
+    (l.price * (
+        select count(*)
+        from payment_detail2 pd2
+        join payment p2 on pd2.payrec_id = p2.payrec_id
+        where pd2.lect_id = l.lect_id and p2.state = 1
+    )) as total_revenue,
+    (select count(*)
+     from payment_detail2 pd2_sub
+     join payment p_sub on pd2_sub.payrec_id = p_sub.payrec_id
+     where pd2_sub.lect_id = l.lect_id
+       and p_sub.state = 1) as user_count
+from payment p
+join payment_detail pd on p.payrec_id = pd.payrec_id
+join payment_detail2 pd2 on pd.payrec_id = pd2.payrec_id
+join lecture l on l.lect_id = pd2.lect_id
+where p.state = 1 and l.inst_id=#{instId}
+group by p.time, l.lect_id, l.name, l.price
+order by p.time desc
 </select>
 
 </mapper>
