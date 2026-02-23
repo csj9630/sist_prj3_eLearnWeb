@@ -75,6 +75,7 @@ on i.inst_id=l.inst_id
 join category c
 on c.cat_id = l.cat_id
 where l.approval=2
+or l.approval=0
 <if test="categoryName != null and categoryName != ''">
 and c.name = #{categoryName}
 </if>
