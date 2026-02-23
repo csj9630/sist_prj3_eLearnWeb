@@ -38,6 +38,7 @@
         <article class="stat-card">
           <div class="stat-header">
             <h2 class="stat-label">평점</h2>
+            <a th:href="@{/instructor/review/reviewList}"><span class="more-link">더보기</span></a>
           </div>
           <div class="stat-value" th:text="${ScoreReview} + '점'"></div>
         </article>
@@ -54,7 +55,12 @@
             <h2 class="stat-label">강의 총 수익</h2>
             <a th:href="@{/instructor/payment/inst_payment}"><span class="more-link">더보기</span></a>
           </div>
+          <th:block th:if="${instProfit != 0}">
           <div class="stat-value" th:text="${#numbers.formatInteger(instProfit, 3, 'COMMA')} + '원'"></div>
+          </th:block>
+          <th:block th:unless="${instProfit != 0}">
+          <div class="stat-value" th:text="${instProfit}+ '원'"></div>
+          </th:block>
         </article>
       </section>
 
@@ -76,6 +82,9 @@
                 </tr>
               </thead>
               <tbody>
+              	<tr th:if="${sellList == null or #lists.isEmpty(sellList)}">
+    				<td colspan="5" style="text-align: center;">데이터가 없습니다.</td>
+  				</tr>
                 <tr th:each="sell : ${sellList}">
                   <td th:text="${#dates.format(sell.pay_date, 'yyyy-MM-dd')}"></td>
                   <td th:text="${sell.lect_name}"></td>
