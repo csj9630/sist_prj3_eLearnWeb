@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import kr.co.sist.common.util.CryptoUtil;
 
 import kr.co.sist.user.payment.PayDetailDTO; 
 import kr.co.sist.user.payment.UserPaymentMapper; 
@@ -13,6 +14,8 @@ public class PayRecService {
 	
 	@Autowired
 	private UserPaymentMapper userPaymentMapper;
+	@Autowired
+	private CryptoUtil cryptoUtil;
 	
 	// 구매 내역 조회
 	public List<PayDetailDTO> searchPurchaseLectures(String userId) {
@@ -20,6 +23,11 @@ public class PayRecService {
 		
 		// Mapper를 통해 DB에서 조회
 		list = userPaymentMapper.selectMyPurchaseList(userId);
+		if(list != null) {
+			for(PayDetailDTO dto : list) {
+				dto.setInstName(cryptoUtil.decryptSafe(dto.getInstName()));
+			}//end for
+		}//end if
 		
 		return list;
 	}//searchPurchaseLectures

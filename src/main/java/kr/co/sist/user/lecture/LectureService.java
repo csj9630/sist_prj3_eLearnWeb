@@ -10,6 +10,7 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import kr.co.sist.common.util.CryptoUtil;
 import kr.co.sist.common.lecture.CommonLectureService;
 import kr.co.sist.common.lecture.SkillDomain;
 import kr.co.sist.user.lecture.board.LectureDomain;
@@ -28,6 +29,9 @@ public class LectureService {
 	
 	@Autowired
 	private ChapterService cs;
+	
+	@Autowired
+	private CryptoUtil cryptoUtil;
 	
 	@Autowired
 	private CommonLectureService commonService; // 공통 서비스 주입
@@ -58,6 +62,11 @@ public class LectureService {
 	    
 		try { 
 			list = lm.selectLectureList(rangeDTO);
+			if(list != null) {
+				for(LectureDomain domain : list) {
+					domain.setInstName(cryptoUtil.decryptSafe(domain.getInstName()));
+				}//end for
+			}//end if
 		}catch(PersistenceException pe) {
 			pe.printStackTrace();
 		}catch (SQLException e) {

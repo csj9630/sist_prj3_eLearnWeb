@@ -205,6 +205,9 @@ public class AdminReviewService {
 
 		try {
 			rDomain = rm.selectReviewDetailAdmin(reviewId);
+			if (rDomain != null) {
+				rDomain.setUser_name(cryptoUtil.decryptSafe(rDomain.getUser_name()));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} // end try ~ catch

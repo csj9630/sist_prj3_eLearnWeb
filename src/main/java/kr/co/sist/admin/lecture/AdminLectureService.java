@@ -32,7 +32,15 @@ public class AdminLectureService {
 	}
 
 	public List<AdminLectureDomain> searchLectureByCategory(AdminLectureSearchDTO alsDTO) throws PersistenceException {
-		return alm.selectLectureByCategory(alsDTO);
+		List<AdminLectureDomain> list = alm.selectLectureByCategory(alsDTO);
+
+		if (list != null) {
+			for (AdminLectureDomain domain : list) {
+				domain.setInst_name(cryptoUtil.decryptSafe(domain.getInst_name()));
+			}
+		}
+
+		return list;
 	}
 
 	public int countLectureByCategory(AdminLectureSearchDTO alsDTO) throws PersistenceException {
