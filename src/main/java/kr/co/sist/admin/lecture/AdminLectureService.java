@@ -1,4 +1,4 @@
-﻿package kr.co.sist.admin.lecture;
+package kr.co.sist.admin.lecture;
 
 import java.util.Collections;
 import java.util.List;
