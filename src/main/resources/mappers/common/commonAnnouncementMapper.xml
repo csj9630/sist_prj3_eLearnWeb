@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.common.announcement.CommonAnnouncementMapper">
+	<!-- announcement 테이블에 게시글을 추가하는 작업 -->
+	<select id = "selectAnnouncementTotalCnt" parameterType = "commonAnnouncementRangeDTO" resultType = "int">
+		select count(*) cnt
+		from announcement
+		<where>
+			<if test = "keyword neq null and keyword neq ''">
+				instr(${fieldStr}, #{keyword}) != 0
+			</if>
+		</where>
+	</select>
+	
+	<select id = "selectRangeAnnouncement" parameterType = "commonAnnouncementRangeDTO" resultType = "commonAnnouncementDomain">
+		select	ann_id, title, content, views, regdate, regip
+		from   (select	ann_id, title, content, views, regdate, regip,
+						row_number() over(order by regdate desc) rnum
+				from	announcement
+		<where>
+			<if test = "keyword neq null and keyword neq ''">
+						instr(${fieldStr}, #{keyword}) != 0
+			</if>
+		</where>
+				)
+		where	rnum between #{startNum} and #{endNum}
+	</select>
+	
+	<!-- 글 번호를 받아서 해당하는 글 하나를 검색 -->
+	<select id = "selectAnnouncementDetail" parameterType = "Integer" resultType = "commonAnnouncementDomain">
+		select	title, content, views, regdate, regip, adm_id
+		from	announcement
+		where	ann_id = #{ann_id}
+	</select>
+	
+	<!-- 글 번호를 받아서 해당하는 글의 조회수를 증가 -->
+	<update id = "updateAnnouncementView" parameterType = "Integer">
+		update	announcement
+		set		views = views + 1
+		where	ann_id = #{ann_id}
+	</update>
+</mapper>

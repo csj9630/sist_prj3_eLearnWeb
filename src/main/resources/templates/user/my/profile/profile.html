@@ -31,10 +31,12 @@
                         style="width:90px; height:90px; border-radius:50%; overflow:hidden; background:#eee; flex-shrink:0; border: 3px solid #e5f9f0;">
                         <img th:src="@{/images/profile/default.png}"
                             th:if="${profile.img == null or profile.img == '' or profile.img == 'default.png'}"
-                            style="width:100%; height:100%; object-fit:cover;" alt="프로필 이미지">
+                            style="width:100%; height:100%; object-fit:cover;" alt="프로필 이미지"
+                            onerror="this.src = '/common/images/default.png'">
                         <img th:src="@{${profile.img}}"
                             th:unless="${profile.img == null or profile.img == '' or profile.img == 'default.png'}"
-                            style="width:100%; height:100%; object-fit:cover;" alt="프로필 이미지">
+                            style="width:100%; height:100%; object-fit:cover;" alt="프로필 이미지"
+                            onerror="this.src = '/common/images/default.png'">
                     </div>
 
                     <!-- 이름 / 아이디 -->
@@ -61,7 +63,8 @@
                 </div>
                 <div style="display:flex; gap:40px; padding: 8px 0;">
                     <div style="text-align:center;">
-                        <div style="font-size:24px; font-weight:700; color:#00c471;">-</div>
+                        <div style="font-size:24px; font-weight:700; color:#00c471;" th:text="${profile.reviewCount}">0
+                        </div>
                         <div style="font-size:13px; color:#858a8d; margin-top:4px;">수강평 작성수</div>
                     </div>
                 </div>

@@ -6,7 +6,7 @@
     
     	<!-- intlearn로고 -->
     	<!-- 후에 메인페이지가 회원/강사로 나뉘게 되면(localhost:8080/user/  또는 localhost:8080/instructor/ ) 그 때 수정 필요 -->
-	    <a href="/main" class="logo">
+	    <a href="/" class="logo">
 	        <img src="/common/images/main_logo.png" alt="Inflearn" class="logo-img">
 	    </a>
 
@@ -18,7 +18,7 @@
         </a>
         
         <!-- 커뮤니티 -->
-        <a href="/user/community/index" class="nav-text">
+        <a href="/common/announcement/announcementList" class="nav-text">
             <img src="/common/images/community.png" alt="커뮤니티" class="nav-icon">
             <span>커뮤니티</span>
         </a>
@@ -48,7 +48,8 @@
         <a href="/user/my/dashboard/user_dashboard" class="profile-btn" title="마이페이지">
         <img th:if="${session.userImg != null}" 
              th:src="${session.userImg}" 
-             class="profile-img" alt="프로필">
+             class="profile-img" alt="프로필"
+             onerror="this.src = '/common/images/default.png'">
         <i th:unless="${session.userImg != null}" class="fas fa-user-circle"></i>
         </a>
         

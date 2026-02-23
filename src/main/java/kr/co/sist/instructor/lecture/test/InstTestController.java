@@ -31,7 +31,7 @@ public class InstTestController {
 		model.addAttribute("testList", list);
 		model.addAttribute("instId", instId);
 		
-		return "/instructor/lecture/test/instTestFrm";
+		return "instructor/lecture/test/instTestFrm";
 	}//testFrm
 
 	//시험 목록 화면을 ajax로 보내줌
@@ -55,7 +55,7 @@ public class InstTestController {
 	 * iDTO) { boolean flag = is.writeTest(iDTO); model.addAttribute("result",
 	 * flag);
 	 * 
-	 * return "/instructor/lecture/test/instTestResult"; }//createTest
+	 * return "instructor/lecture/test/instTestResult"; }//createTest
 	 */	// 시험문제 생성
 	@PostMapping("/createTest")
 	@ResponseBody

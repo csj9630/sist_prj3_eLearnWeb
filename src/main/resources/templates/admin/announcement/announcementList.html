@@ -23,6 +23,12 @@ $(function() {
 		searchAnnouncement();
 	}); // click
 	
+	$("#keyword").keyup(function(evt) {
+		if(evt.which == 13) {
+			searchReview();
+		} // end if
+	}); // keyup
+	
 }); // ready
 
 function searchAnnouncement() {
@@ -51,10 +57,10 @@ function searchAnnouncement() {
 
 		<!-- 옵션 선택바 -->
         <div class="announcement-toolbar" style = "display: flex;">
-          <!-- 
+          <!--
           <form th:action = "@{/admin/announcement/announcementList}" id = "announcementSearchFrm">
           -->
-          <form th:action = "@{{url}(url = '/admin/announcement/announcementList', field = ${param.lectId}, keyword = ${param.keyword},currentPage = ${param.currentPage})}" id = "announcementSearchFrm">
+          <form th:action = "@{{url}(url = '/admin/announcement/announcementList', field = ${param.lectId}, keyword = ${param.keyword}, currentPage = ${param.currentPage})}" id = "announcementSearchFrm">
           <div class="announcement-filter">
           	<select name = "field" id = "field">
 			<option value = "1" th:selected = "${param.field ne null and param.field[0] eq '1'}">제목</option>
@@ -71,7 +77,7 @@ function searchAnnouncement() {
 			<input type = "button" value = "글쓰기" class = "btn btn--primary" id = "btnWrite"/>
 		  </div>
         </div>
-
+		
 		<!-- 테이블 내용 -->
 		<table class = "announcement-table">
 		<thead>
@@ -91,7 +97,7 @@ function searchAnnouncement() {
 		</th:block>
 		<tr class="announcement-row" th:each = "announcementDomain, i : ${announcementList}" th:object = "${announcementDomain}">
 			<td th:text = "${listNum - i.index}">번호</td>
-			<td class="announcement-title"><a th:href = "@{{url}(url = '/admin/announcement/announcementDetail', annId = *{ann_id}, currentPage = ${param.currentPage})}"><span th:text = "*{title}">제목</span></a></td>
+			<td class="announcement-title"><a th:href = "@{{url}(url = '/admin/announcement/announcementDetail', annId = *{ann_id}, currentPage = ${param.currentPage} ? ${param.currentPage} : 1)}"><span th:text = "*{title}">제목</span></a></td>
 			<td th:text = "*{adm_id}">작성자 ID</td>
 			<td th:text = "*{views}">조회수</td>
 			<td th:text = "*{#dates.format(regdate, 'yyyy-MM-dd EEEE')}">작성일</td>

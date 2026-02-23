@@ -259,7 +259,7 @@ function checkQuestion() {
 				// 사이드바 업데이트 정답 및 오답 변경
 			    $("#correct-count").text(correctCount);
 			    $("#wrong-count").text(wrongCount);
-			    $("#final-score").text(correctCount * (100 / jsonObj.length)); // 점수 계산
+			    $("#final-score").text(Math.floor(correctCount * (100 / jsonObj.length))); // 점수 계산
 
 			    // 애니메이션 효과와 함께 결과 노출
 			    $("#result-stats").slideDown(); 

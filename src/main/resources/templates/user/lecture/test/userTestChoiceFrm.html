@@ -130,13 +130,20 @@
 		$("#checkAnswer").click(function(){
 			checkAnswer();
 		});
-
-        //닫기 버튼 기능
-        $("#btnClose").click(function(){
-            if(confirm("페이지를 닫으시겠습니까?")) {
-                window.close();
-            }
-        });
+		// 닫기 버튼 기능
+	    $("#btnClose").click(function(){
+	        // 1. 실제 input(id="lectId")에서 현재 값을 가져옵니다.
+	        var lectIdurl = $("#lectId").val(); 
+	        
+	        // 2. 경로를 viewProgressList에서 list로 변경합니다.
+	        var url = "/lecture/chapter/list";
+	        
+	        if(confirm("문제 페이지로 돌아가시겠습니까?")) {
+	            // 3. url 뒤에 ?lectId= 를 붙이고 가져온 값을 더합니다.
+	            // 결과 예시: /lecture/chapter/list?lectId=L1
+	            location.href = url + "?lectId=" + lectIdurl; 
+	        }
+	    });
 	});//ready
 	
 	function checkTest() {

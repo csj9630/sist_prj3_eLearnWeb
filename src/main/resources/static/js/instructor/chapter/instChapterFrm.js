@@ -84,10 +84,10 @@ function loadChapterDetail(chptrId) {
 	      $('#videoPreview').removeClass('d-flex').addClass('d-none');
 	  }
 	  
-      // 기존 첨부파일 표시
+      // 기존 첨부파일 표시, 파일명 앞 UUID를 언더바로 제거.
       if (data.doc) {
         $("#currentFile")
-          .text("기존 첨부파일: " + data.doc)
+          .text("기존 첨부파일: " + data.doc.substr(data.doc.indexOf('_')+1))
           .show();
       } else {
         $("#currentFile").hide();

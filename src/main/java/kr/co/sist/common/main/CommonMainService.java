@@ -1,5 +1,7 @@
 package kr.co.sist.common.main;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
@@ -33,6 +35,22 @@ public class CommonMainService {
             log.error("강의 목록 조회 실패", pe);
         }
         return list;
+    }
+    
+    public List<CommonMainDomain> getTopCoursesByStudentCount(int limit) {
+        List<CommonMainDomain> list = getCourseList();
+        if (list == null || list.isEmpty() || limit <= 0) {
+            return new ArrayList<>();
+        }
+
+        List<CommonMainDomain> copy = new ArrayList<>(list);
+        copy.sort(
+            Comparator.comparingInt(CommonMainDomain::getUsercount).reversed()
+                .thenComparing(Comparator.comparing(CommonMainDomain::getLectId, Comparator.nullsLast(String::compareTo)).reversed())
+        );
+
+        int toIndex = Math.min(limit, copy.size());
+        return new ArrayList<>(copy.subList(0, toIndex));
     }
 
 }

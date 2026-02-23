@@ -17,14 +17,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-        // 강의 썸네일: "/common/images/lecture_thumbs/**" → "C:/upload/lecture_thumbs/"
-        // properties에 정의된 가상 경로와 물리 경로를 그대로 연결
+        // 1. 강의 썸네일 매핑 (중요: 슬래시 3개가 아니라 2개면 충분합니다)
         registry.addResourceHandler(imgPath + "**")
-                .addResourceLocations("file:///" + uploadPath);
+                .addResourceLocations("file:" + uploadPath);
 
-        // 프로필 이미지: "/images/**" → "C:/upload/"
-        // DB에 저장된 경로 예시: /images/profile/kim/img_1.jpg
+        // 2. 프로필 이미지 매핑 (하드코딩된 C:/ 경로 삭제)
+        // /images/** 요청이 오면 /upload/ 경로에서 찾도록 수정
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:///C:/upload/");
+                .addResourceLocations("file:/upload/"); 
     }
 }
+

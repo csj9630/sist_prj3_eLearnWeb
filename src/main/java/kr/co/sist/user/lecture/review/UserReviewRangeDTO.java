@@ -21,7 +21,7 @@ public class UserReviewRangeDTO {
 	private int totalPage = 0; // 총 페이지
 	
 	public String getFieldStr() {
-		String[] fieldTitle = {"content", "user_id"};
+		String[] fieldTitle = {"content", "score"};
 		int tempField = Integer.parseInt(field);
 		if(!(tempField > 0 && tempField < 3)) { // 1 ~ 2 사이가 아닌 경우
 			tempField = 1;

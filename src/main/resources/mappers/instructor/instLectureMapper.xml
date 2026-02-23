@@ -21,11 +21,20 @@
 		    C.NAME AS "catName",
 		    -- 평점 계산 (리뷰가 없을 경우 0)
 		    (SELECT NVL(ROUND(AVG(R.SCORE), 1), 0) FROM REVIEW R WHERE R.LECT_ID = L.LECT_ID) AS "reviewAvg",
-		    L.USERCOUNT,
+		    -- 수정됨: 실제 결제 내역 기반 수강생 수 (결제완료 상태인 STATE = 1 기준)
+	        (SELECT COUNT(*) 
+	         FROM PAYMENT_DETAIL2 PD2 
+	         JOIN PAYMENT P ON PD2.PAYREC_ID = P.PAYREC_ID 
+	         WHERE PD2.LECT_ID = L.LECT_ID AND P.STATE = 1) AS "userCount",
 		    -- 질문 수 계산
 		    (SELECT COUNT(*) FROM QUESTION Q WHERE Q.LECT_ID = L.LECT_ID) AS "questCnt",
-		    -- 총 수입 (가격 * 수강생 수)
-		    (L.PRICE * L.USERCOUNT) AS "cash",
+		    -- 수정됨: 실제 총 수입 (강의 가격 * 실제 결제 완료 수강생 수)
+	        (L.PRICE * (
+	            SELECT COUNT(*) 
+	            FROM PAYMENT_DETAIL2 PD2 
+	            JOIN PAYMENT P ON PD2.PAYREC_ID = P.PAYREC_ID 
+	            WHERE PD2.LECT_ID = L.LECT_ID AND P.STATE = 1
+	        )) AS "cash",
 		    L.AVAILABILITY,
 		    -- UI 요구사항: 승인 상태 및 거절 사유
 		    L.APPROVAL,
