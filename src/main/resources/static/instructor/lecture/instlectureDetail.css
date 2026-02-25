@@ -1,0 +1,51 @@
+
+/* 레이아웃은 dashboard.css에 전적으로 위임하고, 여기서는 본문 내부만 제어합니다. */
+
+/* 1. 본문 최상위 래퍼 여백 설정 */
+#wrap {
+  padding: 32px;
+  width: 100%;
+}
+
+/* 2. 카테고리 뱃지 등 상세 전용 스타일 */
+.bg-primary-soft {
+  background-color: #0080ff;
+  color: #1f6feb;
+}
+
+.fw-bold {
+  background-color: #1F6FEB;
+  color: #ffffff;
+  padding: 5px;
+  border-radius: 10%;
+}
+
+/* 3. 테이블 정렬 최적화 (기존 코드 유지) */
+.table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #ebe7e3;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.table thead th, .table tbody td {
+  padding: 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid #ebe7e3;
+  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.table th:nth-child(1), .table td:nth-child(1) { width: 10%; text-align: center; }
+.table th:nth-child(2), .table td:nth-child(2) { text-align: left; white-space: normal; }
+.table th:nth-child(3), .table td:nth-child(3) { width: 10%; text-align: center; }
+.table th:nth-child(4), .table td:nth-child(4) { width: 20%; text-align: left; }
+.table th:nth-child(5), .table td:nth-child(5) { width: 20%; text-align: center; }
+.table thead th {
+  background: #fcfaf8;
+  color: #6e6a67;
+  font-weight: 700;
+}

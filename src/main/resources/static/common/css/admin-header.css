@@ -8,35 +8,45 @@
 }
 
 .admin-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1200;
   width: 100%;
   background: var(--admin-header-bg);
   color: var(--admin-header-text);
   font-family: "Pretendard", "Noto Sans KR", "Segoe UI", sans-serif;
   letter-spacing: 0.2px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
 }
 
 .admin-header__bar {
-  max-width: 1200px;
-  margin: 0 auto;
-  height: 44px;
+  width: 100%;
+  margin: 0;
+  height: var(--header-height, 84px);
   display: flex;
   align-items: center;
-  gap: 24px;
-  padding: 0 16px;
+  gap: 18px;
+  padding: 0 18px;
 }
 
 .admin-header__brand {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 6px;
+  width: var(--sidebar-width, 240px);
+  min-width: var(--sidebar-width, 240px);
+  padding-right: 18px;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
   font-weight: 700;
-  font-size: 16px;
+  font-size: 17px;
   text-decoration: none;
   color: var(--admin-header-text);
 }
 
 .admin-header__brand img {
-  height: 28px;
+  height: 42px;
   width: auto;
   display: block;
   object-fit: contain;
@@ -60,9 +70,9 @@
 .admin-header__link {
   color: var(--admin-header-muted);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 600;
-  padding: 6px 8px;
+  padding: 10px 12px;
   border-radius: 6px;
   transition: color 150ms ease, background 150ms ease;
 }
@@ -87,10 +97,10 @@
   background: var(--admin-header-btn);
   color: #ffffff;
   text-decoration: none;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 9px 14px;
+  border-radius: 8px;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
   transition: background 150ms ease, transform 150ms ease;
 }
@@ -101,15 +111,22 @@
 }
 
 .admin-header__accent {
-  height: 3px;
-  background: #ffffff;
-  opacity: 0.9;
+  height: 2px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.22) 0, rgba(255, 255, 255, 0.22) var(--sidebar-width, 240px), rgba(255, 255, 255, 0.08) var(--sidebar-width, 240px), rgba(255, 255, 255, 0.08) 100%);
+  opacity: 1;
 }
 
 @media (max-width: 720px) {
   .admin-header__bar {
-    height: 52px;
+    height: 60px;
     gap: 12px;
+  }
+
+  .admin-header__brand {
+    width: auto;
+    min-width: 0;
+    padding-right: 0;
+    border-right: none;
   }
 
   .admin-header__nav {

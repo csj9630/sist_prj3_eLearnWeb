@@ -15,7 +15,7 @@ import kr.co.sist.user.member.UserDTO;
 import kr.co.sist.user.member.UserDomain;
 
 // user 모듈의 로그인 컨트롤러 - 빈 이름을 명시적으로 지정하여 충돌 방지
-@RequestMapping("/user/member/login")
+@RequestMapping("/user/login")
 @Controller("userLoginController")
 public class LoginController {
 
@@ -24,13 +24,21 @@ public class LoginController {
 
 	@GetMapping("/loginFrm")
 	public String stuLogin() {
-
-		return "user/member/login/loginFrm";
+		return "common/member/loginFrm";
 	}
 
 	@PostMapping("/loginProcess")
-	public String stuLoginProcess(UserDTO uDTO, Model model, HttpSession session) {
+	public String stuLoginProcess(UserDTO uDTO, Model model, jakarta.servlet.http.HttpServletRequest request) {
 		System.out.println("---- 로그인 프로세스 진입 ----");
+
+		// 기존 세션 무효화 (동시 로그인 방지: 강사/유저 세션 충돌 해결)
+		HttpSession oldSession = request.getSession(false);
+		if (oldSession != null) {
+			oldSession.invalidate();
+		}
+		// 속성을 담을 새 세션 발급
+		HttpSession session = request.getSession(true);
+
 		UserDomain ud = ls.loginUser(uDTO);
 		System.out.println("로그인 결과 ud: " + ud);
 
@@ -39,6 +47,8 @@ public class LoginController {
 			session.setAttribute("userId", ud.getId());
 			session.setAttribute("userName", ud.getName());
 			session.setAttribute("userEmail", ud.getEmail());
+			// 프로필 이미지 경로 세션 저장 (null이면 헤더에서 기본 아이콘 표시)
+			session.setAttribute("userImg", ud.getImg());
 
 			System.out.println("세션 설정 완료: " + session.getId());
 			System.out.println("세션 설정 완료: " + session.getAttribute("userName"));
@@ -49,7 +59,7 @@ public class LoginController {
 		} else { // 로그인 실패
 			System.out.println("로그인 실패: ud is null");
 			model.addAttribute("msg", "아이디 또는 비밀번호를 확인해주세요.");
-			return "user/member/login/loginFrm";
+			return "common/member/loginFrm";
 		}
 	}
 

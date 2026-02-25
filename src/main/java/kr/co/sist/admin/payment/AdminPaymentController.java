@@ -7,20 +7,37 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admin/payment")
 public class AdminPaymentController {
 
 	@Autowired
 	private AdminPaymentService aps;
 	
-	@GetMapping("/payment/searchPayPriceSum")
-	public String searchPaySum(Model model) { 
-		List<LectProfitDomain> lectProfitList=aps.getLectProfit();
+	@GetMapping("/searchPayPriceSum")
+	public String searchPaySum(Model model, AdminPaymentSearchDTO apsDTO, HttpServletRequest req) { 
+		int totalProfit=aps.getTotalProfit();
+		int adminProfit=aps.getAdminProfit();
+		List<String> instList=aps.getAllInst();
+		List<LectProfitDomain> lectProfitList=aps.getLectProfit(apsDTO);
+		
+		model.addAttribute("instructor", instList);
+		model.addAttribute("totalProfit", totalProfit);
+		model.addAttribute("adminProfit", adminProfit);
 		//하단 수익 데이터
 		model.addAttribute("lectProfitList", lectProfitList);
+		model.addAttribute("currentUri", req.getRequestURI());
 		
 		return "admin/payment/payment";
 	}//searchPaySum
+	
+	@GetMapping("/searchInstProfit")
+	@ResponseBody
+	public List<LectProfitDomain> searchInstProfit(Model model, AdminPaymentSearchDTO apsDTO) {
+		return aps.getLectProfit(apsDTO);
+	}//searchInstProfit
 }

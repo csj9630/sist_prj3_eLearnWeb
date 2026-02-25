@@ -8,7 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+
 
 @Controller
 @RequestMapping("/admin")
@@ -18,7 +20,8 @@ public class AdminDashBoardController {
 	private AdminDashBoardService adbs;
 	
 	@GetMapping("/dashboard")
-	public String dashboard(Model model, HttpSession session) {
+	public String dashboard(Model model, HttpSession session, HttpServletRequest req) {
+		session.setAttribute("adminId", "admin1"); //임시로 세션에 adminId 값 넣음
 		int instCnt=adbs.getTotalCountInst();
 		int lectCnt=adbs.getTotalCountLect();
 		int userCnt=adbs.getTotalCountUser();
@@ -36,10 +39,9 @@ public class AdminDashBoardController {
 		model.addAttribute("payList", payList);
 		//최다 수강 과목
 		model.addAttribute("userList", userList);
-		System.out.println(userList);
 		//헤더에 쓸 페이지명
 		model.addAttribute("pageTitle", "대시보드");
-		
+		model.addAttribute("currentUri", req.getRequestURI());
 		return "admin/dashboard/dashboard";
 	}
 }

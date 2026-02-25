@@ -1,0 +1,219 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>강사 챕터 관리</title>
+
+    <th:block th:replace="~{fragments/cdn :: cdn}" />
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="/js/instructor/chapter/instChapterFrm.js"></script>
+    <style type="text/css">
+      body {
+        background-color: #f8faff;
+        font-family: "Pretendard", sans-serif;
+        padding: 40px;
+      }
+      .manage-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+        align-items: start;
+      }
+      .view-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      }
+      .section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2b3445;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f2f5;
+      }
+      .form-label {
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 8px;
+      }
+      .input-custom {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+      .input-custom:focus {
+        border-color: #4361ee;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        outline: none;
+      }
+      .btn-main {
+        background: #4361ee;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-main:hover {
+        background: #3a53d0;
+        transform: translateY(-2px);
+      }
+      .chapter-list .list-group-item {
+        border: 1px solid #e2e8f0;
+        margin-bottom: 10px;
+        border-radius: 10px !important;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .chapter-list .list-group-item:hover {
+        background-color: #f8faff;
+        border-color: #4361ee;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="manage-container">
+      <div class="view-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3 class="section-title mb-0 border-0">챕터 목록</h3>
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-sm"
+            onclick="resetForm()"
+          >
+            + 새 챕터 추가
+          </button>
+          <a th:href="@{/instructor/lecture/detail(lectId=${lectId})}" 
+		       class="btn btn-sm btn-outline-secondary" 
+		       style="border-radius: 8px; padding: 6px 15px; font-weight: 500; font-size: 0.85rem;">
+		      <i class="fas fa-arrow-left me-1"></i> 강의 상세로
+		    </a>
+        </div>
+
+        <div class="list-group chapter-list" id="chapterListArea"></div>
+      </div>
+
+      <div class="view-card">
+        <h3 class="section-title" id="formTitle">새 챕터 추가</h3>
+        
+
+        <form id="chapterForm" enctype="multipart/form-data">
+          <input
+            type="hidden"
+            name="lectId"
+            id="lectId"
+            th:value="${param.lectId}"
+          />
+          <input type="hidden" name="chptrId" id="chptrId" />
+
+          <div class="form-group mb-3">
+            <label class="form-label">챕터명</label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              class="form-control input-custom"
+              placeholder="챕터명을 입력하세요"
+              required
+            />
+          </div>
+
+          <div class="form-group mb-3">
+		    <label class="form-label">유튜브 링크 (Video URL)</label>
+		    <input type="text" name="video" id="video" class="form-control input-custom" placeholder="예: https://youtu.be/..." required />
+		    
+		    <div id="videoPreview" class="mt-2 d-none align-items-start p-2" style="background: #f8faff; border-radius: 10px; border: 1px solid #e2e8f0;">
+		        <img id="thumbImg" src="" alt="썸네일" style="width: 140px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+		        <div class="ms-3 mt-1">
+		            <span class="badge bg-danger mb-1">YouTube</span>
+		            <div id="videoTitleText" class="fw-bold text-dark mb-1" style="font-size: 0.95rem; word-break: keep-all;">제목을 불러오는 중...</div>
+		            <div id="videoDurationText" class="text-muted small fw-bold">길이 확인 중...</div>
+		        </div>
+		    </div>
+		    
+		    <div id="hiddenPlayerContainer" style="position: absolute; left: -9999px; top: -9999px; width: 1px; height: 1px; overflow: hidden;">
+		        <div id="hiddenPlayer"></div>
+		    </div>
+		</div>
+
+		<div class="form-group mb-3">
+		    <label class="form-label">영상 길이</label>
+		    <div class="input-group">
+		        <input
+		            type="number"
+		            name="length"
+		            id="length"
+		            class="form-control input-custom bg-light"
+		            placeholder="초 (자동 계산)"
+		            readonly
+		        />
+		        <span class="input-group-text" style="background-color: #f0f2f5; border: 2px solid #e2e8f0; border-left: none; border-right: none;">=</span>
+		        <input
+		            type="text"
+		            id="lengthStrView"
+		            class="form-control input-custom bg-light"
+		            placeholder="시/분/초 (자동 변환)"
+		            readonly
+		        />
+		    </div>
+		</div>
+
+          <div class="form-group mb-4">
+            <label class="form-label">강의 자료 첨부</label>
+            <input
+              type="file"
+              name="uploadFile"
+              id="uploadFile"
+              class="form-control input-custom"
+            />
+            <div
+              id="currentFile"
+              class="mt-2 small text-primary"
+              style="display: none"
+            ></div>
+          </div>
+
+          <div class="action-area mt-4">
+            <input
+              type="button"
+              id="btnAdd"
+              value="챕터 저장하기"
+              class="btn-main w-100"
+            />
+
+            <div id="editButtons" style="display: none">
+              <input
+                type="button"
+                id="btnUpdate"
+                value="수정 완료"
+                class="btn-main w-100 mb-2"
+              />
+              <input
+                type="button"
+                id="btnDelete"
+                value="챕터 삭제"
+                class="btn btn-danger w-100 mb-2"
+                style="border-radius: 10px; padding: 14px; font-weight: 600"
+              />
+              <button
+                type="button"
+                id="btnCancel"
+                class="btn btn-link w-100 text-secondary"
+                onclick="resetForm()"
+              >
+                작성 취소 (새로 등록)
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

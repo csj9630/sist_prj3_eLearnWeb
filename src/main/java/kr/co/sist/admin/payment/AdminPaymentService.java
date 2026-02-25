@@ -6,16 +6,38 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import kr.co.sist.common.util.CryptoUtil;
+
 @Service
 public class AdminPaymentService {
 
 	@Autowired(required=false)
 	private AdminPaymentMapper apm;
 	
-	public List<LectProfitDomain> getLectProfit() throws PersistenceException {
-		List<LectProfitDomain> lectProfitList;
+	@Autowired
+	private CryptoUtil cryptoUtil;
+	
+	public List<String> getAllInst() throws PersistenceException {
+		return apm.selectAllInst();
+	}
+	
+	public int getTotalProfit() throws PersistenceException {
+		return apm.selectAllProfit();
+	}//getTotalProfit
+	
+	public int getAdminProfit() throws PersistenceException {
+		return apm.selectAdminProfit();
+	}
+	
+	public List<LectProfitDomain> getLectProfit(AdminPaymentSearchDTO apsDTO) throws PersistenceException {
+		List<LectProfitDomain> lectProfitList = apm.selectLectProfit(apsDTO);
 		
-		lectProfitList=apm.selectLectProfit();
+		if (lectProfitList != null) {
+			for (LectProfitDomain lectProfitDomain : lectProfitList) {
+				lectProfitDomain.setInst_name(cryptoUtil.decryptSafe(lectProfitDomain.getInst_name()));
+			}
+		}
+		
 		return lectProfitList;
 	}//getLectProfit
 }

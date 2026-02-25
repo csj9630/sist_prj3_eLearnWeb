@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>공지사항</title>
+    <link rel="stylesheet" href="/common/css/common-sidebar.css">
+    <link rel="stylesheet" href="/common/announcement/announcement.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/CommonHeader :: header}"></div>
+	
+    <div class="common-container">
+        <div th:replace="~{fragments/CommonSidebar :: commonSidebar}"></div>
+		
+        <div class="common-content">
+            		<!-- 옵션 선택바 -->
+      		<h2 class="page-title" th:text = "${announcementDomain.title}"></h2>
+      		<div class = "partingLine" style = "height: 2px; background-color: #E0E0E0;"></div>
+			
+      		<div class="regDate">
+      			<span th:text = "|업로드: ${#dates.format(announcementDomain.regdate, 'yyyy년 MM월 dd일')}|"></span>
+   			</div>
+   			<div class="annContent">
+   				<textarea th:utext = "${announcementDomain.content}" readonly = "readonly"></textarea>
+   			</div>
+  			<div class="listBtn">
+	   			<a href = "javascript:history.back()" class = "btn btn--list" id = "btnWrite">리스트</a>
+   			</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title th:text="${allDetail.detail.name}">강의 상세정보</title>
+    <link rel="stylesheet" th:href="@{/css/user/lectureDetail.css}" />
+    <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+
+    <style type="text/css">
+	#wrap {
+	    margin: 0px auto;
+	    width: 1200px;
+	    min-height: 100vh; /* 고정 height: 1000px; 삭제 -> 최소 화면 높이 보장 */
+	    padding-bottom: 100px; /* 푸터와 겹치지 않게 하단 여백 추가 */
+	  }
+
+      #header {
+        height: 150px;
+      }
+
+      #container {
+     /*    height: 700px; */
+    	 min-height: 700px;
+      }
+
+      #footer {
+        height: 150px;
+      }
+
+      .thumb {
+        width: 80%;
+        border-radius: 5px;
+      }
+    </style>
+
+    <!--JS 실습 파트-->
+    <script type="text/javascript">
+      $(function () {}); //document.ready
+      /**
+      * 장바구니 담기 AJAX (기본 알림창 방식)
+      */
+     function addToCart(lectId) {
+         $.ajax({
+             url: '/user/payment/ajaxAddToCart',
+             type: 'POST',
+             data: { lectId: lectId },
+             success: function (res) {
+                 if (res === 'success') {
+                     if (confirm('장바구니에 담겼습니다! 🛒\n장바구니 페이지로 이동하시겠습니까?')) {
+                         location.href = '/user/payment/searchMyCart';
+                     }
+                 } else if (res === 'duplicate') {
+                     alert('이미 장바구니에 담긴 강의입니다.');
+                 } else if (res === 'login_required') {
+                     if (confirm('로그인이 필요한 서비스입니다.\n로그인 페이지로 이동할까요?')) {
+                         location.href = '/common/member/loginFrm';
+                     }
+                 }
+             },
+             error: function () {
+                 alert('오류가 발생했습니다. 다시 시도해주세요.');
+             }
+         });
+     }
+    </script>
+  </head>
+  <body>
+    <div id="header">
+      <th:block th:replace="~{fragments/MyHeader :: header}" />
+    </div>
+    <div id="wrap">
+      <div class="container mt-5">
+        <div class="row" th:object="${allDetail.detail}">
+          <div class="col-md-4">
+            <img
+              th:src="|${imgPath}*{thumbnail}|"
+              onerror="this.src = '/common/images/default.png'"
+              class="img-fluid"
+              alt="강의 썸네일"
+            />
+          </div>
+          <div class="col-md-8">
+            <div
+              class="badge bg-emerald-100 text-emerald-700 px-3 py-2 rounded-pill mb-3"
+              style="
+                background-color: #ecfdf5;
+                color: #059669;
+                font-weight: 700;
+              "
+            >
+              <i data-lucide="tag" class="w-3 h-3 d-inline-block me-1"></i>
+              <span th:text="*{catName}">카테고리명</span>
+            </div>
+
+            <h2 th:text="*{name}">강의명</h2>
+            <p class="text-muted mb-4 intro" th:text="*{shortint}">강의 한 줄 소개</p>
+
+            <div class="skill-tags mb-4">
+              <span
+                th:each="skill : ${skillList}"
+                th:text="${skill}"
+                class="badge border me-2 py-2 px-3 text-secondary"
+                style="border-radius: 8px; font-weight: 500; background: #fff"
+              >
+                Java
+              </span>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+              <h3
+                class="text-primary mb-0"
+                th:text="*{price == 0 ? '무료' : #numbers.formatInteger(price, 3, 'COMMA') + '원'}"
+              >
+                가격
+              </h3>
+            </div>
+
+			<div class="mt-4 d-flex justify-content-start">
+    <button type="button" 
+            th:onclick="addToCart([[${allDetail.detail.lectId}]])"
+            class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2"
+            style="width: 50%; height: 54px; font-weight: 800;">
+        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+        <span>장바구니 담기</span>
+    </button>
+</div>
+
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item shadow-sm">
+              <button
+                class="nav-link active"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-intro"
+                
+              >
+                강의 소개
+              </button>
+            </li>
+            <li class="nav-item shadow-sm">
+              <button
+                class="nav-link"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-curriculum"
+              >
+                교육 과정
+              </button>
+            </li>
+            <li class="nav-item shadow-sm">
+              <button
+                class="nav-link"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-reviews"
+              >
+                수강평
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content p-4 border border-top-0">
+            <div class="tab-pane fade show active" id="tab-intro">
+              <div th:utext="${allDetail.detail.intro}">강의 상세 내용</div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-curriculum">
+              <div class="content-box mt-3">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 10%">번호</th>
+                      <th style="width: 50%">강의명</th>
+                      <th style="width: 20%">강의시간</th>
+                      <th style="width: 20%; text-align: center">강의자료</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:if="${#lists.isEmpty(allDetail.chapter)}">
+                      <td colspan="4" class="text-center py-4 text-muted">
+                        등록된 커리큘럼이 없습니다.
+                      </td>
+                    </tr>
+
+                    <tr
+                      th:each="item, i : ${allDetail.chapter}"
+                      th:object="${item}"
+                    >
+                      <td th:text="${i.count}">1</td>
+
+                      <td>
+                        <i class="bi bi-play-circle me-2 text-primary"></i>
+                        <span th:text="*{name}">강의 제목</span>
+                      </td>
+
+                      <td th:text="*{lengthStr}">10:00</td>
+
+                      <td class="text-center">
+                        <th:block th:if="*{not #strings.isEmpty(doc)}">
+                          <span
+                            class="badge rounded-pill bg-light text-dark border"
+                          >
+                            <i class="bi bi-file-earmark-arrow-down"></i> 자료
+                            포함
+                          </span>
+                        </th:block>
+                        <span
+                          th:unless="*{not #strings.isEmpty(doc)}"
+                          class="text-muted small"
+                          >-</span
+                        >
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-reviews">
+              <div
+                th:if="${#lists.isEmpty(allDetail.review)}"
+                class="text-center py-5"
+              >
+                <p>
+                  아직 작성된 수강평이 없습니다. 첫 번째 수강평을 남겨보세요!
+                </p>
+              </div>
+              <div
+                th:each="rev : ${allDetail.review}"
+                class="mb-4 pb-3 border-bottom"
+              >
+                <div class="d-flex justify-content-between">
+                  <strong th:text="${rev.user_id}">작성자</strong>
+                  <span class="text-warning" th:text="${'★'.repeat(rev.score)}"
+                    >별점</span
+                  >
+                </div>
+                <p class="mt-2" th:text="${rev.content}">수강평 내용</p>
+                <small
+                  class="text-muted"
+                  th:text="${#dates.format(rev.regdate, 'yyyy-MM-dd')}"
+                  >날짜</small
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--"wrap" -->
+    <div id="footer">
+      <th:block th:replace="~{fragments/footer :: footer}" />
+    </div>
+  </body>
+</html>

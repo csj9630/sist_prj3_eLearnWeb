@@ -9,7 +9,7 @@
   --shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
   --radius: 18px;
   --sidebar-width: 240px;
-  --header-height: 72px;
+  --header-height: 50px;
   --stroke: #ebe7e3;
 }
 
@@ -77,6 +77,27 @@ body.admin-dashboard {
   font-size: 12px;
 }
 
+.more-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8c8f95;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.more-link::after {
+  content: "›";
+  font-size: 16px;
+  line-height: 1;
+  color: #b1b5bb;
+}
+
+.more-link:hover {
+  color: #6f7480;
+}
+
 .stat-value {
   margin-top: 18px;
   font-size: 18px;
@@ -97,6 +118,12 @@ body.admin-dashboard {
   box-shadow: var(--shadow);
 }
 
+.close-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
 .panel-header {
   display: flex;
   align-items: flex-start;
@@ -236,12 +263,17 @@ body.admin-dashboard {
 
 .data-table th:nth-child(2),
 .data-table td:nth-child(2) {
-  width: 45%;
+  width: 20%;
 }
 
 .data-table th:nth-child(3),
 .data-table td:nth-child(3) {
-  width: 15%;
+  width: 20%;
+}
+
+.data-table th:nth-child(4),
+.data-table td:nth-child(4) {
+  width: 20%;
 }
 
 .data-table th:nth-child(4),

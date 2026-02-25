@@ -17,7 +17,6 @@
                     '학습 시작 전'
                 ) AS chptrName,
                 l.THUMBNAIL AS thumbnail,
-                -- 여기서는 LASTDATE를 잘 쓰고 계십니다.
                 NVL(
                     (SELECT MAX(mc.LASTDATE) FROM MY_CHAPTER mc 
                      JOIN CHAPTER c ON mc.CHPTR_ID = c.CHPTR_ID 

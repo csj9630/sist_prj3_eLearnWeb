@@ -20,7 +20,23 @@ public class CommonMemberController {
         this.commonMemberService = commonMemberService;
     }
 
-    @GetMapping({ "/findIdFrm", "/findId" })
+    /**
+     * 공통 로그인 페이지 (사용자/강사 탭 전환)
+     */
+    @GetMapping("/loginFrm")
+    public String loginFrm() {
+        return "common/member/loginFrm";
+    }
+
+    /**
+     * 공통 회원가입 선택 페이지 (학생/강사 선택)
+     */
+    @GetMapping("/joinSelectFrm")
+    public String joinSelectFrm() {
+        return "common/member/joinSelectFrm";
+    }
+
+    @GetMapping("/findIdFrm")
     public String findIdFrm() {
         return "common/member/findIdFrm";
     }
@@ -100,6 +116,16 @@ public class CommonMemberController {
     @ResponseBody
     public boolean resetPassword(String type, String id, String password) {
         return commonMemberService.updatePassword(type, id, password);
+    }
+
+    /**
+     * 공통 로그아웃 - 세션 전체 무효화 후 메인으로 리다이렉트
+     * mainHeader.html의 /common/member/logout 링크에서 호출됨
+     */
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate(); // 세션 전체 삭제 (userId, userName 등 모두 제거)
+        return "redirect:/"; // 메인 페이지로 이동
     }
 
 }

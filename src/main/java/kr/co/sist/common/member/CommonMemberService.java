@@ -3,9 +3,12 @@ package kr.co.sist.common.member;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 공통 - 회원 멤버 서비스 (아이디/비번 찾기)
  */
+@Slf4j
 @Service
 public class CommonMemberService {
 
@@ -29,14 +32,8 @@ public class CommonMemberService {
     }
 
     /**
-     * 인증번호 발송
-     * 
-     * @param phone 수신 번호
-     * @return 발송된 인증번호 (실패 시 null)
-     */
-    /**
      * 아이디 찾기용 인증번호 발송
-     * 
+     *
      * @param phone 수신 번호
      * @return 발송된 인증번호 (회원 없으면 "not_found", 실패 시 null)
      */
@@ -49,7 +46,7 @@ public class CommonMemberService {
                 userId = commonMemberMapper.selectInstructorByPhone(phone);
             }
         } catch (PersistenceException pe) {
-            pe.printStackTrace();
+            log.error("아이디 찾기 회원 조회 실패 - phone: {}", phone, pe);
         }
 
         if (userId == null) {
@@ -68,7 +65,7 @@ public class CommonMemberService {
 
     /**
      * 휴대폰 번호 인증 (단순 발송 - 정보수정 등)
-     * 
+     *
      * @param phone 수신 번호
      * @return 발송된 인증번호
      */
@@ -85,7 +82,7 @@ public class CommonMemberService {
 
     /**
      * 아이디 찾기 (인증 후 ID 반환)
-     * 
+     *
      * @param phone 수신 번호
      * @return 회원 아이디
      */
@@ -97,49 +94,60 @@ public class CommonMemberService {
                 userId = commonMemberMapper.selectInstructorByPhone(phone);
             }
         } catch (PersistenceException pe) {
-            pe.printStackTrace();
+            log.error("아이디 찾기 실패 - phone: {}", phone, pe);
         }
         return userId;
     }
 
     /**
      * 비밀번호 찾기 (정보 확인 및 이메일 전송)
-     * 
+     *
      * @param type 회원 유형 (user/instructor)
      * @param id   아이디
      * @param name 이름
      * @return 마스킹된 이메일 / not_found / null
      */
     public String sendPwAuthCode(String type, String id, String name) {
-        String foundEmail = null;
+        java.util.Map<String, Object> result = null;
 
         try {
-            // 이름 암호화 (DB에 암호화됐 저장됨)
-            String encryptedName = cryptoUtil.encrypt(name);
-
-            java.util.Map<String, String> params = new java.util.HashMap<>();
-            params.put("id", id);
-            params.put("name", encryptedName);
-
+            // ID로만 조회하여 이름+이메일을 가져옴
             if ("user".equals(type)) {
-                foundEmail = commonMemberMapper.selectUserEmailByInfo(params);
+                result = commonMemberMapper.selectUserNameEmailById(id);
             } else if ("instructor".equals(type)) {
-                foundEmail = commonMemberMapper.selectInstructorEmailByInfo(params);
+                result = commonMemberMapper.selectInstructorNameEmailById(id);
             }
         } catch (PersistenceException pe) {
-            pe.printStackTrace();
+            log.error("비밀번호 찾기 회원 조회 실패 - type: {}, id: {}", type, id, pe);
         }
 
-        if (foundEmail == null) {
+        // 해당 ID의 회원이 없는 경우
+        if (result == null) {
+            return "not_found";
+        }
+
+        // DB에서 가져온 암호화된 이름을 복호화하여 사용자 입력과 비교
+        String encryptedDbName = (String) result.get("NAME");
+        String decryptedDbName = null;
+        try {
+            decryptedDbName = cryptoUtil.decrypt(encryptedDbName);
+        } catch (Exception e) {
+            log.error("비밀번호 찾기 이름 복호화 실패 - id: {}", id, e);
+            return "not_found"; // 복호화 실패 시
+        }
+
+        // 이름 불일치 시
+        if (decryptedDbName == null || !decryptedDbName.equals(name)) {
             return "not_found";
         }
 
         // 이메일 복호화
+        String encryptedEmail = (String) result.get("EMAIL");
         String decryptedEmail = null;
         try {
-            decryptedEmail = cryptoUtil.decrypt(foundEmail);
+            decryptedEmail = cryptoUtil.decrypt(encryptedEmail);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("비밀번호 찾기 이메일 복호화 실패 - id: {}", id, e);
             return null; // 복호화 실패 시 중단
         }
 
@@ -166,7 +174,7 @@ public class CommonMemberService {
 
     /**
      * 비밀번호 재설정
-     * 
+     *
      * @param type  회원 유형
      * @param id    아이디
      * @param newPw 새 비밀번호
@@ -185,7 +193,7 @@ public class CommonMemberService {
                 currentHash = commonMemberMapper.selectInstructorPassword(id);
             }
         } catch (PersistenceException pe) {
-            pe.printStackTrace();
+            log.error("비밀번호 재설정 - 현재 비밀번호 조회 실패 - type: {}, id: {}", type, id, pe);
             return false;
         }
 
@@ -208,14 +216,14 @@ public class CommonMemberService {
                 cnt = commonMemberMapper.updateInstructorPassword(params);
             }
         } catch (PersistenceException pe) {
-            pe.printStackTrace();
+            log.error("비밀번호 재설정 실패 - type: {}, id: {}", type, id, pe);
         }
         return cnt > 0;
     }
 
     /**
      * SMS 발송 내부 메서드
-     * 
+     *
      * @param phone 수신 번호
      * @param text  메시지 내용
      * @return 발송 성공 여부
@@ -237,7 +245,7 @@ public class CommonMemberService {
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("SMS 발송 실패 - phone: {}", phone, e);
             return false;
         }
     }

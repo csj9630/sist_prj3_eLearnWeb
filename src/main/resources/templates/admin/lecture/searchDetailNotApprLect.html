@@ -12,7 +12,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script type="text/javascript">
 $(function(){
-	$(".btn--primary").click(function(){
+	$("#btnApprove").click(function(){
 		if(!confirm("강의를 승인하겠습니까?")) return;
 		
 		var lectureId=$("#lectId").val();
@@ -31,8 +31,39 @@ $(function(){
 		});//ajax
 	});//click
 	
-	$(".btn--ghost").click(function(){
-		alert("승인 거절 메시지 폼 생성");
+	$("#btnRejectToggle").click(function(){
+		$("#rejectModal").addClass("is-open").attr("aria-hidden", "false");
+	})
+	$("#btnRejectCancel, .modal__backdrop").click(function(){
+		$("#rejectModal").removeClass("is-open").attr("aria-hidden", "true");
+		$("#rejectReason").val("");
+	});
+
+	$("#btnReject").click(function(){
+		var lectureId=$("#lectId").val();
+		var reason=$("#rejectReason").val().trim();
+		if(reason.length===0){
+			alert("거절 사유를 입력하세요.");
+			return;
+		}
+		$.ajax({
+			url:"/admin/lecture/reject",
+			type:"POST",
+			data:{lectureId: lectureId, reason: reason},
+			error:function(xhr){
+				alert(xhr.status);
+			},
+			success:function(data){
+				alert("거절 처리가 완료되었습니다.");
+				$("#appr").text("거절");
+				$("#rejectModal").removeClass("is-open").attr("aria-hidden", "true");
+				$("#rejectReason").val("");
+			}
+		});
+	});
+	
+	$("#btnClose").click(function(){
+		window.history.back();
 	})
 });
 </script>
@@ -60,8 +91,8 @@ $(function(){
               <h2>강의 정보</h2>
             </div>
             <div class="panel-controls">
-              <button class="btn btn--primary">승인</button>
-              <button class="btn btn--ghost">승인 거절</button>
+              <button type="button" class="btn btn--primary" id="btnApprove">승인</button>
+              <button type="button" class="btn btn--ghost" id="btnRejectToggle">승인 거절</button>
             </div>
           </div>
 
@@ -80,19 +111,22 @@ $(function(){
                     <th scope="row">강사</th>
                     <td th:text="${lecture.inst_name}">강사명</td>
                     <th scope="row">등록일</th>
-                    <td colspan="3" th:text="${#dates.format(lecture.regDate, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${#dates.format(lecture.regDate, 'yyyy-MM-dd')}"></td>
                   </tr>
                   <tr>
                     <th scope="row">가격</th>
-                    <td th:text="${lecture.price}"></td>
+                    <td th:if="${lecture.price != 0}"
+                    th:text="${#numbers.formatInteger(lecture.price, 3, 'COMMA')+'원'}"></td>
+                    <td th:unless="${lecture.price != 0}"
+                    th:text="${lecture.price+'원'}"></td>
                     <th scope="row">수강생</th>
-                    <td colspan="3" th:text="${lecture.user_count}"></td>
+                    <td th:text="${lecture.user_count}"></td>
                   </tr>
                   <tr>
                     <th scope="row">승인</th>
                     <td th:text="${lecture.approval == 1 ? '승인' : '대기'}" id="appr">승인</td>
                   	<th scope="row">소개</th>
-                    <td colspan="3" th:text="${lecture.intro}">소개 텍스트</td>
+               		<td th:text="${#strings.abbreviate(#strings.replace(lecture.intro.replaceAll('<[^>]*>', ''), ' ', ' '), 12)}">소개글</td>
                   </tr>
                 </tbody>
               </table>
@@ -123,24 +157,43 @@ $(function(){
                 <tbody>
                   <tr th:each="ch : ${chapter}">
                     <td th:text="${ch.ch_name}"></td>
-                    <td th:text="${ch.ch_length}+':00'"></td>
-                    <td th:text="${ch.ch_regdate}"></td>
-                    <td th:text="${ch.ch_doc}"></td>
+                    <td th:text="${ch.ch_lengthStr}"></td>
+<!--                     <td th:text="${ch.ch_length}+'분'"></td> -->
+               		<td th:text="${ch.ch_regdate}"></td> 
+                    <!-- <td>
+                      <a th:href="@{/admin/lecture/file(chptrId=${ch.ch_id})}" th:text="${ch.ch_doc}"></a>
+					</td> -->
+       				<td>
+					     <a th:href="@{/admin/lecture/file(chptrId=${ch.ch_id})}" th:text="${#strings.substringAfter(ch.ch_doc, '_')}"></a>
+					</td>
                     <td>
-                      <a th:href="${ch.ch_video}" th:text="${ch.ch_video}" target="_blank"></a>
+                      <a th:href="'https://www.youtube.com/watch?v='+${ch.ch_video}"  target="_blank">영상 링크</a>
                     </td>
                   </tr>
-                  <!-- <tr th:if="${chapterList == null or #lists.isEmpty(chapterList)}">
-                    <td colspan="4">등록된 커리큘럼이 없습니다.</td>
-                  </tr> -->
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-
+        <div class="close-wrap">
+  			<button type="button" id="btnClose" class="btn btn--ghost">닫기</button>
+		</div>
       </section>
     </main>
   </div>
+  <!-- 모달  -->
+  <div id="rejectModal" class="modal" aria-hidden="true">
+    <div class="modal__backdrop"></div>
+    <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="rejectTitle">
+      <h3 id="rejectTitle">거절 사유 입력</h3>
+      <label for="rejectReason">거절 사유 :</label>
+      <textarea id="rejectReason" rows="4" placeholder="거절 사유를 입력하세요"></textarea>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" id="btnReject">제출</button>
+        <button type="button" class="btn btn--ghost" id="btnRejectCancel">취소</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
+

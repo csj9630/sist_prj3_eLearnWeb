@@ -10,14 +10,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class InstTestService {
 
-	private final TempController tempController;
 
 	@Autowired(required = false)
 	private InstTestMapper iMapper;
-
-	InstTestService(TempController tempController) {
-		this.tempController = tempController;
-	}
 
 	// 시험문제 페이지 조회 ( 모든 시험 문제 조회 )
 	public List<InstTestDomain> searchTest(InstTestViewDTO itvDTO) {
@@ -29,6 +24,18 @@ public class InstTestService {
 		} // end catch
 
 		return list;
+	}// searchTest
+	
+	// 강의 아이디를 통해 강사 아이디 조회하기
+	public String searchInstId(String lectId) {
+		String instId="";
+		try {
+			instId = iMapper.selectInstId(lectId);
+		} catch (PersistenceException pe) {
+			pe.printStackTrace();
+		} // end catch
+		
+		return instId;
 	}// searchTest
 
 	// 시험문제 - 하나 조회 ( ajax로 구현 )
@@ -73,6 +80,8 @@ public class InstTestService {
 		try {
 			//삭제 성공 시 true 반환
 			if(iMapper.deleteOneInstTest(itvDTO) == 1) {
+				//번호 초기화
+				iMapper.updateTestNum(itvDTO);
 				removeResult = true;
 			}
 

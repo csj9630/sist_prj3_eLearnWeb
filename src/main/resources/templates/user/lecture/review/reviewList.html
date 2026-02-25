@@ -3,52 +3,179 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<th:block th:replace = "~{//fragments/cdn :: cdn}"/>
+<th:block th:replace = "~{fragments/cdn :: cdn}"/>
 <style type = "text/css">
-#wrap{margin: 0px auto; width: 1000px; height: 1200px;}
-#header{height: 150px;}
-#container{min-height: 950px;}
-#footer{height: 100px;}
-#sectorHead{display: flex; margin-bottom: 20px;}
-#headName{font-size: 20px; font-weight: bold;}
-#btnWriteContainer{padding: 20px; background-color: #fff9db; border-radius: 10px; display: flex;}
-#star{color: #fab005; font-weight: bold; font-size: 18px;}
-#containerText{width: 600px;}
-#containerTitle{font-weight: bold; font-size: 18px;}
-#containerContent{margin-left: 23px; font-size: 17px;}
-#containerButton{margin-left: 210px;}
-#btnWrite{background-color: #fd7e14; color: #fff; font-weight: bold; width: 150px; height: 40px;}
-#reviewStats{text-align: center; margin-top: 20px; margin-bottom: 20px; border: solid; border-color: #e0e0e0;  border-radius: 10px;}
-#statAvgScore{font-size: 50px; height: 60px;}
-#statReviewCount{font-size: 20px; margin-bottom: 10px;}
+#wrap {margin: 0px auto; width: 1000px; height: 1200px;}
+#header {height: 150px;}
+#container {min-height: 950px;}
+#footer {height: 100px;}
 
-td p{margin: 0 !important;}
-h5{font-weight: bold;}
+#sectorHead {display: flex; margin-bottom: 20px;}
+#headName {font-size: 20px; font-weight: bold;}
+#headCount {font-size: 16px; font-weight: bold; text-align: right; margin-left: auto;}
+#headCountGray {color: #a0a0a0; font-weight: bold;}
+#btnWriteContainer {padding: 20px; background-color: #fff9db; border-radius: 10px; display: flex;}
+#star {color: #fab005; font-weight: bold; font-size: 18px;}
+#containerTitle {font-weight: bold; font-size: 18px;}
+#containerContent {margin-left: 23px; font-size: 17px;}
+#containerButton {margin-left: auto;}
+#btnWrite {background-color: #ff8014; color: #fff; font-weight: bold; border-width: 0; border-radius: 10px; font-size: 18px; padding: 10px; padding-left: 30px; padding-right: 30px; cursor: pointer; transition: background-color 0.1s ease-in-out;}
+#btnWrite:hover {background-color: #e67312;}
+#reviewStats {text-align: center; margin-top: 20px; margin-bottom: 20px; border: solid; border-color: #e0e0e0;  border-radius: 10px; border-width: thin;}
+#statAvgScore {font-size: 50px; height: 60px;}
+#statReviewCount {font-size: 20px; margin-bottom: 10px; color: #a0a0a0;}
+#partingLine {height: 1px; background-color: #e0e0e0;}
+#reviewScoreSet {display: flex;}
+#reviewScore {font-size: 18px; font-weight: bold; padding-top: 3px; margin-left: 5px;}
+#reviewHeader {display: flex; margin-top: 15px;}
+#reviewUserNameAndDate {font-weight: bold; align-content: center;}
+#reviewUserName {color: #000;}
+#reviewDate {color: #808080;}
+
+td p {margin: 0 !important;}
+h5 {font-weight: bold;}
 
 /* 별점 디자인 */
-/* 별점 디자인 베이스 */
-.statStarRate {
-    position: relative;
-    display: inline-block;
-    font-size: 40px; /* 별 크기 조절 */
-    text-align: top;
-    color: #ddd;     /* 빈 별 색상 (회색) */
+.statStarRate {position: relative; display: inline-block; font-size: 40px; text-align: top; color: #ddd;}
+.statStarRate .fill {position: absolute; top: 0; left: 0; white-space: nowrap; overflow: hidden; color: #fab005;}
+.reviewStarRate {position: relative; display: inline-block; font-size: 20px; text-align: top; color: #ddd;}
+.reviewStarRate .fill {position: absolute; top: 0; left: 0; white-space: nowrap; overflow: hidden; color: #fab005;}
+
+/* 수정, 삭제 버튼 */
+.reviewPopUpMenu {
+	position: relative;
+	display: inline-block;
+	margin-left: auto;
 }
-/* 별점 디자인 채우기 */
-.statStarRate .fill {
-    position: absolute;
-    top: 0;
-    left: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    color: #f5c518;  /* 채워진 별 색상 (노란색) */
+.reviewPopUpMenuBtn {
+	background: none;
+	border: none;
+	font-size: 30px;
+	cursor: pointer;
+	padding: 5px 10px;
+	color: #404040;
+}
+.popupMenu {
+	display: none;
+	position: absolute;
+	top: 100%;
+	right: 0;
+	background-color: #00c471;
+	border-radius: 8px;
+	padding: 5px 0;
+	z-index: 100;
+	min-width: 80px;
+	flex-direction: column;
+}
+.popupMenuBtn {
+	width: 100%;
+	background: none;
+	border: none;
+	color: white;
+	padding: 10px 15px;
+	text-align: center;
+	font-size: 16px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.1s;
+}
+.popupMenuBtn:hover {
+	background-color: #00a760;
+}
+.popupMenuBtn:first-child {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.reviewPopUpMenu:hover .popupMenu {
+	display: flex; /* 마우스를 올리면 숨겨둔 메뉴를 flex 박스로 보여줍니다. */
+}
+
+/* 모달 */
+* { box-sizing: border-box; font-family: sans-serif; }
+
+/* 모달 배경 (화면 전체를 덮는 어두운 막) */
+.modal-overlay {
+    display: none; /* 평소에는 숨김 (JS로 flex로 변경) */
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    z-index: 1000;
+}
+
+/* 모달 본문 (하얀색 박스) */
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.modal-content h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* 별점 스타일 */
+.star-rating-input {
+    margin-bottom: 20px;
+}
+.star-rating-input .star {
+    font-size: 40px;
+    color: #e4e5e9; /* 빈 별 색상 (회색) */
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.star-rating-input .star.active {
+    color: #ffc107; /* 채워진 별 색상 (노란색) */
+}
+
+/* 텍스트 입력창 스타일 */
+.modal-content textarea {
+    width: 100%;
+    height: 120px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none; /* 크기 조절 방지 */
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* 버튼 컨테이너 및 스타일 */
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+}
+.modal-buttons button {
+    flex: 1; /* 두 버튼이 동일한 너비를 가짐 */
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+}
+.btn-cancel {
+    background-color: white;
+    color: #555;
+    border: 1px solid #ddd !important; /* 취소 버튼 테두리 */
+}
+.btn-submit {
+    background-color: #00c471; /* 인프런 스타일 초록색 */
+    color: white;
 }
 </style>
 <script type="text/javascript">
 $(function() {
+	/* 
 	$("#btnWrite").click(function() {
 		location.href = "/lecture/review/reviewWriteFrm?lectId=[[${param.lectId}]]&currentPage=[[${param.currentPage}]]";
 	}); // click
+	*/
 	
 	$("#btnSearch").click(function() {
 		searchReview();
@@ -59,6 +186,23 @@ $(function() {
 			searchReview();
 		} // end if
 	}); // keyup
+	
+	$("#btn-submit").click(function() {
+		// 제목과 내용에 값이 있는지 유효성 검증
+		if($("#score").val().trim() == "0") {
+			alert("평점은 필수 입력입니다.");
+			return;
+		} // end if
+		
+		if($("#content").val() == "" || $("#content").val() == "<p></p>") {
+			alert("내용은 필수 입력입니다.");
+			$("#content").focus();
+			return;
+		} // end if
+		
+		$("#frm").submit();
+	}); // click
+	
 }); // ready
 
 function searchReview() {
@@ -66,19 +210,195 @@ function searchReview() {
 		$("#reviewSearchFrm").submit();
 	} // end if
 } // searchReview
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('reviewModal');
+    const openBtn = document.getElementById('btnWrite');
+    const closeBtn = document.getElementById('closeModalBtn');
+    
+    // 1. 모달 열기 / 닫기
+    if (openBtn) { // 🌟 openBtn(btnWrite)이 화면에 존재할 때만 이벤트를 추가하도록 변경
+    	openBtn.addEventListener('click', () => modal.style.display = 'flex');
+	}
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    
+    // 모달 외부 클릭 시 닫기 (선택 사항)
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+	
+    // 2. 별점 클릭 로직
+    const stars = document.querySelectorAll('.star-rating-input .star');
+    const ratingInput = document.getElementById('score');
+    let currentRating = 0; // 현재 선택된 점수
+
+    stars.forEach(star => {
+        // 별 클릭 시
+        star.addEventListener('click', function() {
+            // 클릭한 별의 data-value 값을 가져옴 (1~5)
+            currentRating = parseInt(this.getAttribute('data-value'));
+            ratingInput.value = currentRating; // 숨겨진 input에 값 저장
+            
+            // 모든 별을 순회하며 클릭한 점수 이하의 별은 노란색, 초과는 회색으로 처리
+            stars.forEach(s => {
+                const starValue = parseInt(s.getAttribute('data-value'));
+                if (starValue <= currentRating) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        });
+        
+        // (보너스) 마우스를 올렸을 때 클릭하지 않아도 임시로 채워지는 호버 효과
+        star.addEventListener('mouseover', function() {
+            const hoverValue = parseInt(this.getAttribute('data-value'));
+            stars.forEach(s => {
+                if (parseInt(s.getAttribute('data-value')) <= hoverValue) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        });
+
+        // 마우스를 떼면 원래 클릭했던 점수로 원상복구
+        star.addEventListener('mouseout', function() {
+            stars.forEach(s => {
+                if (parseInt(s.getAttribute('data-value')) <= currentRating) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        });
+    });
+    
+	// 🌟 [추가됨] 수정 모달 로직 시작
+    const modifymodal = document.getElementById('reviewModifyModal');
+    const closeModifyBtn = document.getElementById('closeModifyModalBtn');
+    
+    // 1. 수정 모달 닫기
+    closeModifyBtn.addEventListener('click', () => {
+        modifymodal.style.display = 'none';
+    });
+    
+    // 2. 수정 모달 내의 별점 컨트롤 로직
+    const modifyStars = document.querySelectorAll('.modify-star-rating .star');
+    const modifyRatingInput = document.getElementById('modifyScore');
+    let currentModifyRating = 0;
+
+    // 별점을 화면에 그리는 함수
+    function setModifyStars(rating) {
+        currentModifyRating = rating;
+        modifyRatingInput.value = rating;
+        modifyStars.forEach(s => {
+            if (parseInt(s.getAttribute('data-value')) <= rating) {
+                s.classList.add('active');
+            } else {
+                s.classList.remove('active');
+            }
+        });
+    }
+
+    modifyStars.forEach(star => {
+        star.addEventListener('click', function() {
+            setModifyStars(parseInt(this.getAttribute('data-value')));
+        });
+        star.addEventListener('mouseover', function() {
+            const hoverValue = parseInt(this.getAttribute('data-value'));
+            modifyStars.forEach(s => {
+                s.classList.toggle('active', parseInt(s.getAttribute('data-value')) <= hoverValue);
+            });
+        });
+        star.addEventListener('mouseout', function() {
+            setModifyStars(currentModifyRating);
+        });
+    });
+
+    // 3. 수정 버튼 클릭 시 서버에서 데이터 가져오기 (AJAX)
+    const modifyBtns = document.querySelectorAll('.btn-reviewModify'); // 수정된 class로 선택
+    modifyBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const reviewId = this.getAttribute('data-review-id');
+            
+            // Controller에 새로 추가할 AJAX 전용 메서드로 요청
+            fetch(`/lecture/review/reviewDetailAjax?reviewId=${reviewId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 모달 내부에 데이터 세팅
+                    document.getElementById('modifyReviewIdValue').value = data.review_id;
+                    document.getElementById('modifyContent').value = data.content;
+                    setModifyStars(data.score); // DB에 저장된 별점 세팅
+                    
+                    modifymodal.style.display = 'flex'; // 수정 모달 띄우기
+                })
+                .catch(error => {
+                    alert('리뷰 정보를 불러오는데 실패했습니다.');
+                    console.error('Error:', error);
+                });
+        });
+    });
+
+    // 4. 수정하기(저장) 버튼 클릭 시 유효성 검사 및 전송
+    document.getElementById('btn-modify-submit').addEventListener('click', function() {
+		
+    	if(confirm("수강평을 정말 수정하시겠습니까?")) {
+	        if($("#modifyScore").val().trim() == "0") {
+	            alert("평점은 필수 입력입니다.");
+	            return;
+	        } 
+	        if($("#modifyContent").val().trim() == "") {
+	            alert("내용은 필수 입력입니다.");
+	            $("#modifyContent").focus();
+	            return;
+	        }
+	        document.getElementById('modifyFrm').submit();
+    	}
+    });
+    
+ 	// 🌟 5. 삭제 버튼 클릭 로직 추가
+    const deleteBtns = document.querySelectorAll('.btn-reviewDelete');
+    
+    deleteBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            if(confirm('수강평을 정말 삭제하시겠습니까?')) {
+                // 클릭한 버튼에서 review_id 가져오기
+                const reviewId = this.getAttribute('data-review-id');
+                
+                // 서버로 전송할 가상의 폼(form) 동적 생성
+                const deleteForm = document.createElement('form');
+                deleteForm.method = 'POST';
+                deleteForm.action = `/lecture/review/reviewRemoveProcess?lectId=[[${param.lectId}]]&currentPage=[[${param.currentPage}]]`;
+                
+                // review_id를 담을 hidden input 생성
+                const idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.name = 'review_id';
+                idInput.value = reviewId;
+                
+                // 폼에 input을 넣고 body에 추가한 뒤 강제 제출(submit)
+                deleteForm.appendChild(idInput);
+                document.body.appendChild(deleteForm);
+                deleteForm.submit(); 
+            }
+        });
+    });
+});
 </script>
 </head>
 <body>
 <div id = "wrap">
 <div id = "header">
+<th:block th:replace = "~{//fragments/MyHeader :: header}"/>
 </div>
 <div id = "container">
 <div id = "sectorHead">
 	<div id = "headName">수강평</div>
-	<div id = "headCount">전체  <strong><span th:text = "|${totalCount}개|"></span></strong></div>
+	<div id = "headCount"><span id = "headCountGray">전체 </span><span th:text = "|${totalCount}개|">리뷰 개수개</span></div>
 </div>
-<div id = "reviewList" style = "min-height: 500px">
-	<div id = "btnWriteContainer">
+<div id = "reviewList">
+	<div id = "btnWriteContainer" th:if="${myReview == null}">
 		<div id = "containerText">
 			<span id = "star"> ★ </span><span id = "containerTitle">수강평을 남겨주세요</span><br/>
 			<span id = "containerContent">여러분의 소중한 수강평이 다른 학습자들에게 큰 도움이 됩니다.</span><br/>
@@ -89,20 +409,67 @@ function searchReview() {
 		</div>
 	</div>
 	<div id = "reviewStats">
-		<div id = "statAvgScore"><strong><span th:text = "${avgScore}"></span></strong></div>
+		<div id = "statAvgScore"><strong><span th:text = "${#numbers.formatDecimal(avgScore, 1, 1)}">리뷰 평균 점수</span></strong></div>
 		<div class="statStarRate">
 		    <span>★★★★★</span>
 		    <span class="fill" th:style="'width:' + ${avgScore * 20} + '%'">★★★★★</span>
 		</div>
-		<div id = "statReviewCount"><strong><span th:text = "${totalCount}"></span>개의 수강평</strong></div>
+		<div id = "statReviewCount"><strong><span th:text = "${totalCount}">리뷰 개수</span>개의 수강평</strong></div>
 	</div>
+	<div id="reviewPanel" th:if="${myReview != null}" th:object="${myReview}" style="background-color: #fcfcfc; border: 1px solid #fab005; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+    <div id="reviewHeader">
+        <div style="margin-right: 10px;"><img th:src="@{/images/user/profile/{img}(img=*{profile})}" style="width: 50px; height: 50px; border-radius: 25px;"></div>
+        <div id="reviewUserNameAndDate">
+            <div id="reviewUserName">
+                <span th:text="*{name}">작성자</span> 
+                <span style="color: #ff8014; font-size: 13px; font-weight: bold;">(내가 작성한 수강평)</span>
+            </div>
+            <div th:text="*{#dates.format(regdate, 'yyyy. MM. dd')}" id="reviewDate">작성일</div>
+        </div>
+        <div class="reviewPopUpMenu">
+            <input type="button" class="reviewPopUpMenuBtn" value="···"/>
+            <div class="popupMenu">
+                <input type="button" class="popupMenuBtn btn-reviewModify" th:data-review-id="*{review_id}" value="수정"/>
+                <input type="button" class="popupMenuBtn btn-reviewDelete" th:data-review-id="*{review_id}" value="삭제"/>
+            </div>
+        </div>
+    </div>
+    <div id="reviewScoreSet">
+        <div class="reviewStarRate">
+            <span>★★★★★</span>
+            <span class="fill" th:style="'width:' + *{score * 20} + '%'">★★★★★</span>
+        </div>
+        <div th:text="*{score}" id="reviewScore">평점</div>
+    </div>
+    <div th:utext="*{content}" style="margin-bottom: 10px;">리뷰 내용</div>
+	</div>
+	<div id = "reviewPanel" th:each = "reviewDomain, i : ${reviewList}" th:object = "${reviewDomain}" th:unless="${sessionUserId == reviewDomain.user_id}">
+		<div id = "partingLine"></div>
+		<div id = "reviewHeader">
+			<div style = "margin-right: 10px;"><img th:src = "@{/images/user/profile/{img}(img=*{profile})}" style = "width: 50px; height: 50px; border-radius: 25px;"></div>
+			<div id = "reviewUserNameAndDate">
+				<div th:text = "*{name}" id = "reviewUserName">작성자 닉네임</div>
+				<div th:text = "*{#dates.format(regdate, 'yyyy. MM. dd')}" id = "reviewDate">작성일</div>
+			</div>
+		</div>
+		<div id = "reviewScoreSet">
+			<div class="reviewStarRate">
+			    <span>★★★★★</span>
+			    <span class="fill" th:style="'width:' + *{score * 20} + '%'">★★★★★</span>
+			</div>
+			<div th:text = "*{score}" id = "reviewScore">평점</div>
+		</div>
+		<div th:utext = "*{content}" style = "margin-bottom: 10px;">리뷰 내용</div>
+	</div>
+	<div id = "partingLine"></div>
+	
 	<table class = "table table-hover">
 	<thead>
 	<tr>
 		<th style = "width: 100px">프로필</th>
 		<th style = "width: 340px">내용</th>
-		<th style = "width: 120px">작성자 ID</th>
 		<th style = "width: 120px">작성자 닉네임</th>
+		<th style = "width: 120px">작성자 ID</th>
 		<th style = "width: 80px">평점</th>
 		<th style = "width: 200px">작성일</th>
 	</tr>
@@ -116,7 +483,7 @@ function searchReview() {
 	<tr th:each = "reviewDomain, i : ${reviewList}" th:object = "${reviewDomain}">
 		<td th:text = "*{profile}">프로필</td>
 		<td><a th:href = "@{{url}(url = '/lecture/review/reviewDetail', reviewId = *{review_id}, lectId = ${param.lectId}, currentPage = ${param.currentPage})}"><span th:utext = "*{content}">내용</span></a></td>
-		<td th:text = "*{name}">작성자 ID</td>
+		<td th:text = "*{name}">작성자 닉네임</td>
 		<td th:text = "*{user_id}">작성자 ID</td>
 		<td th:text = "*{score}">평점</td>
 		<td th:text = "*{#dates.format(regdate, 'yyyy-MM-dd EEEE')}">작성일</td>
@@ -124,11 +491,61 @@ function searchReview() {
 	</tbody>
 	</table>
 </div>
+<div id="reviewModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>힘이 되는 수강평을 남겨주세요!</h2>
+		<form th:action = "@{{url}(url = '/lecture/review/reviewWriteFrmProcess', lectId = ${param.lectId}, currentPage = ${param.currentPage})}" method = "post" name = "frm" id = "frm">
+        
+        <div class="star-rating-input">
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="5">★</span>
+        </div>
+        <input type="hidden" id="score" name="score" value="0">
+		
+        <textarea name = "content" id = "content" placeholder="수강평을 작성해보세요!"></textarea>
+        <input type = "hidden" name = "lect_id" th:value = "${param.lectId}"/>
+		</form>
+
+        <div class="modal-buttons">
+            <button class="btn-cancel" id="closeModalBtn">취소</button>
+            <button class="btn-submit" id="btn-submit">저장하기</button>
+        </div>
+    </div>
+</div>
+<div id="reviewModifyModal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>수강평 수정하기</h2>
+		<form th:action="@{{url}(url = '/lecture/review/reviewModifyProcess', lectId = ${param.lectId}, currentPage = ${param.currentPage})}" method="post" name="modifyFrm" id="modifyFrm">
+        
+        <input type="hidden" id="modifyReviewIdValue" name="review_id" value="0">
+        <input type="hidden" id="modifyScore" name="score" value="0">
+        
+        <div class="star-rating-input modify-star-rating">
+            <span class="star" data-value="1">★</span>
+            <span class="star" data-value="2">★</span>
+            <span class="star" data-value="3">★</span>
+            <span class="star" data-value="4">★</span>
+            <span class="star" data-value="5">★</span>
+        </div>
+		
+        <textarea name="content" id="modifyContent" placeholder="수강평을 수정해보세요!"></textarea>
+        <input type="hidden" name="lect_id" th:value="${param.lectId}"/>
+		</form>
+		
+        <div class="modal-buttons">
+            <button class="btn-cancel" type="button" id="closeModifyModalBtn">취소</button>
+            <button class="btn-submit" type="button" id="btn-modify-submit">수정하기</button>
+        </div>
+    </div>
+</div>
 <div id = "reviewSearchDiv" style = "text-align: center">
 	<form th:action = "@{/lecture/review/reviewList}" id = "reviewSearchFrm">
 	<select name = "field" id = "field" style = "height: 30px">
 	<option value = "1" th:selected = "${param.field ne null and param.field[0] eq '1'}">내용</option>
-	<option value = "2" th:selected = "${param.field ne null and param.field[0] eq '2'}">작성자</option>
+	<option value = "2" th:selected = "${param.field ne null and param.field[0] eq '2'}">평점</option>
 	</select>
 	<input type = "text" name = "keyword" id = "keyword" th:value = "${param.keyword}" style = "height: 30px;"/>
 	<input type = "hidden" name = "currentPage" id = "currentPage" th:value = "${param.currentPage eq null ? 1 : param.currentPage}"/>
@@ -142,6 +559,9 @@ function searchReview() {
 </div>
 </div>
 <div id = "footer">
+<!--
+<th:block th:replace = "~{//fragments/MyFooter :: footer}"/>
+-->
 </div>
 </div>
 </body>

@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>대시보드</title>
     <link rel="stylesheet" href="/css/user-mypage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <script th:inline="javascript">
         /* Thymeleaf 변수를 자바스크립트로 가져옴 */
-        const realMonthlyData = /*[[${monthlyData}]]*/ [0,0,0,0,0]; // 데이터가 없으면 기본값
+        const realMonthlyData = /*[[${monthlyData}]]*/[0, 0, 0, 0, 0]; // 데이터가 없으면 기본값
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const ctx = document.getElementById('monthlyChart').getContext('2d');
-            
+
             // 데이터 길이만큼 날짜 라벨 생성 (1일, 2일...)
             const labels = realMonthlyData.map((_, i) => (i + 1) + '일');
 
@@ -53,8 +54,9 @@
             });
         });
     </script>
-    
+
 </head>
+
 <body>
     <div th:replace="~{fragments/MyHeader :: header}"></div>
 
@@ -62,40 +64,53 @@
         <div th:replace="~{fragments/MySidebar :: sidebar('dashboard')}"></div>
 
         <div class="mypage-content">
-            <h2 class="page-title">대시보드 <span class="sub-title">오늘도 성장하는 하루 되세요!</span></h2>
+            <h2 class="page-title">대시보드 <span class="sub-title">오늘도 intlearn과 함께 성장해요!</span></h2>
 
             <div class="dashboard-grid">
-                
+
                 <div class="dash-section">
                     <div class="section-head">
                         <span>최근 학습 강의</span>
                         <a href="/user/my/lecture" class="link-more">전체 보기 ></a>
                     </div>
                     <div class="cards-row">
-                        <div th:if="${#lists.isEmpty(recentList)}" style="width:100%; text-align:center; padding:30px; color:#888;">
+                        <div th:if="${#lists.isEmpty(recentList)}"
+                            style="width:100%; text-align:center; padding:30px; color:#888;">
                             <i class="fas fa-book-open" style="font-size:24px; margin-bottom:10px;"></i>
                             <p>수강 중인 강의가 없습니다.</p>
                         </div>
                         <th:block th:each="lect : ${recentList}">
-                            <div class="course-card">
+                            
+                            <a th:href="@{/lecture/chapter/list(lectId=${lect.lectId})}" 
+                               class="course-card" 
+                               style="display: flex; flex-direction: column; text-decoration: none; color: inherit; cursor: pointer;">
+                            
                                 <div class="card-thumb">
-                                    <img th:src="${lect.thumbnail != null ? lect.thumbnail : 'https://via.placeholder.com/260x145?text=No+Image'}" 
-                                         onerror="this.src='https://via.placeholder.com/260x145?text=Inflearn'"
-                                         alt="강의 썸네일">
+                                     <img
+									 th:src="|${imgPath}*{lect.thumbnail}|"
+									 alt="썸네일"
+									 onerror="this.src = '/common/images/default.png'"
+									 />
                                 </div>
+
                                 <div class="card-body">
                                     <div class="card-title" th:text="${lect.lectName}">강의 제목</div>
+
                                     <div class="progress-bg">
                                         <div class="progress-bar" th:style="'width:' + ${lect.progRate} + '%'"></div>
                                     </div>
+
                                     <div class="card-meta">
-                                        <span th:text="|${lect.myChapter}/${lect.totalChapter}강 (${lect.progRate}%)|"></span>
-                                        <span th:if="${lect.progRate == 100}" style="color:#00c471; font-weight:bold;">완강</span>
+                                        <span
+                                            th:text="|${lect.myChapter}/${lect.totalChapter}강 (${lect.progRate}%)|"></span>
+                                        <span th:if="${lect.progRate == 100}"
+                                            style="color:#00c471; font-weight:bold;">완강</span>
                                         <span th:unless="${lect.progRate == 100}">수강중</span>
                                     </div>
+                                     
                                 </div>
-                            </div>
-                        </th:block>
+                            </a>
+                            </th:block>
                     </div>
                 </div>
 
@@ -105,10 +120,9 @@
                         <span class="link-more">이번 주 출석</span>
                     </div>
                     <div class="week-status-wrap" th:with="days=${ {'월','화','수','목','금','토','일'} }">
-                        
+
                         <th:block th:each="i : ${#numbers.sequence(0, 6)}">
-                            <div class="status-day"
-                                 th:classappend="${weeklyStatus[i]} ? 'learned' : 'not-learned'">
+                            <div class="status-day" th:classappend="${weeklyStatus[i]} ? 'learned' : 'not-learned'">
                                 <span th:text="${days[i]}">요일</span>
                                 <i th:class="${weeklyStatus[i]} ? 'fas fa-check' : 'fas fa-times'"></i>
                             </div>
@@ -116,11 +130,11 @@
 
                     </div>
                 </div>
-                
+
                 <div class="dash-section">
                     <div class="section-head">
                         <span>월간 완료 수업 수</span>
-                        <span class="link-more">이번 달 학습 추이</span>
+                        <span class="link-more">이번 달 학습 그래프</span>
                     </div>
                     <div class="chart-container" style="position: relative; height:300px; width:100%">
                         <canvas id="monthlyChart"></canvas>
@@ -131,6 +145,7 @@
         </div>
     </div>
 
-    
+
 </body>
+
 </html>

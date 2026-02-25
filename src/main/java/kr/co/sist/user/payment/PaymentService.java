@@ -8,11 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.co.sist.common.util.CryptoUtil;
+
 @Service("userPaymentService")
 public class PaymentService {
 
     @Autowired
     private UserPaymentMapper userPaymentMapper;
+    
+    @Autowired
+    private CryptoUtil cryptoUtil;
 
     public boolean addLectureToCart(String userId, String lectId) {
         Map<String, String> params = new HashMap<>();
@@ -29,7 +34,13 @@ public class PaymentService {
     }//addLectureToCart
 
     public List<MyCartDTO> getMyCart(String userId) {
-        return userPaymentMapper.selectCartByUserId(userId);
+        List<MyCartDTO> list = userPaymentMapper.selectCartByUserId(userId);
+        if(list != null) {
+            for(MyCartDTO dto : list) {
+                dto.setInstName(cryptoUtil.decryptSafe(dto.getInstName()));
+            }//end for
+        }//end if
+        return list;
     }//getMyCart
 
     public boolean deleteCartLectures(String userId, List<MyCartDTO> mcDTO) {
@@ -95,7 +106,13 @@ public class PaymentService {
     
 
     public List<PayDetailDTO> searchPurchaseLectures(String userId) {
-        return userPaymentMapper.selectMyPurchaseList(userId);
+        List<PayDetailDTO> list = userPaymentMapper.selectMyPurchaseList(userId);
+        if(list != null) {
+            for(PayDetailDTO dto : list) {
+                dto.setInstName(cryptoUtil.decryptSafe(dto.getInstName()));
+            }//end for
+        }//end if
+        return list;
     }//searchPurchaseLectures
     
 }//class

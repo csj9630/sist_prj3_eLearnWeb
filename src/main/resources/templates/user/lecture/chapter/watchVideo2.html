@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>강의 시청 - intlearn</title>
+    <th:block th:replace="~{fragments/cdn :: cdn}"></th:block>
+        <link rel="stylesheet" th:href="@{/css/user/watchVideo.css}">
+</head>
+<body>
+    <div class="watch-wrapper">
+        <main class="player-section">
+            <header class="video-header">
+                <h1 id="currentVideoTitle">강의를 불러오고 있습니다...</h1>
+                <h7 style="color:white">버튼으로 강의를 종료해주세요</h7>
+            </header>
+
+            <div class="player-wrapper">
+                <div id="player"></div>
+            </div>
+
+            <footer class="video-footer">
+                <div class="footer-left">
+                    <button id="btnPrev" class="btn-inf btn-gray me-2">이전 강의</button>
+                    <button id="btnNext" class="btn-inf btn-green">다음 강의</button>
+                </div>
+                <div class="footer-right">
+                	 <button id="btnExit" class="btn-inf btn-gray">💾저장 & 🔚종료</button>
+                </div>
+                
+            </footer>
+        </main>
+
+        <aside class="sidebar-section">
+            <div class="sidebar-header">커리큘럼</div>
+            <div class="playlist-scroll">
+                <div th:each="vd, i : ${vdList}" 
+                     th:id="'row-' + ${i.index}" 
+                     class="video-row"
+                     th:onclick="|playVideoByIndex(${i.index})|">
+                    
+                    <div class="item-info">
+                        <span class="item-title" th:text="${vd.num + '차시. ' + vd.title}">차시 제목</span>
+                        <div class="item-meta">
+                            <span class="time-total" th:text="${vd.convertHms(vd.videoLength)}">전체시간</span>
+                            <span class="mx-1">/</span>
+                            <span class="time-current" th:text="${vd.convertHms(vd.progTime)}">기존기록</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const videoJSONArr = /*[[${vdList}]]*/ []; 
+        const startChptrId = /*[[${startChptrId}]]*/ "";
+        const lectId = /*[[${lectId}]]*/ "";
+        const exitUrl = /*[[@{/lecture/chapter/list(lectId=${lectId})}]]*/ "/";
+        const currentUserId = /*[[${session.userId}]]*/ "userId";
+        /*]]>*/
+    </script>
+    
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script th:src="@{/js/user/watch-video.js}"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.sist.instructor.lecture.chapter.InstChapterMapper">
+
+	<select id="selectChapterList" parameterType="String"
+		resultType="instChapterDTO">
+		SELECT CHPTR_ID AS chptrId,
+				LECT_ID AS lectId,
+				NAME AS name,
+				LENGTH AS length,
+				REGDATE AS regdate,
+				DOC AS doc,
+				VIDEO AS video,
+				NUM AS num
+		FROM CHAPTER
+		WHERE LECT_ID = #{lectId}
+		ORDER BY NUM ASC
+	</select>
+
+	<select id="selectChapterDetail" parameterType="String"
+		resultType="instChapterDTO">
+		SELECT CHPTR_ID AS chptrId,
+			LECT_ID AS lectId,
+			NAME AS name,
+			LENGTH AS length,
+			REGDATE AS regdate,
+			DOC AS doc,
+			VIDEO AS video,
+			NUM AS num
+		FROM CHAPTER
+		WHERE CHPTR_ID = #{chptrId}
+	</select>
+
+	<insert id="insertChapter" parameterType="instChapterDTO">
+		INSERT INTO CHAPTER (
+			chptr_id,
+			lect_id,
+			name,
+			video,
+			length,
+			doc,
+			num,
+			regdate
+		) VALUES (
+			'CH' || SEQ_CHAPTER_ID.NEXTVAL,
+			#{lectId},
+			#{name},
+			#{video},
+			#{length},
+			#{doc},
+			(SELECT NVL(MAX(NUM), 0) + 1 FROM CHAPTER WHERE LECT_ID = #{lectId}),
+			SYSDATE
+		)
+	</insert>
+
+	<update id="updateChapter" parameterType="instChapterDTO">
+	 UPDATE CHAPTER
+		SET 
+			NAME = #{name}, VIDEO = #{video}, LENGTH = #{length},
+			
+			<if test="doc != null and doc != ''">
+				DOC = #{doc},
+			</if> 
+			REGDATE =	SYSDATE 
+		WHERE CHPTR_ID = #{chptrId} 
+	</update>
+
+	<delete id="deleteChapter" parameterType="String">
+		DELETE FROM CHAPTER
+		WHERE CHPTR_ID = #{chptrId}
+	</delete>
+</mapper>

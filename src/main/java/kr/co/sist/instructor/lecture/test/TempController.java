@@ -13,7 +13,7 @@ public class TempController {
 	@RequestMapping(value="/leeTest",method= {GET,POST})
 	public String main(Model model) {
 		
-		return "/myIndex";
+		return "myIndex";
 	}
 	
 	

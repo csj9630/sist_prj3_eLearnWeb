@@ -2,14 +2,11 @@
 <html xmlns:th = "http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-<th:block th:replace = "~{/fragments/cdn :: cdn}"/>
+<title>관리자 대시보드</title>
+<th:block th:replace = "~{fragments/cdn :: cdn}"/>
+<link rel="stylesheet" th:href="@{/admin/dashboard/dashboard.css}" />
+<link rel="stylesheet" th:href="@{/admin/announcement/announcement.css}" />
 <style type = "text/css">
-#wrap{margin: 0px auto; width: 1200px; height: 1000px;}
-#header{height: 150px;}
-#container{height: 700px;}
-#footer{height: 150px;}
-
 a{color: #000000; text-decoration: none;}
 a:hover{color: #808080; text-decoration: none;}
 
@@ -51,7 +48,7 @@ $(function() {
 <script type="text/javascript">
 $(function() {
       $('#content').summernote({
-        placeholder: '아무말 대잔치!',
+        placeholder: '공지사항을 작성해주세요.',
         tabsize: 2,
         height: 300,
         width: 500,
@@ -69,45 +66,55 @@ $(function() {
 }); // ready
 </script>
 </head>
-<body>
-<div id = "wrap">
-<div id = "header">
-</div>
-<div id = "container">
-<h2>아무말 대잔치 글읽기</h2>
-<form method = "post" name = "frm" id = "frm">
-<table>
-<tr>
-	<td style = "width: 100px">제목</td>
-	<td><input type = "text" name = "title" id = "title" th:value = "${announcementDomain.title}" style = "width: 500px"/></td>
-</tr>
-<tr>
-	<td>내용</td>
-	<td><textarea name = "content" id = "content" th:text = "${announcementDomain.content}"></textarea></td>
-</tr>
-<tr>
-	<td>ID/IP</td>
-	<td><input type = "text" name = "id" id = "id" readonly = "readonly" th:value = "${announcementDomain.adm_id}" style = "width: 300px"/>/<span th:text = "${announcementDomain.regip}"></span></td>
-</tr>
-<tr>
-	<td colspan = "2" style = "text-align: center;">
-		<input type = "hidden" name = "ann_id" th:value = "${param.annId}"/>
-		<input type = "hidden" name = "currentPage" th:value = "${param.currentPage}"/>
-		<button onclick = "return false" class = "btn btn-success"  id = "btnModify">글 수정</button>
-		<button onclick = "return false" class = "btn btn-danger"  id = "btnDelete">글 삭제</button>
-		<a href = "javascript:history.back()" class = "btn btn-info"  id = "btnWrite">리스트</a>
-	</td>
-	<td></td>
-</tr>
-<tr>
-	<td></td>
-	<td></td>
-</tr>
-</table>
-</form>
-</div>
-<div id = "footer">
-</div>
-</div>
+<body class="admin-dashboard">
+  <div id="header">
+    <th:block th:replace="~{fragments/adminHeader :: adminHeader}"></th:block>
+  </div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <th:block th:replace="~{fragments/adminSidebar :: adminSidebar}"></th:block>
+    </aside>
+
+	<!-- 좌측 상단 제목 -->
+    <main class="admin-content">
+      <section class="announcement-page">
+        <header class="announcement-header">
+          <h1>공지사항 관리</h1>
+        </header>
+
+        <form method = "post" name = "frm" id = "frm">
+		<table>
+		<tr>
+			<td style = "width: 100px">제목</td>
+			<td><input type = "text" name = "title" id = "title" th:value = "${announcementDomain.title}" style = "width: 500px"/></td>
+		</tr>
+		<tr>
+			<td>내용</td>
+			<td><textarea name = "content" id = "content" th:text = "${announcementDomain.content}"></textarea></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td style = "text-align: center;">
+				<input type = "hidden" name = "ann_id" th:value = "${param.annId}"/>
+				<input type = "hidden" name = "currentPage" th:value = "${param.currentPage}"/>
+				<th:block th:if = "${announcementDomain.adm_id} eq ${session.adm_id}">
+					<button onclick = "return false" class = "btn btn-success"  id = "btnModify">글 수정</button>
+					<button onclick = "return false" class = "btn btn-danger"  id = "btnDelete">글 삭제</button>
+				</th:block>
+				<a href = "javascript:history.back()" class = "btn btn-info"  id = "btnWrite">리스트</a>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td></td>
+			<td></td>
+		</tr>
+		</table>
+		</form>
+      </section>
+      
+    </main>
+  </div>
 </body>
 </html>

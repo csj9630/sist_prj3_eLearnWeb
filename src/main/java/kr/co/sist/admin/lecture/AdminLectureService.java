@@ -1,50 +1,91 @@
 package kr.co.sist.admin.lecture;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import kr.co.sist.common.util.CryptoUtil;
+
+
 @Service
 public class AdminLectureService {
 
-	@Autowired(required=false)
+	@Autowired(required = false)
 	private AdminLectureMapper alm;
-	
-	//카테고리 옵션
-	public List<String> searchAllCategory() throws PersistenceException{
+
+	@Autowired
+	private CryptoUtil cryptoUtil;
+
+	// 강좌 찾기 목록
+	public List<String> searchAllCategory() throws PersistenceException {
 		return alm.selectAllCategory();
 	}
-	
-	//비공개 상태 변경
-	public int disableLecture(String lectureId) throws PersistenceException{
-		return alm.updateStatus(lectureId);
+
+	public int ableLecture(String lectureId) throws PersistenceException {
+		return alm.updateOpen(lectureId);
 	}
 
-	//교육 과목 관리 데이터
-	public List<AdminLectureDomain> searchLectureByCategory(AdminLectureSearchDTO alsDTO) throws PersistenceException{
-		return alm.selectLectureByCategory(alsDTO);
+	public int disableLecture(String lectureId) throws PersistenceException {
+		return alm.updateStop(lectureId);
 	}
-	
-	//강의 관리 데이터
-	public List<AdminNotApprLectureDomain> searchNotApprLectList(AdminLectureSearchDTO alsDTO) throws PersistenceException {
-		return alm.selectNotApprLectList(alsDTO);
+
+	public List<AdminLectureDomain> searchLectureByCategory(AdminLectureSearchDTO alsDTO) throws PersistenceException {
+		List<AdminLectureDomain> list = alm.selectLectureByCategory(alsDTO);
+
+		if (list != null) {
+			for (AdminLectureDomain domain : list) {
+				domain.setInst_name(cryptoUtil.decryptSafe(domain.getInst_name()));
+			}
+		}
+
+		return list;
 	}
-	
-	//강의 관리 상세 데이터
+
+	public int countLectureByCategory(AdminLectureSearchDTO alsDTO) throws PersistenceException {
+		return alm.selectLectureCount(alsDTO);
+	}
+
+	public List<AdminNotApprLectureDomain> searchNotApprLectList(AdminLectureSearchDTO alsDTO)
+			throws PersistenceException {
+		List<AdminNotApprLectureDomain> list = alm.selectNotApprLectList(alsDTO);
+
+		if (list != null) {
+			for (AdminNotApprLectureDomain domain : list) {
+				domain.setInst_name(cryptoUtil.decryptSafe(domain.getInst_name()));
+			}
+		}
+
+		return list != null ? list : Collections.emptyList();
+	}
+
+	public int countNotApprLect(AdminLectureSearchDTO alsDTO) throws PersistenceException {
+		return alm.selectNotApprCount(alsDTO);
+	}
+
 	public List<AdminLectureDetailDomain> searchLectureDetail(String lectureId) throws PersistenceException {
-		return alm.selectLectureDetail(lectureId);
+		List<AdminLectureDetailDomain> list = alm.selectLectureDetail(lectureId);
+
+		if (list != null) {
+			for (AdminLectureDetailDomain domain : list) {
+				domain.setInst_name(cryptoUtil.decryptSafe(domain.getInst_name()));
+			}
+		}
+
+		return list != null ? list : Collections.emptyList();
 	}
-	
-	//강의 관리 상세 데이터(챕터)
+
 	public List<AdminLectureChapterDomain> searchLectureChapter(String lectureId) throws PersistenceException {
 		return alm.selectLectureChapter(lectureId);
 	}
-	
-	//강의 승인
+
 	public int approvalLecture(String lectureId) throws PersistenceException {
 		return alm.updateApproval(lectureId);
 	}
 
+	public int rejectReason(String lectureId, String reason) throws PersistenceException {
+		return alm.rejcetLecture(lectureId, reason);
+	}
 }

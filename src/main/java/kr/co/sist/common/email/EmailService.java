@@ -44,7 +44,7 @@ public class EmailService {
         }
 
         String authCode = createAuthCode();
-        String subject = "[2GV] 이메일 인증 번호입니다.";
+        String subject = "[intlearn] 이메일 인증 번호입니다.";
         String content = "<div style='text-align:center; border:1px solid #ddd; padding:20px; font-family:sans-serif;'>"
                 + "<h2>이메일 인증 번호</h2>"
                 + "<p>아래 인증 번호를 입력하여 이메일 인증을 완료해주세요.</p>"

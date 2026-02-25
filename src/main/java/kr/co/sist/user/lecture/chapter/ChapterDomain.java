@@ -12,6 +12,7 @@ public class ChapterDomain {
 	private String chptrId ;
 	private String name;
 	private int length;
+	private int num;
 	private Date regdate;
 	private String doc;
 //	private String video;

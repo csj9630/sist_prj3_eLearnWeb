@@ -3,6 +3,7 @@ package kr.co.sist.admin.login;
 import jakarta.servlet.http.HttpSession;
 import kr.co.sist.admin.member.AdminDTO;
 import kr.co.sist.admin.member.AdminDomain;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,7 @@ public class AdminLoginController {
         AdminDomain adminDomain = adminLoginService.login(adminDTO);
         if (adminDomain != null) {
             session.setAttribute("adminId", adminDomain.getId());
-            return "redirect:/admin/member/userList"; // 로그인 성공 시 사용자 목록으로 이동
+            return "redirect:/admin/dashboard"; // 로그인 성공 시 사용자 목록으로 이동
         }
         model.addAttribute("msg", "아이디 또는 비밀번호를 확인해주세요.");
         return "admin/login/loginFrm";

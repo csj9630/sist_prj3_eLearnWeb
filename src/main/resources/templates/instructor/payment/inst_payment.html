@@ -1,62 +1,176 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>강사 수익 확인</title>
-<style>
-    body { font-family: 'Noto Sans KR', sans-serif; padding: 30px; text-align: center; background-color: #fff8e1; }
-    .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; border: 1px solid #e67e22; }
-    h1 { color: #d35400; }
-    
-    .summary-box { display: flex; justify-content: space-around; margin: 30px 0; padding: 20px; background: #fdf2e9; border-radius: 10px; }
-    .summary-item h2 { margin: 0; color: #e67e22; }
-    
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border-bottom: 1px solid #ddd; padding: 12px; }
-    th { background-color: #e67e22; color: white; }
-    
-    .btn-home { background-color: #555; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; float: right; margin-bottom: 20px;}
-</style>
-</head>
-<body>
+<title>내 수익 조회 - 강사센터</title>
+<link rel="stylesheet" href="/css/user-mypage.css">
+<link rel="stylesheet" href="/css/instructor.css">
+<link rel="stylesheet" th:href="@{/instructor/dashboard/dashboard.css}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <div class="container">
-        <a href="/" class="btn-home">🏠 초기 화면으로</a>
-        <div style="clear:both;"></div>
+<style>
+    /* 박스 전체 컨테이너 (좌우 분할) */
+    
+</style>
+
+<script th:inline="javascript">
+$(document).ready(function() {
+    // 1. Controller에서 넘겨준 searchMonth 값 받기 (예: "2026-02")
+    const currentParams = /*[[${searchMonth}]]*/ '2026-02'; 
+    
+    // "YYYY-MM"을 분리
+    const parts = currentParams.split('-');
+    const currentYear = parseInt(parts[0]);
+    const currentMonth = parseInt(parts[1]);
+
+    // 2. 년도 드롭다운 생성 (현재 년도 기준 과거 5년 ~ 미래 1년)
+    const yearSelect = document.getElementById("yearSelect");
+    const todayYear = new Date().getFullYear();
+    
+    for (let y = todayYear + 1; y >= todayYear - 5; y--) {
+        let option = document.createElement("option");
+        option.value = y;
+        option.text = y + "년";
+        if (y === currentYear) option.selected = true;
+        yearSelect.appendChild(option);
+    }
+
+    // 3. 월 드롭다운 생성 (1월 ~ 12월)
+    const monthSelect = document.getElementById("monthSelect");
+    for (let m = 1; m <= 12; m++) {
+        let option = document.createElement("option");
+        // 값은 두 자리 문자열로 ("01", "02"...)
+        let val = String(m).padStart(2, '0');
+        option.value = val;
+        option.text = m + "월";
+        if (m === currentMonth) option.selected = true;
+        monthSelect.appendChild(option);
+    }
+});
+
+// 4. 조회 버튼 클릭 시 실행 함수
+function searchRevenue() {
+    const year = document.getElementById("yearSelect").value;
+    const month = document.getElementById("monthSelect").value;
+    
+    // "YYYY-MM" 형태로 합쳐서 서버로 전송
+    const searchVal = `${year}-${month}`;
+    
+    location.href = "/instructor/payment/inst_payment?searchMonth=" + searchVal;
+}
+</script>
+</head>
+<body class="instructor-dashboard">
+
+    <div id="header">
+    	<th:block th:replace="~{fragments/instructorHeader :: instructorHeader}"></th:block>
+  	</div>
+
+	<div class="instructor-layout">
+    	<aside class="instructor-sidebar">
+      		<th:block th:replace="~{fragments/instructorSidebar :: instructorSidebar}"></th:block>
+    	</aside>
+    	
+   	<main class="instructor-content">
+    <div class="mypage-container" style="display: block; width: 1000px; margin: 50px auto;">
         
-        <h1>💰 강사 정산 센터</h1>
-        
-        <div class="summary-box">
-            <div class="summary-item">
-                <h3>총 누적 매출액</h3>
-                <h2 th:text="${#numbers.formatInteger(totalSum, 0, 'COMMA')} + '원'">0원</h2>
+        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 25px;">내 수익 조회</h2>
+
+        <div class="revenue-box-compact">
+            
+            <div class="revenue-left">
+                <div class="revenue-label">
+                    <i style="color: #ffc107;"></i> 누적 총 수입
+                </div>
+                <div class="revenue-value">
+                    <span th:text="${#numbers.formatInteger(totalRevenue, 0, 'COMMA')}">0</span>원
+                </div>
             </div>
-            <div class="summary-item">
-                <h3>총 수강생 수</h3>
-                <h2 th:text="${userCount} + '명'">0명</h2>
+
+            <div class="vertical-divider"></div> 
+
+            <div class="revenue-right">
+                <div class="revenue-label" style="justify-content: flex-end;">
+                    <i style="color: #00c471;"></i> 월별 정산 내역
+                </div>
+                <div class="revenue-control">
+                    <select id="yearSelect" class="form-select" style="width: 100px;"></select>
+                    
+                    <select id="monthSelect" class="form-select" style="width: 80px;"></select>
+                    
+                    <button type="button" onclick="searchRevenue()" class="btn-search-revenue">
+                        <i class="fas fa-search"></i> 조회
+                    </button>
+                    
+                    <div class="month-amount">
+                        <span th:text="${#numbers.formatInteger(monthRevenue, 0, 'COMMA')}">0</span>원
+                    </div>
+                </div>
             </div>
         </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: end; margin-bottom: 10px;">
+            <h3 style="font-size: 18px; font-weight: 700;">강의별 누적 수익 현황</h3>
+            <span style="font-size: 13px; color: #888;">* 결제 완료된 건만 집계됩니다.</span>
+        </div>
         
-        <h3>강의별 상세 매출</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>강의명</th>
-                    <th>매출액</th>
-                    <th>수강생 수</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:if="${#lists.isEmpty(list)}">
-                    <td colspan="3">매출 내역이 없습니다.</td>
-                </tr>
-                <tr th:each="item : ${list}">
-                    <td th:text="${item.lectName}"></td>
-                    <td th:text="${#numbers.formatInteger(item.totalPrice, 0, 'COMMA')} + '원'"></td>
-                    <td th:text="${item.userCount} + '명'"></td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="inst-table-wrap">
+            <table class="inst-table">
+                <colgroup>
+                    <col width="15%"> 
+                    <col width="*">   
+                    <col width="20%"> 
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>오픈 날짜</th>
+                        <th>강의 정보</th>
+                        <th>누적 수익</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(list)}">
+                        <td colspan="3" style="padding: 60px 0; text-align: center; color: #858a8d;">
+                            <i class="fas fa-exclamation-circle" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                            수익 내역이 존재하지 않습니다.
+                        </td>
+                    </tr>
+
+                    <tr th:each="item : ${list}">
+                        <td style="text-align: center; color: #666;" th:text="${item.openDate}">2026-02-18</td>
+                        
+                        <td>
+                            <div class="lect-info">
+	                            <!-- <img
+								 th:src="|${imgPath}*{item.thumbnail}|"
+								 alt="썸네일"
+								 onerror="this.src = '/common/images/default.png'"
+								 /> -->
+                                <img th:src="|${imgPath}*{item.thumbnail}|" 
+                                     onerror="this.src = '/common/images/default.png'" 
+                                     class="lect-thumb" alt="썸네일">
+                                
+                                <div class="lect-text">
+                                    <span class="lect-name" th:text="${item.lectName}">강의명</span>
+                                    <span class="sales-count">
+                                        결제완료: <b th:text="${item.salesCount}">0</b>건
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        
+                        <td style="text-align: right; padding-right: 30px;">
+                            <span style="font-size: 16px; font-weight: 700; color: #1b1c1d;" 
+                                  th:text="${#numbers.formatInteger(item.totalPrice, 0, 'COMMA')}">0</span>
+                            <span style="font-size: 14px; color: #555;">원</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        	</div>
+		</div>
+		</main>
     </div>
 
 </body>

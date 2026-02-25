@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-@Alias("dashboardDomain")
+@Alias("adminDashboardDomain")
 
 @Getter
 @Setter

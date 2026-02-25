@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header">
+    <header>
+        <div class="header-inner">
+
+            <!-- intlearn로고 -->
+            <a href="#" class="logo">
+                <img src="/common/images/main_logo.png" alt="Inflearn" class="logo-img">
+            </a>
+
+            <!-- 강의/커뮤니티 (로고 옆) -->
+            <nav class="header-menu-left">
+                <a href="/user/lecture/lectureList" class="nav-text">
+                    <img src="/common/images/lecture.png" alt="강의" class="nav-icon">
+                    <span>강의</span>
+                </a>
+                <a href="/common/announcement/announcementList" class="nav-text">
+                    <img src="/common/images/community.png" alt="커뮤니티" class="nav-icon">
+                    <span>커뮤니티</span>
+                </a>
+            </nav>
+
+            <!-- 검색바 (가운데) -->
+            <div class="header-search">
+                <i class="fas fa-search header-search-icon"></i>
+                <input type="text" id="header-search-input" placeholder="배우고 싶은 지식을 검색해보세요" class="header-search-input">
+            </div>
+
+            <!-- 우측 아이콘 그룹 -->
+            <div class="header-actions">
+
+                <!-- 1. 비로그인 상태 (유저, 강사 모두 아닐 때) -->
+                <a th:if="${session.userId == null and session.instId == null}" href="/common/member/loginFrm"
+                    class="header-auth-btn login-btn" title="로그인">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>로그인</span>
+                </a>
+
+                <!-- 2. 일반 유저 로그인 상태 -->
+                <th:block th:if="${session.userId != null}">
+                    <a href="/common/member/logout" class="header-auth-btn logout-btn" title="로그아웃">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>로그아웃</span>
+                    </a>
+
+                    <!-- 장바구니 -->
+                    <a href="/user/payment/searchMyCart" class="header-icon" title="장바구니">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+
+                    <!-- 사용자 이름 -->
+                    <span class="header-username" th:text="${session.userName} + '님'"></span>
+
+                    <!-- 마이페이지 -->
+                    <a href="/user/my/dashboard" class="profile-btn" title="마이페이지">
+                        <img th:if="${session.userImg != null}" th:src="${session.userImg}" class="profile-img"
+                            alt="프로필"
+                            onerror="this.src = '/common/images/default.png'"
+                            >
+                        <i th:unless="${session.userImg != null}" class="fas fa-user-circle"></i>
+                    </a>
+                </th:block>
+
+                <!-- 3. 강사 로그인 상태 -->
+                <th:block th:if="${session.instId != null}">
+                    <a href="/instructor/login/logout" class="header-auth-btn logout-btn" title="로그아웃">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>로그아웃</span>
+                    </a>
+
+                    <!-- 내 수익확인 (강사 전용 아이콘) -->
+                    <a href="/instructor/payment/inst_payment" class="header-icon" title="내 수익 조회">
+                        <i class="fas fa-coins"></i>
+                    </a>
+
+                    <!-- 강사 이름 표시 -->
+                    <span class="header-username" th:text="${session.instId} + ' 강사님'"></span>
+
+                    <!-- 강사 대시보드 (마이페이지 형태) -->
+                    <a href="/instructor/dashboard" class="profile-btn" title="강사 대시보드">
+                        <i class="fas fa-chalkboard-teacher" style="font-size: 24px; color: #4a4a4a;"></i>
+                    </a>
+                </th:block>
+
+            </div>
+            <!-- ------ --><!-- 위치설정을 위한 또 다른 div -->
+
+        </div>
+
+
+    </header>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/mainHeader.css">
+</div>
+
+</html>
