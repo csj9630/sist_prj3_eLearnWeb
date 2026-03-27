@@ -65,8 +65,7 @@ DevOps & Tools
 
 <br/>
 
-<img width="1051" height="1105" alt="image" src="https://github.com/user-attachments/assets/a10ed28f-f7ef-45c5-83c0-e7152db4ef6d" />
-
+<img width="1007" height="872" alt="image" src="https://github.com/user-attachments/assets/b2960833-1828-4c9b-9115-82e729ba19cc" />
 <img width="1912" height="906" alt="image" src="https://github.com/user-attachments/assets/e39c9a08-7e0d-432c-8ae0-dc406e693146" />
 
 <br/>
